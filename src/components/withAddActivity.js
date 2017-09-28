@@ -61,7 +61,7 @@ class AddActivity extends React.Component {
             details: { disabled: true },
         });
 
-        request.open('POST', 'http://localhost:8081/events', true);
+        request.open('POST', 'http://'+ window.location.hostname + ':3001/events', true);
         request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=UTF-8');
         request.send(
             "a_titulo=" + document.getElementById('new-activity-title').value +
@@ -89,11 +89,20 @@ class AddActivity extends React.Component {
                     details: { disabled: false },
                 });
 
+                if (request.status === 0) {
+                    handleSnackBar("Sin Conexion");
+                }
+
                 if (request.status === 200) {
                     window.location.href = "/"
-                } else {
-                    console.log("error");
-                    handleSnackBar("Error");
+                }
+
+                if (request.status === 400) {
+                    handleSnackBar("Solicitud erronea");
+                }
+
+                if (request.status === 404) {
+                    handleSnackBar("No encontrado");
                 }
             }
         }
@@ -104,7 +113,7 @@ class AddActivity extends React.Component {
             <div style={{...this.state.divContent.style}}>
                 <div style={{...this.state.divForm.style}}>
                     <FormControl style={{...this.state.formControl.style}}>
-                        <InputLabel htmlFor="new-activity-title" color="primary">Rut *</InputLabel>
+                        <InputLabel htmlFor="new-activity-title" color="primary">Titulo *</InputLabel>
                         <Input id="new-activity-title"/>
                     </FormControl>
 

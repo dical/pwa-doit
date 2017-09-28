@@ -1,10 +1,6 @@
 import React, { Component } from 'react';
 
-import Button from 'material-ui/Button';
-import Avatar from 'material-ui/Avatar';
-import Icon from 'material-ui/Icon';
-import List, { ListItem, ListItemText, ListItemSecondaryAction, ListSubheader } from 'material-ui/List';
-import Typography from 'material-ui/Typography';
+import List, { ListItem, ListItemText, ListSubheader } from 'material-ui/List';
 
 class Settings extends Component {
     handleLogout = () => {
