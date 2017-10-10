@@ -1,18 +1,16 @@
 {
-  "name": "create-react-app",
-  "version": "1.0.0",
+  "name": "pwa-doit",
+  "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "jss": "latest",
-    "jss-preset-default": "latest",
+    "jss": "^8.1.0",
+    "jss-preset-default": "^3.0.0",
     "material-ui": "next",
-    "prop-types": "latest",
-    "react": "latest",
-    "react-dom": "latest",
-    "react-jss": "latest",
-    "react-scripts": "latest",
-    "recompose": "latest",
-    "react-router-dom": "latest"
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-jss": "^7.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "^1.0.14"
   },
   "scripts": {
     "start": "react-scripts start",
