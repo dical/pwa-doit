@@ -1,9 +1,11 @@
 import React from 'react';
 
 import Button from 'material-ui/Button';
+import Icon from 'material-ui/Icon';
 import Snackbar from 'material-ui/Snackbar';
-import Typography from 'material-ui/Typography';
+import Tabs, { Tab } from 'material-ui/Tabs';
 import TextField from 'material-ui/TextField';
+import Typography from 'material-ui/Typography';
 
 class Registry extends React.Component {
     state = {
@@ -18,14 +20,15 @@ class Registry extends React.Component {
         errorPassword: false,
         errorPasswordConfirm: false,
         valueSex: "masculino",
-        response: "Registrando usuario"
+        response: "Registrando usuario",
+        tabs: 0
     };
 
     componentDidMount() {
         document.getElementById('title').innerText = 'Registrarse';
 
         document.getElementById('header').style.backgroundColor = '';
-        document.getElementById('header').style.boxShadow = '';
+        document.getElementById('header').style.boxShadow = 'none';
         document.getElementById('shell').style.padding = '64px 0';
 
         document.getElementById('back').style.display = '';
@@ -37,7 +40,7 @@ class Registry extends React.Component {
         document.getElementById('check').style.display = 'none';
         document.getElementById('down').style.display = 'none';
         document.getElementById('shared').style.display = 'none';
-        document.getElementById('person_add').style.display = 'none';
+        document.getElementById('edit').style.display = 'none';
     }
 
     handleAlert = () => {
@@ -132,7 +135,7 @@ class Registry extends React.Component {
 
         onDisabled(); onProgress(); onResponse("Registrando usuario..."); onAlert();
 
-        request.open('POST', 'http://' + window.location.hostname + ':3001/users', true);
+        request.open('POST', 'http://' + window.location.hostname + ':8081/users', true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
 
         request.send(
@@ -185,43 +188,62 @@ class Registry extends React.Component {
         let progress = document.getElementById('progress'); progress.style.display = progress.style.display === 'none' ? '' : 'none';
     };
 
+    handleChange = (event, value) => {
+        this.setState({ tabs: value })
+    };
+
     render() {
         return (
-            <form noValidate autoComplete="off" style={{margin: 16, lineHeight: 3.5}}>
-                <TextField fullWidth id="registry-name" label="Nombre(s) *" type="text" error={this.state.errorName} onChange={this.handleCheckName}/>
-                <TextField fullWidth id="registry-surname" label="Apellido(s) *" type="text" error={this.state.errorSurname} onChange={this.handleCheckSurname}/>
+            <div>
+                <Tabs value={this.state.tabs} onChange={this.handleChange} indicatorColor="primary" textColor="primary" fullWidth style={{backgroundColor: '#E3F2FD', boxShadow: '0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12)'}}>
+                    <Tab icon={<span><Icon>person</Icon></span>} style={{maxWidth: '100%'}}/>
+                    <Tab icon={<span><Icon>business</Icon></span>} style={{maxWidth: '100%'}}/>
+                </Tabs>
 
-                <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <TextField id="registry-born" label="Fecha de nacimiento *" type="date" InputLabelProps={{ shrink: true }} error={this.state.errorBorn} onChange={this.handleCheckBorn} style={{margin: '20px 8px 0 0', width: '-webkit-fill-available'}}/>
-                    <TextField id="registry-sex" label="Sexo" select value={this.state.valueSex} SelectProps={{native: true}} error={this.state.errorSex} onChange={this.handleCheckSex} style={{margin: '20px 0 0 8px', lineHeight: 1, width: '-webkit-fill-available'}}>
-                        <option value="masculino">Masculino</option>
-                        <option value="femenino">Femenino</option>
-                    </TextField>
-                </div>
+                <form noValidate autoComplete="off" style={{margin: '16px 16px 0'}}>
+                    <TextField fullWidth id="registry-name" label="Nombre(s) *" type="text" error={this.state.errorName} onChange={this.handleCheckName} style={{marginBottom: 16}}/>
 
-                <TextField fullWidth id="registry-mail" label="Correo electronico *" type="mail" error={this.state.errorMail} onChange={this.handleCheckMail}/>
+                    {this.state.tabs === 0 && <TextField fullWidth id="registry-surname" label="Apellido(s) *" type="text" error={this.state.errorSurname} onChange={this.handleCheckSurname}/>}
 
-                <TextField fullWidth id="registry-user" label="Nombre de usuario *" type="text" error={this.state.errorUsername} onChange={this.handleCheckUsername}/>
+                    {this.state.tabs === 1 && <TextField fullWidth id="registry-rut" label="Rut *" type="text" error={this.state.errorSurname} onChange={this.handleCheckSurname}/>}
 
-                <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <TextField fullWidth id="registry-password" label="Contraseña *" style={{margin: '20px 8px 0 0', width: '-webkit-fill-available'}} type="password" error={this.state.errorPassword} onChange={this.handleCheckPassword}/>
-                    <TextField fullWidth id="registry-password-confirm" label="Confirmar *" style={{margin: '20px 0 0 8px', width: '-webkit-fill-available'}} type="password" error={this.state.errorPasswordConfirm} onChange={this.handleCheckPasswordConfirm}/>
-                </div>
+                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                        <TextField id="registry-born" label="Fecha de nacimiento *" type="date" InputLabelProps={{ shrink: true }} error={this.state.errorBorn} onChange={this.handleCheckBorn} style={{margin: '20px 8px 0 0', width: '-webkit-fill-available'}}/>
+                        {this.state.tabs === 0 && <TextField id="registry-sex" label="Sexo" select value={this.state.valueSex} SelectProps={{native: true}} error={this.state.errorSex} onChange={this.handleCheckSex} style={{margin: '20px 0 0 8px', width: '-webkit-fill-available'}}>
+                            <option value="masculino">Masculino</option>
+                            <option value="femenino">Femenino</option>
+                        </TextField>}
+                        {this.state.tabs === 1 && <TextField id="new-activity-city" label="Ciudad" select value={this.state.valueSex} SelectProps={{native: true}} disabled={this.state.disableCity} style={{margin: '20px 0 0 8px', width: '100%'}}>
+                            <option value="la serena">La Serena</option>
+                            <option value="coquimbo">Coquimbo</option>
+                        </TextField>}
+                    </div>
 
-                <Typography type="caption" gutterBottom style={{margin:'16px 0'}}>Campos requeridos *</Typography>
+                    {this.state.tabs === 1 && <TextField fullWidth id="new-activity-address" label="Direccion *" type="text" disabled={this.state.disableAddress} error={this.state.errorAddress} onChange={this.handleCheckAddress} style={{margin: '16px 0 0'}}/>}
 
-                <Button raised color="primary" onClick={this.handleRequest} disabled={this.state.buttonRegistry} style={{margin: '26px 0', width: '100%'}}>Registrarse</Button>
+                    <TextField fullWidth id="registry-mail" label="Correo electronico *" type="mail" error={this.state.errorMail} onChange={this.handleCheckMail} style={{margin: '16px 0 0'}}/>
+                    <TextField fullWidth id="registry-user" label="Nombre de usuario *" type="text" error={this.state.errorUsername} onChange={this.handleCheckUsername} style={{margin: '16px 0 0'}}/>
 
-                <Snackbar
-                    anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
-                    open={this.state.alert}
-                    autoHideDuration={6000}
-                    onRequestClose={this.handleAlert}
-                    SnackbarContentProps={{'aria-describedby': 'message-id'}}
-                    message={<span id="message-id">{this.state.response}</span>}
-                    action={[<Button key="undo" color="accent" dense onClick={this.handleAlert}>OCULTAR</Button>]}
-                />
-            </form>
+                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                        <TextField fullWidth id="registry-password" label="Contraseña *" style={{margin: '20px 8px 0 0', width: '-webkit-fill-available'}} type="password" error={this.state.errorPassword} onChange={this.handleCheckPassword}/>
+                        <TextField fullWidth id="registry-password-confirm" label="Confirmar *" style={{margin: '20px 0 0 8px', width: '-webkit-fill-available'}} type="password" error={this.state.errorPasswordConfirm} onChange={this.handleCheckPasswordConfirm}/>
+                    </div>
+
+                    <Typography type="caption" gutterBottom style={{margin:'16px 0'}}>Campos requeridos *</Typography>
+
+                    <Button raised color="primary" onClick={this.handleRequest} disabled={this.state.buttonRegistry} style={{margin: '26px 0', width: '100%'}}>Registrarse</Button>
+
+                    <Snackbar
+                        anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
+                        open={this.state.alert}
+                        autoHideDuration={6000}
+                        onRequestClose={this.handleAlert}
+                        SnackbarContentProps={{'aria-describedby': 'message-id'}}
+                        message={<span id="message-id">{this.state.response}</span>}
+                        action={[<Button key="undo" color="accent" dense onClick={this.handleAlert}>OCULTAR</Button>]}
+                    />
+                </form>
+            </div>
         );
     }
 }

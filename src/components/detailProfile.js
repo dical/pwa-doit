@@ -32,7 +32,7 @@ class Profile extends Component {
         document.getElementById('check').style.display = 'none';
         document.getElementById('down').style.display = 'none';
         document.getElementById('shared').style.display = 'none';
-        document.getElementById('person_add').style.display = 'none';
+        document.getElementById('edit').style.display = 'none';
 
         this.handleRequest()
     }
@@ -40,7 +40,7 @@ class Profile extends Component {
     handleRequest = () => {
         let request = new XMLHttpRequest(), onUpdate = this.handleUpdate;
 
-        request.open('GET', 'http://' + window.location.hostname + ':3001/users/' + getCookie('userId'), true);
+        request.open('GET', 'http://' + window.location.hostname + ':8081/users/' + getCookie('userId'), true);
 
         request.onreadystatechange = function() {
             if (request.readyState === 4) {

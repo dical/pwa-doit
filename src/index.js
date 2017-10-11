@@ -52,6 +52,10 @@ class App extends React.Component {
         }
     };
 
+    handleConfirm = () => {
+        document.querySelector('form button').click()
+    };
+
     render() {
         const { navigation } = this.state;
 
@@ -80,7 +84,7 @@ class App extends React.Component {
                                 <Icon>filter_list</Icon>
                             </IconButton>
 
-                            <IconButton id="check" color="inherit">
+                            <IconButton id="check" disabled color="inherit" style={{marginLeft: 'auto'}} onClick={this.handleConfirm}>
                                 <Icon>check</Icon>
                             </IconButton>
 
@@ -88,8 +92,8 @@ class App extends React.Component {
                                 <Icon>shared</Icon>
                             </IconButton>
 
-                            <IconButton id="person_add" color="inherit">
-                                <Icon>person_add</Icon>
+                            <IconButton id="edit" color="inherit">
+                                <Icon>edit</Icon>
                             </IconButton>
 
                             <Link id='settings' to='/settings' style={{textDecoration: 'none', color: 'inherit', marginLeft: 'auto'}}>

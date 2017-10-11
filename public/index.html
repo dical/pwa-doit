@@ -26,8 +26,12 @@
     </head>
 
     <style>
-        .hide {
-            display: none;
+        .overflow-text {
+            -webkit-line-clamp: 2;
+            text-overflow: ellipsis;
+            -webkit-box-orient: vertical;
+            display: -webkit-box !important;
+            overflow: hidden;
         }
     </style>
 

@@ -27,11 +27,15 @@ class Activities extends Component {
         document.getElementById('settings').style.display = 'none';
         document.getElementById('check').style.display = 'none';
         document.getElementById('shared').style.display = 'none';
-        document.getElementById('person_add').style.display = 'none';
+        document.getElementById('edit').style.display = 'none';
+
+        if (getCookie('userType') !== 'business') {
+            document.getElementById('add').style.display = 'none';
+        }
 
         let request = new XMLHttpRequest(), onUpdate = this.handleUpdateData;
 
-        request.open('GET', 'http://' + window.location.hostname + ':3001/events', true);
+        request.open('GET', 'http://' + window.location.hostname + ':8081/events', true);
 
         request.onreadystatechange = function() {
             if (request.readyState === 4) {
@@ -55,16 +59,16 @@ class Activities extends Component {
     render() {
         return (
             <List>
-                {this.state.data.map(event => (
-                    <Link to={'/activity/' + event._id} style={{textDecoration:'none'}}>
+                {this.state.data.map((event, i) => (
+                    <Link key={this.state.data.length - i} to={'/activity/' + event._id} style={{textDecoration:'none'}}>
                         <ListItem button>
                             <Avatar src={'images/activity.jpg'} style={{height: 72, width: 72, borderRadius: 0}}/>
-                            <ListItemText primary={event.name} secondary={event.details}/>
+                            <ListItemText classes={{text:'overflow-text'}} primary={event.name} secondary={"Disfruta de una clase asistida por un instructor en nuestra escuela, dos horas para conectarte con el mar en nuestra escuela ubicada en la avenida del mar"}/>
                         </ListItem>
                     </Link>
                 ))}
 
-                <Link to='/add' style={{textDecoration:'none'}}>
+                <Link id="add" to='/add' style={{textDecoration:'none'}}>
                     <Button fab color="accent" style={{position: 'fixed', right: 16, marginTop: '-28px'}}>
                         <Icon>add</Icon>
                     </Button>
@@ -72,6 +76,22 @@ class Activities extends Component {
             </List>
         );
     }
+}
+
+function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) === 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
 }
 
 export default Activities;

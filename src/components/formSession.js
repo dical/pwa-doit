@@ -33,7 +33,7 @@ class Login extends Component {
         document.getElementById('check').style.display = 'none';
         document.getElementById('down').style.display = 'none';
         document.getElementById('shared').style.display = 'none';
-        document.getElementById('person_add').style.display = 'none';
+        document.getElementById('edit').style.display = 'none';
     }
 
     handleAlert = () => {
@@ -78,7 +78,7 @@ class Login extends Component {
 
         onDisabled(); onProgress(); onResponse("Iniciando sesion..."); onAlert();
 
-        request.open('POST', 'http://' + window.location.hostname + ':3001/sessions', true);
+        request.open('POST', 'http://' + window.location.hostname + ':8081/sessions', true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
 
         request.send(

@@ -49,7 +49,6 @@ class AddActivity extends Component {
         document.getElementById('check').style.display = 'none';
         document.getElementById('down').style.display = 'none';
         document.getElementById('shared').style.display = 'none';
-        document.getElementById('person_add').style.display = 'none';
     }
 
     handleAddTags = (event) => {
@@ -149,7 +148,7 @@ class AddActivity extends Component {
 
         onDisabled(); onProgress(); onResponse("Agregando actividad..."); onAlert();
 
-        request.open('POST', 'http://' + window.location.hostname + ':3001/events', true);
+        request.open('POST', 'http://' + window.location.hostname + ':8081/events', true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
 
         console.log(document.cookie);

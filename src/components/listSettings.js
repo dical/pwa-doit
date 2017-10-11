@@ -24,7 +24,6 @@ class Settings extends Component {
         document.getElementById('check').style.display = 'none';
         document.getElementById('down').style.display = 'none';
         document.getElementById('shared').style.display = 'none';
-        document.getElementById('person_add').style.display = 'none';
     }
 
     render() {
