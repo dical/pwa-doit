@@ -9,19 +9,56 @@ import Typography from 'material-ui/Typography';
 
 class Registry extends React.Component {
     state = {
-        alert: false,
-        buttonRegistry: true,
-        errorBorn: false,
-        errorMail: false,
-        errorName: false,
-        errorSex: false,
-        errorSurname: false,
-        errorUsername: false,
-        errorPassword: false,
-        errorPasswordConfirm: false,
-        valueSex: "masculino",
-        response: "Registrando usuario",
-        tabs: 0
+        address: {
+            error: false,
+            disabled: false
+        },
+        born: {
+            error: false,
+            disabled: false
+        },
+        city: {
+            error: false,
+            disabled: false
+        },
+        confirm: {
+            error: false,
+            disabled: false
+        },
+        name: {
+            error: false,
+            disabled: false
+        },
+        mail: {
+            error: false,
+            disabled: false
+        },
+        password: {
+            error: false,
+            disabled: false
+        },
+        registry: true,
+        rut: {
+            error: false,
+            disabled: false
+        },
+        tabs: 0,
+        sex: {
+            disabled: false,
+            value: 'masculino'
+        },
+        snack: {
+            message: '',
+            open: false
+        },
+        surname: {
+            error: false,
+            disabled: false
+        },
+        user: {
+            error: false,
+            disabled: false
+        }
     };
 
     componentDidMount() {
@@ -31,45 +68,60 @@ class Registry extends React.Component {
         document.getElementById('header').style.boxShadow = 'none';
         document.getElementById('shell').style.padding = '64px 0';
 
-        document.getElementById('back').style.display = '';
-        document.getElementById('title').style.display = '';
+        ['back', 'title'].forEach(function(id) {
+            document.getElementById(id).style.display = ''
+        });
 
-        document.getElementById('settings').style.display = 'none';
-        document.getElementById('search').style.display = 'none';
-        document.getElementById('filter').style.display = 'none';
-        document.getElementById('check').style.display = 'none';
-        document.getElementById('down').style.display = 'none';
-        document.getElementById('shared').style.display = 'none';
-        document.getElementById('edit').style.display = 'none';
+        ['settings', 'search', 'filter', 'check', 'down', 'shared', 'edit'].forEach(function(id) {
+            document.getElementById(id).style.display = 'none'
+        })
     }
 
-    handleAlert = () => {
-        this.setState({
-            alert: !this.state.alert
-        });
+    handleChange = (event, value) => {
+        this.setState({ tabs: value })
     };
 
     handleCheckBorn = (event) => {
         this.setState({
-            errorBorn: false
-        }, this.handleCheckRegistry);
+            born: {
+                error: false,
+                disabled: this.state.born.disabled
+            }
+        }, this.handleCheckRegistry)
+    };
+
+    handleCheckConfirm = (event) => {
+        this.setState({
+            confirm : {
+                error:
+                !(new RegExp("[A-Za-z0-9!?-]{8,16}")).test(event.target.value) ||
+                !(document.getElementById('registry-password').value === document.getElementById('registry-password-confirm').value),
+                disabled: false
+            }
+        }, this.handleCheckRegistry)
     };
 
     handleCheckMail = (event) => {
         this.setState({
-            errorMail: !(new RegExp("^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$")).test(event.target.value)
-        }, this.handleCheckRegistry);
+            mail: {
+                error: !(new RegExp("^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$")).test(event.target.value),
+                disabled: false
+            }
+        }, this.handleCheckRegistry)
     };
 
     handleCheckName = (event) => {
         this.setState({
-            errorName: !(new RegExp("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{2,48}")).test(event.target.value)
-        }, this.handleCheckRegistry);
+            name: {
+                error: !(new RegExp("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{2,48}")).test(event.target.value),
+                disabled: false
+            }
+        }, this.handleCheckRegistry)
     };
 
     handleCheckRegistry = () => {
         this.setState({
-            buttonRegistry:
+            registry:
             this.state.errorName ||
             this.state.errorSurname ||
             this.state.errorMail ||
@@ -84,46 +136,44 @@ class Registry extends React.Component {
             document.getElementById('registry-user').value.replace(' ','') === '' ||
             document.getElementById('registry-password').value.replace(' ','') === '' ||
             document.getElementById('registry-password-confirm').value.replace(' ','') === ''
-        });
-    };
-
-
-    handleCheckSex = (event) => {
-        this.setState({
-            errorSex: false,
-            valueSex: event.target.value
-        }, this.handleCheckRegistry);
+        })
     };
 
     handleCheckSurname = (event) => {
         this.setState({
-            errorSurname: !(new RegExp("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{2,48}")).test(event.target.value)
-        }, this.handleCheckRegistry);
+            surname: {
+                error: !(new RegExp("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{2,48}")).test(event.target.value),
+                disabled: false
+            }
+        }, this.handleCheckRegistry)
     };
 
-    handleCheckUsername = (event) => {
+    handleCheckUser = (event) => {
         this.setState({
-            errorUsername: !(new RegExp("^([a-z]+[0-9]{0,2}){5,20}$")).test(event.target.value)
-        }, this.handleCheckRegistry);
+            user: {
+                error: !(new RegExp("^([a-z]+[0-9]{0,2}){5,20}$")).test(event.target.value),
+                disabled: false
+            }
+        }, this.handleCheckRegistry)
     };
 
     handleCheckPassword = (event) => {
         this.setState({
-            errorPassword: !(new RegExp("[A-Za-z0-9!?-]{8,16}")).test(event.target.value)
-        }, this.handleCheckRegistry);
-    };
-
-    handleCheckPasswordConfirm = (event) => {
-        this.setState({
-            errorPasswordConfirm: !(new RegExp("[A-Za-z0-9!?-]{8,16}")).test(event.target.value) || document.getElementById('registry-password').value !== document.getElementById('registry-password-confirm').value
-        }, this.handleCheckRegistry);
+            user: {
+                error: !(new RegExp("[A-Za-z0-9!?-]{8,16}")).test(event.target.value),
+                disabled: false
+            }
+        }, this.handleCheckRegistry)
     };
 
     handleDisabled = () => {
         this.setState({
-            registry: !this.state.login,
-            alert: true
-        });
+            registry: !this.state.registry
+        })
+    };
+
+    handleProgress = () => {
+        let progress = document.getElementById('progress'); progress.style.display = progress.style.display === 'none' ? '' : 'none';
     };
 
     handleRequest = () => {
@@ -178,72 +228,238 @@ class Registry extends React.Component {
         };
     };
 
-    handleResponse = (text) => {
+    handleSnack = (message) => {
         this.setState({
-            response: text
-        });
-    };
-
-    handleProgress = () => {
-        let progress = document.getElementById('progress'); progress.style.display = progress.style.display === 'none' ? '' : 'none';
-    };
-
-    handleChange = (event, value) => {
-        this.setState({ tabs: value })
+            snack: {
+                open: !(typeof message === 'object'),
+                message: typeof message === 'object' ? '' : message
+            }
+        })
     };
 
     render() {
         return (
-            <div>
-                <Tabs value={this.state.tabs} onChange={this.handleChange} indicatorColor="primary" textColor="primary" fullWidth style={{backgroundColor: '#E3F2FD', boxShadow: '0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12)'}}>
-                    <Tab icon={<span><Icon>person</Icon></span>} style={{maxWidth: '100%'}}/>
-                    <Tab icon={<span><Icon>business</Icon></span>} style={{maxWidth: '100%'}}/>
+            <form
+                autoComplete="off"
+                style={{ margin: '0 16px' }}
+            >
+                <Tabs
+                    fullWidth
+                    indicatorColor="primary"
+                    onChange={ this.handleChange }
+                    style={{
+                        backgroundColor: '#E3F2FD',
+                        boxShadow: '0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12)',
+                        margin: '0 -16px'
+                    }}
+                    textColor="primary"
+                    value={ this.state.tabs }
+                >
+                    <Tab
+                        icon={ <Icon>person</Icon> }
+                        style={{ maxWidth: '100%' }}
+                    />
+
+                    <Tab
+                        icon={ <Icon>business</Icon>}
+                        style={{ maxWidth: '100%' }}
+                    />
                 </Tabs>
 
-                <form noValidate autoComplete="off" style={{margin: '16px 16px 0'}}>
-                    <TextField fullWidth id="registry-name" label="Nombre(s) *" type="text" error={this.state.errorName} onChange={this.handleCheckName} style={{marginBottom: 16}}/>
+                <TextField
+                    id="registry-name"
+                    disabled={ this.state.name.disabled }
+                    error={ this.state.name.error }
+                    fullWidth
+                    label={ this.state.tabs === 0 ? 'Nombre(s) *' : 'Razon social *' }
+                    onChange={ this.handleCheckName }
+                    style={{ margin: '26px 0 0' }}
+                    type="text"
+                />
 
-                    {this.state.tabs === 0 && <TextField fullWidth id="registry-surname" label="Apellido(s) *" type="text" error={this.state.errorSurname} onChange={this.handleCheckSurname}/>}
+                { this.state.tabs === 0 &&
+                    <TextField
+                        id="registry-surname"
+                        disabled={ this.state.surname.disabled }
+                        error={ this.state.surname.error }
+                        fullWidth
+                        label="Apellido(s) *"
+                        onChange={ this.handleCheckSurname }
+                        style={{ margin: '16px 0 0' }}
+                        type="text"
+                    />
+                }
 
-                    {this.state.tabs === 1 && <TextField fullWidth id="registry-rut" label="Rut *" type="text" error={this.state.errorSurname} onChange={this.handleCheckSurname}/>}
+                { this.state.tabs === 1 &&
+                    <TextField
+                        id="registry-rut"
+                        disabled={ this.state.rut.disabled }
+                        error={ this.state.rut.error }
+                        fullWidth
+                        label="Rut *"
+                        onChange={ this.handleCheckRut }
+                        style={{ margin: '16px 0 0' }}
+                        type="text"
+                    />
+                }
 
-                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                        <TextField id="registry-born" label="Fecha de nacimiento *" type="date" InputLabelProps={{ shrink: true }} error={this.state.errorBorn} onChange={this.handleCheckBorn} style={{margin: '20px 8px 0 0', width: '-webkit-fill-available'}}/>
-                        {this.state.tabs === 0 && <TextField id="registry-sex" label="Sexo" select value={this.state.valueSex} SelectProps={{native: true}} error={this.state.errorSex} onChange={this.handleCheckSex} style={{margin: '20px 0 0 8px', width: '-webkit-fill-available'}}>
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between'
+                    }}
+                >
+                    <TextField
+                        id="registry-born"
+                        disabled={ this.state.born.disabled }
+                        error={ this.state.born.error }
+                        fullWidth
+                        InputLabelProps={{ shrink: true }}
+                        label="Fecha de nacimiento *"
+                        onChange={ this.handleCheckBorn }
+                        style={{ margin: '16px 16px 0 0' }}
+                        type="date"
+                    />
+
+                    { this.state.tabs === 0 &&
+                        <TextField
+                            id="registry-sex"
+                            disabled={ this.state.sex.disabled }
+                            fullWidth
+                            label="Sexo"
+                            select
+                            SelectProps={{ native: true }}
+                            style={{ margin: '16px 0 0 16px' }}
+                            value={ this.state.sex.value }
+                        >
                             <option value="masculino">Masculino</option>
                             <option value="femenino">Femenino</option>
-                        </TextField>}
-                        {this.state.tabs === 1 && <TextField id="new-activity-city" label="Ciudad" select value={this.state.valueSex} SelectProps={{native: true}} disabled={this.state.disableCity} style={{margin: '20px 0 0 8px', width: '100%'}}>
-                            <option value="la serena">La Serena</option>
-                            <option value="coquimbo">Coquimbo</option>
-                        </TextField>}
-                    </div>
+                        </TextField>
+                    }
 
-                    {this.state.tabs === 1 && <TextField fullWidth id="new-activity-address" label="Direccion *" type="text" disabled={this.state.disableAddress} error={this.state.errorAddress} onChange={this.handleCheckAddress} style={{margin: '16px 0 0'}}/>}
+                    { this.state.tabs === 1 &&
+                        <TextField
+                            id="registry-city"
+                            disabled={ this.state.city.disabled }
+                            fullWidth
+                            label="Ciudad"
+                            select
+                            SelectProps={{ native: true }}
+                            style={{ margin: '16px 0 0 16px' }}
+                            value={ this.state.city.value }
+                        >
+                            <option value="La Serena">La Serena</option>
+                            <option value="Coquimbo">Coquimbo</option>
+                        </TextField>
+                    }
+                </div>
 
-                    <TextField fullWidth id="registry-mail" label="Correo electronico *" type="mail" error={this.state.errorMail} onChange={this.handleCheckMail} style={{margin: '16px 0 0'}}/>
-                    <TextField fullWidth id="registry-user" label="Nombre de usuario *" type="text" error={this.state.errorUsername} onChange={this.handleCheckUsername} style={{margin: '16px 0 0'}}/>
-
-                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                        <TextField fullWidth id="registry-password" label="Contraseña *" style={{margin: '20px 8px 0 0', width: '-webkit-fill-available'}} type="password" error={this.state.errorPassword} onChange={this.handleCheckPassword}/>
-                        <TextField fullWidth id="registry-password-confirm" label="Confirmar *" style={{margin: '20px 0 0 8px', width: '-webkit-fill-available'}} type="password" error={this.state.errorPasswordConfirm} onChange={this.handleCheckPasswordConfirm}/>
-                    </div>
-
-                    <Typography type="caption" gutterBottom style={{margin:'16px 0'}}>Campos requeridos *</Typography>
-
-                    <Button raised color="primary" onClick={this.handleRequest} disabled={this.state.buttonRegistry} style={{margin: '26px 0', width: '100%'}}>Registrarse</Button>
-
-                    <Snackbar
-                        anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
-                        open={this.state.alert}
-                        autoHideDuration={6000}
-                        onRequestClose={this.handleAlert}
-                        SnackbarContentProps={{'aria-describedby': 'message-id'}}
-                        message={<span id="message-id">{this.state.response}</span>}
-                        action={[<Button key="undo" color="accent" dense onClick={this.handleAlert}>OCULTAR</Button>]}
+                { this.state.tabs === 1 &&
+                    <TextField
+                        id="registry-address"
+                        disabled={ this.state.address.disabled }
+                        error={ this.state.address.error }
+                        fullWidth
+                        label="Direccion *"
+                        onChange={ this.handleCheckAddress }
+                        style={{ margin: '16px 0 0' }}
+                        type="text"
                     />
-                </form>
-            </div>
+                }
+
+                <TextField
+                    id="registry-mail"
+                    label="Correo electronico *"
+                    disabled={ this.state.mail.disabled }
+                    error={ this.state.mail.error }
+                    fullWidth
+                    onChange={ this.handleCheckMail }
+                    style={{ margin: '16px 0 0' }}
+                    type="mail"
+                />
+
+                <TextField
+                    id="registry-user"
+                    disabled={ this.state.user.disabled }
+                    error={ this.state.user.error }
+                    fullWidth
+                    label="Nombre de usuario *"
+                    onChange={ this.handleCheckUser }
+                    style={{ margin: '16px 0 0' }}
+                    type="text"
+                />
+
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between'
+                    }}
+                >
+                    <TextField
+                        id="registry-password"
+                        disabled={ this.state.password.disabled }
+                        error={ this.state.password.error }
+                        fullWidth
+                        label="Contraseña *"
+                        onChange={ this.handleCheckPassword }
+                        style={{ margin: '16px 16px 0 0' }}
+                        type="password"
+                    />
+
+                    <TextField
+                        id="registry-password-confirm"
+                        disabled={ this.state.confirm.disabled }
+                        error={ this.state.confirm.error }
+                        fullWidth
+                        label="Confirmar *"
+                        onChange={ this.handleCheckConfirm }
+                        style={{ margin: '16px 0 0 16px' }}
+                        type="password"
+                    />
+                </div>
+
+                <Button
+                    color="primary"
+                    disabled={ this.state.registry }
+                    onClick={ this.handleRequest }
+                    raised
+                    style={{
+                        margin: '32px 0 16px',
+                        width: '100%'
+                    }}
+                >
+                    Registrarse
+                </Button>
+
+                <Typography
+                    type="caption"
+                    style={{ margin:'16px 0' }}
+                >
+                    Campos requeridos *
+                </Typography>
+
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left'
+                    }}
+                    open={ this.state.snack.open }
+                    autoHideDuration={ 6000 }
+                    onRequestClose={ this.handleSnack }
+                    SnackbarContentProps={{ 'aria-describedby': 'message-id' }}
+                    message={<span id="message-id">{ this.state.snack.message }</span>}
+                    action={[
+                        <Button
+                            key="undo"
+                            color="accent"
+                            dense
+                            onClick={ this.handleSnack }
+                        >
+                            OCULTAR
+                        </Button>
+                    ]}
+                />
+            </form>
         );
     }
 }

@@ -36,12 +36,20 @@ class App extends React.Component {
         search: ''
     };
 
+    handleActivities = () => {
+        document.getElementById('activities').click()
+    };
+
     handleBack = () => {
         window.history.back()
     };
 
     handleChange = (event, value) => {
         this.setState({ navigation: value });
+    };
+
+    handleComments = () => {
+        document.getElementById('comments').click()
     };
 
     handleUser = () => {
@@ -114,13 +122,21 @@ class App extends React.Component {
                         <Route path="/settings" component={Settings}/>
                     </Switch>
 
-                    <BottomNavigation value={navigation} onChange={this.handleChange} style={{bottom: 0, position: 'fixed', width: '100%'}}>
-                        <BottomNavigationButton onClick={function() { document.getElementById('comments').click() }} icon={<Icon>forum</Icon>}/>
-                        <BottomNavigationButton onClick={function() { document.getElementById('activities').click() }} icon={<Icon>directions_run</Icon>}/>
+                    <BottomNavigation
+                        value={navigation}
+                        onChange={this.handleChange}
+                        style={{
+                            backgroundColor: '#E3F2FD',
+                            bottom: 0,
+                            position: 'fixed',
+                            width: '100%'}}
+                    >
+                        <BottomNavigationButton onClick={this.handleComments} icon={<Icon>forum</Icon>}/>
+                        <BottomNavigationButton id="link-activities" onClick={this.handleActivities} icon={<Icon>directions_run</Icon>}/>
                         <BottomNavigationButton onClick={this.handleUser} icon={<Icon>person</Icon>}/>
                     </BottomNavigation>
 
-                    <Link id='comments' to="/"/>
+                    <Link id='comments' to="/comments"/>
                     <Link id='activities' to="/"/>
                     <Link id='login' to="/login"/>
                     <Link id='user' to='/user'/>

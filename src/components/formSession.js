@@ -9,12 +9,18 @@ import Typography from 'material-ui/Typography';
 class Login extends Component {
     state = {
         login: true,
-        password: false,
-        user: false,
-        alert: false,
-        response: "Error",
-        username: false,
-        pass: false
+        password: {
+            error: false,
+            disabled: false
+        },
+        snack: {
+            open: false,
+            message: ''
+        },
+        user: {
+            error: false,
+            disabled: false
+        }
     };
 
     componentDidMount() {
@@ -24,59 +30,88 @@ class Login extends Component {
         document.getElementById('header').style.boxShadow = '';
         document.getElementById('shell').style.padding = '64px 0';
 
-        document.getElementById('back').style.display = '';
-        document.getElementById('title').style.display = '';
+        ['back', 'title'].forEach(function(id) {
+            document.getElementById(id).style.display = ''
+        });
 
-        document.getElementById('settings').style.display = 'none';
-        document.getElementById('search').style.display = 'none';
-        document.getElementById('filter').style.display = 'none';
-        document.getElementById('check').style.display = 'none';
-        document.getElementById('down').style.display = 'none';
-        document.getElementById('shared').style.display = 'none';
-        document.getElementById('edit').style.display = 'none';
+        ['settings', 'search', 'filter', 'check', 'down', 'shared', 'edit'].forEach(function(id) {
+            document.getElementById(id).style.display = 'none'
+        })
     }
 
-    handleAlert = () => {
+    handleAllError = () => {
         this.setState({
-            alert: !this.state.alert
-        });
+            password: {
+                disabled: false,
+                error: true
+            },
+            user: {
+                disabled: false,
+                error: true
+            }
+        })
     };
 
     handleCheckLogin = () => {
         this.setState({
-            login: this.state.username || this.state.pass || document.getElementById('login-user').value.replace(' ', '') === '' || document.getElementById('login-password').value.replace(' ', '') === ''
-        });
+            login:
+            this.state.user.error ||
+            this.state.password.error ||
+            document.getElementById('login-user').value.replace(' ', '') === '' ||
+            document.getElementById('login-password').value.replace(' ', '') === ''
+        })
     };
 
     handleCheckUserName = (event) => {
         this.setState({
-            username: !(new RegExp("^([a-z]+[0-9]{0,2}){5,20}$")).test(event.target.value)
-        }, this.handleCheckLogin);
+            user: {
+                error:
+                !(new RegExp("[a-z0-9!?-]{5,20}")).test(event.target.value) &&
+                !(event.target.value.replace(' ', '') === ''),
+                disabled: this.state.user.disabled
+            }
+        }, this.handleCheckLogin)
     };
 
     handleCheckUserPassword = (event) => {
         this.setState({
-            pass: !(new RegExp("[A-Za-z0-9!?-]{8,16}")).test(event.target.value)
-        }, this.handleCheckLogin);
+            password: {
+                error:
+                !(new RegExp("[A-Za-z0-9!?-]{8,16}")).test(event.target.value) &&
+                !(event.target.value.replace(' ', '') === ''),
+                disabled: this.state.password.disabled
+            }
+        }, this.handleCheckLogin)
     };
 
     handleDisabled = () => {
         this.setState({
-            user: !this.state.user,
-            password: !this.state.password,
-            login: !this.state.login,
-            alert: true
-        });
+            user: {
+                error: this.state.user.error,
+                disabled: !this.state.user.disabled
+            },
+            password: {
+                error: this.state.user.error,
+                disabled: !this.state.user.disabled
+            },
+            login: !this.state.login
+        })
+    };
+
+    handleProgress = () => {
+        let progress = document.getElementById('progress'); progress.style.display = progress.style.display === 'none' ? '' : 'none';
     };
 
     handleRequest = () => {
-        let request = new XMLHttpRequest(),
-            onAlert = this.handleAlert,
-            onDisabled = this.handleDisabled,
-            onProgress = this.handleProgress,
-            onResponse = this.handleResponse;
+        let request = new XMLHttpRequest()
+            , onSnacked = this.handleSnack
+            , onDisabled = this.handleDisabled
+            , onProgress = this.handleProgress
+            , onError = this.handleAllError;
 
-        onDisabled(); onProgress(); onResponse("Iniciando sesion..."); onAlert();
+        onDisabled();
+        onProgress();
+        onSnacked("Iniciando sesion...");
 
         request.open('POST', 'http://' + window.location.hostname + ':8081/sessions', true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
@@ -90,60 +125,137 @@ class Login extends Component {
 
         request.onreadystatechange = function() {
             if (request.readyState === 4) {
+                onDisabled();
+                onProgress();
+
                 switch (request.status) {
                     case 201:
-                        onDisabled(); onProgress(); document.cookie = 'userId=' + JSON.parse(request.response)._id; document.getElementById('user').click();
+                         setCookie('userId', JSON.parse(request.response)._id, 360); document.getElementById('link-activities').click();
                         break;
                     case 403:
-                        onDisabled(); onProgress(); onResponse(JSON.parse(request.responseText).data.text);
+                        let errors = JSON.parse(request.responseText).errors
+                            , text = ''
+                            , property;
+
+                        for (property in errors) {
+                            if (errors.hasOwnProperty(property)) {
+                                text += errors[property].message + '\n'
+                            }
+                        }
+
+                        onError();
+                        onSnacked(text);
                         break;
                     default:
-                        onDisabled(); onProgress(); onResponse("Sin conexion");
+                        onSnacked("Sin conexion");
                         break;
                 }
             }
         }
     };
 
-    handleResponse = (text) => {
+    handleSnack = (message) => {
         this.setState({
-            response: text
-        });
-    };
-
-    handleProgress = () => {
-        let progress = document.getElementById('progress'); progress.style.display = progress.style.display === 'none' ? '' : 'none';
+            snack: {
+                open: !(typeof message === 'object'),
+                message: typeof message === 'object' ? '' : message
+            }
+        })
     };
 
     render() {
         return (
-            <form style={{margin: 26, textAlign: 'center'}}>
-                <Typography type="title">DoItExp</Typography>
+            <form
+                style={{
+                    margin: 16,
+                    textAlign: 'center'
+                }}
+            >
+                <Typography
+                    style={{ padding: '72px 0' }}
+                    type="title"
+                >
+                    DoItExp
+                </Typography>
 
-                <TextField fullWidth id="login-user" label="Usuario" type="text" disabled={this.state.user} error={this.state.username} onChange={this.handleCheckUserName} style={{margin: '8px 0'}}/>
-                <TextField fullWidth id="login-password" label="Contraseña" type="password" disabled={this.state.password} error={this.state.pass} onChange={this.handleCheckUserPassword} style={{margin: '8px 0'}}/>
+                <TextField
+                    id="login-user"
+                    autoComplete="off"
+                    disabled={ this.state.user.disabled }
+                    error={ this.state.user.error }
+                    fullWidth
+                    label="Usuario"
+                    onChange={ this.handleCheckUserName }
+                    style={{ margin: '8px 0' }}
+                    type="text"
+                />
 
-                <Button raised color="primary" onClick={this.handleRequest} disabled={this.state.login} style={{margin: '16px 0', width: '100%'}}>Iniciar sesión</Button>
+                <TextField
+                    id="login-password"
+                    autoComplete="off"
+                    disabled={ this.state.password.disabled}
+                    error={ this.state.password.error}
+                    fullWidth
+                    label="Contraseña"
+                    onChange={this.handleCheckUserPassword}
+                    style={{ margin: '8px 0' }}
+                    type="password"
+                />
 
-                <Typography type="body1" gutterBottom>
+                <Button
+                    color="primary"
+                    disabled={ this.state.login }
+                    onClick={ this.handleRequest }
+                    raised
+                    style={{
+                        margin: '16px 0',
+                        width: '100%'
+                    }}
+                >
+                    Iniciar sesión
+                </Button>
+
+                <Typography type="body1">
                     ¿No tienes cuenta? &nbsp;
-                    <Link to="/registry" style={{textDecoration: 'none'}}>
-                        <Button>Registrate</Button>
+                    <Link
+                        to="/registry"
+                        style={{ textDecoration: 'none' }}
+                    >
+                        <Button color="primary">Registrate</Button>
                     </Link>
                 </Typography>
 
                 <Snackbar
-                    anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
-                    open={this.state.alert}
-                    autoHideDuration={6000}
-                    onRequestClose={this.handleAlert}
-                    SnackbarContentProps={{'aria-describedby': 'message-id'}}
-                    message={<span id="message-id">{this.state.response}</span>}
-                    action={[<Button key="undo" color="accent" dense onClick={this.handleAlert}>OCULTAR</Button>]}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left'
+                    }}
+                    open={ this.state.snack.open }
+                    autoHideDuration={ 6000 }
+                    onRequestClose={ this.handleSnack }
+                    SnackbarContentProps={{ 'aria-describedby': 'message-id' }}
+                    message={ <span id="message-id">{ this.state.snack.message }</span> }
+                    action={[
+                        <Button
+                            color="accent"
+                            dense
+                            key="undo"
+                            onClick={ this.handleSnack }
+                        >
+                            OCULTAR
+                        </Button>
+                    ]}
                 />
             </form>
         );
     }
+}
+
+function setCookie(cname, cvalue, exdays) {
+    let d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
 export default Login;
