@@ -29,7 +29,7 @@ class Activities extends Component {
         document.getElementById('shared').style.display = 'none';
         document.getElementById('edit').style.display = 'none';
 
-        if (getCookie('userType') !== 'business') {
+        if (getCookie('userRut') === '') {
             document.getElementById('add').style.display = 'none';
         }
 

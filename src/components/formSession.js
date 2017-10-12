@@ -130,7 +130,15 @@ class Login extends Component {
 
                 switch (request.status) {
                     case 201:
-                         setCookie('userId', JSON.parse(request.response)._id, 360); document.getElementById('link-activities').click();
+                        let res = JSON.parse(request.response);
+
+                         setCookie('userId', res._id, 360);
+
+                         if (res.hasOwnProperty('business')) {
+                             setCookie('userRut', res.business.rut.body, 360);
+                         }
+
+                         document.getElementById('link-activities').click();
                         break;
                     case 403:
                         let errors = JSON.parse(request.responseText).errors

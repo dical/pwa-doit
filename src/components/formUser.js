@@ -81,6 +81,15 @@ class Registry extends React.Component {
         this.setState({ tabs: value })
     };
 
+    handleCheckAddress = (event) => {
+        this.setState({
+            address: {
+                error: false,
+                disabled: this.state.address.disabled
+            }
+        }, this.handleCheckRegistry)
+    };
+
     handleCheckBorn = (event) => {
         this.setState({
             born: {
@@ -95,7 +104,7 @@ class Registry extends React.Component {
             confirm : {
                 error:
                 !(new RegExp("[A-Za-z0-9!?-]{8,16}")).test(event.target.value) ||
-                !(document.getElementById('registry-password').value === document.getElementById('registry-password-confirm').value),
+                !(document.getElementById('registry-password').value === document.getElementById('registry-confirm').value),
                 disabled: false
             }
         }, this.handleCheckRegistry)
@@ -113,7 +122,9 @@ class Registry extends React.Component {
     handleCheckName = (event) => {
         this.setState({
             name: {
-                error: !(new RegExp("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{2,48}")).test(event.target.value),
+                error:
+                !(new RegExp("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{2,48}")).test(event.target.value) &&
+                !(event.target.value.replace(' ', '') === ''),
                 disabled: false
             }
         }, this.handleCheckRegistry)
@@ -122,21 +133,24 @@ class Registry extends React.Component {
     handleCheckRegistry = () => {
         this.setState({
             registry:
-            this.state.errorName ||
-            this.state.errorSurname ||
-            this.state.errorMail ||
-            this.state.errorUsername ||
-            this.state.errorPassword ||
-            this.state.errorPasswordConfirm ||
+            this.state.name.error ||
+            (this.state.tabs === 0 ? this.state.surname.error : false) ||
+            (this.state.tabs === 1 ? this.state.rut.error : false) ||
+            this.state.mail.error ||
+            this.state.user.error ||
+            this.state.password.error ||
+            this.state.confirm.error ||
             document.getElementById('registry-name').value.replace(' ','') === '' ||
-            document.getElementById('registry-surname').value.replace(' ','') === '' ||
+            (this.state.tabs === 0 ? document.getElementById('registry-surname').value.replace(' ','') === '' : false) ||
+            (this.state.tabs === 1 ? document.getElementById('registry-rut').value.replace(' ','') === '' : false) ||
             document.getElementById('registry-born').value.replace(' ','') === '' ||
-            document.getElementById('registry-sex').value.replace(' ','') === '' ||
             document.getElementById('registry-mail').value.replace(' ','') === '' ||
             document.getElementById('registry-user').value.replace(' ','') === '' ||
             document.getElementById('registry-password').value.replace(' ','') === '' ||
-            document.getElementById('registry-password-confirm').value.replace(' ','') === ''
-        })
+            document.getElementById('registry-confirm').value.replace(' ','') === ''
+        });
+
+        console.log(this.state.registry)
     };
 
     handleCheckSurname = (event) => {
@@ -177,34 +191,28 @@ class Registry extends React.Component {
     };
 
     handleRequest = () => {
-        let request = new XMLHttpRequest(),
-            onAlert = this.handleAlert,
-            onDisabled = this.handleDisabled,
-            onProgress = this.handleProgress,
-            onResponse = this.handleResponse;
+        let request = new XMLHttpRequest()
+            , onDisabled = this.handleDisabled
+            , onProgress = this.handleProgress
+            , onSnacked = this.handleSnack;
 
-        onDisabled(); onProgress(); onResponse("Registrando usuario..."); onAlert();
+        onDisabled();
+        onProgress();
+        onSnacked("Registrando usuario...");
 
         request.open('POST', 'http://' + window.location.hostname + ':8081/users', true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
 
-        request.send(
-            JSON.stringify({
-                names: document.getElementById('registry-name').value,
-                surnames: document.getElementById('registry-surname').value,
-                born: document.getElementById('registry-born').value,
-                sex: document.getElementById('registry-sex').value,
-                mail: document.getElementById('registry-mail').value,
-                username: document.getElementById('registry-user').value,
-                password: document.getElementById('registry-password').value
-            })
-        );
-
         request.onreadystatechange = function() {
             if (request.readyState === 4) {
+                onDisabled();
+                onProgress();
+
                 switch (request.status) {
                     case 403:
-                        let errors = JSON.parse(request.responseText).errors, text = '', property;
+                        let errors = JSON.parse(request.responseText).errors
+                            , text = ''
+                            , property;
 
                         for (property in errors) {
                             if (errors.hasOwnProperty(property)) {
@@ -212,20 +220,47 @@ class Registry extends React.Component {
                             }
                         }
 
-                        onDisabled(); onProgress(); onResponse(text);
+                        onSnacked(text);
                         break;
                     case 201:
                         document.cookie = 'doitID=' + JSON.parse(request.response)._id;
                         document.getElementById('user').click();
 
-                        onDisabled(); onProgress(); onResponse('Registrado');
+                        onSnacked("Registrado existosamente");
                         break;
                     default:
-                        onDisabled(); onProgress(); onResponse("Sin conexion");
+                        onSnacked("Sin conexion");
                         break;
                 }
             }
         };
+
+        if (this.state.tabs === 0) {
+            request.send(
+                JSON.stringify({
+                    names: document.getElementById('registry-name').value,
+                    surnames: document.getElementById('registry-surname').value,
+                    born: document.getElementById('registry-born').value,
+                    sex: document.getElementById('registry-sex').value,
+                    mail: document.getElementById('registry-mail').value,
+                    username: document.getElementById('registry-user').value,
+                    password: document.getElementById('registry-password').value
+                })
+            )
+        } else {
+            request.send(
+                JSON.stringify({
+                    names: document.getElementById('registry-name').value,
+                    rut: document.getElementById('registry-rut').value,
+                    born: document.getElementById('registry-born').value,
+                    city: document.getElementById('registry-city').value,
+                    address: document.getElementById('registry-address').value,
+                    mail: document.getElementById('registry-mail').value,
+                    username: document.getElementById('registry-user').value,
+                    password: document.getElementById('registry-password').value
+                })
+            )
+        }
     };
 
     handleSnack = (message) => {
@@ -315,7 +350,7 @@ class Registry extends React.Component {
                         error={ this.state.born.error }
                         fullWidth
                         InputLabelProps={{ shrink: true }}
-                        label="Fecha de nacimiento *"
+                        label={ this.state.tabs === 0 ? "Fecha de nacimiento *" : "Fecha de fundacion *" }
                         onChange={ this.handleCheckBorn }
                         style={{ margin: '16px 16px 0 0' }}
                         type="date"
@@ -407,7 +442,7 @@ class Registry extends React.Component {
                     />
 
                     <TextField
-                        id="registry-password-confirm"
+                        id="registry-confirm"
                         disabled={ this.state.confirm.disabled }
                         error={ this.state.confirm.error }
                         fullWidth
