@@ -113,9 +113,10 @@ class App extends React.Component {
                     </AppBar>
 
                     <Switch>
-                        <Route exact path="/" component={Activities}/>
+                        <Route path="/activities" component={Activities}/>
                         <Route path="/activity" component={Activity}/>
                         <Route path="/login" component={Login}/>
+                        <Route exact path="/" component={Login}/>
                         <Route path="/registry" component={Registry}/>
                         <Route path="/add" component={AddActivity}/>
                         <Route path="/user" component={Profile}/>
@@ -137,7 +138,7 @@ class App extends React.Component {
                     </BottomNavigation>
 
                     <Link id='comments' to="/comments"/>
-                    <Link id='activities' to="/"/>
+                    <Link id='activities' to="/activities"/>
                     <Link id='login' to="/login"/>
                     <Link id='user' to='/user'/>
                     <Link id='activity' to='/activity'/>

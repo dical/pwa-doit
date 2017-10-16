@@ -50,7 +50,7 @@ class Activities extends Component {
         };
 
         request.send()
-    }
+    };
 
     handleUpdateData = (data) => {
         this.setState({ data: data });
@@ -69,7 +69,7 @@ class Activities extends Component {
                 ))}
 
                 <Link id="add" to='/add' style={{textDecoration:'none'}}>
-                    <Button fab color="accent" style={{position: 'fixed', right: 16, marginTop: '-28px'}}>
+                    <Button fab color="accent" style={{position: 'fixed', right: 16, bottom: 72}}>
                         <Icon>add</Icon>
                     </Button>
                 </Link>

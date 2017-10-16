@@ -149,8 +149,15 @@ class Registry extends React.Component {
             document.getElementById('registry-password').value.replace(' ','') === '' ||
             document.getElementById('registry-confirm').value.replace(' ','') === ''
         });
+    };
 
-        console.log(this.state.registry)
+    handleCheckRut = (event) => {
+        this.setState({
+            rut: {
+                error: !(new RegExp("[K|k|0-9]{2,16}")).test(event.target.value) || !checkDigit11(event.target.value),
+                disabled: false
+            }
+        }, this.handleCheckRegistry)
     };
 
     handleCheckSurname = (event) => {
@@ -223,7 +230,7 @@ class Registry extends React.Component {
                         onSnacked(text);
                         break;
                     case 201:
-                        document.cookie = 'doitID=' + JSON.parse(request.response)._id;
+                        document.cookie = 'userId=' + JSON.parse(request.response)._id;
                         document.getElementById('user').click();
 
                         onSnacked("Registrado existosamente");
@@ -498,5 +505,27 @@ class Registry extends React.Component {
         );
     }
 }
+
+let checkDigit11 = function(r) {
+    let n = r.replace('.','').replace('-',''),
+        c = n.slice(0, -1),
+        v = n.slice(-1).toLowerCase(),
+        s = 0,
+        m = 2;
+
+    for(let i = 1; i <= c.length; i++) {
+        let index = m * n.charAt(c.length - i);
+
+        s = s + index;
+
+        if(m < 7) { m = m + 1; } else { m = 2; }
+    }
+
+    v = (v === 'k') ? 10 : v;
+    v = (v === '0') ? 11 : v;
+
+    return parseInt(v, 0) === parseInt(11 - (s % 11), 0);
+
+};
 
 export default Registry;
