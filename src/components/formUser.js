@@ -232,7 +232,7 @@ class Registry extends React.Component {
                     case 201:
                         document.cookie = 'userId=' + JSON.parse(request.response)._id;
 
-                        if (res.hasOwnProperty('business')) {
+                        if ( JSON.parse(request.response).hasOwnProperty('business')) {
                             setCookie('userRut', res.business.rut.body, 360);
                         }
 
@@ -532,5 +532,12 @@ let checkDigit11 = function(r) {
     return parseInt(v, 0) === parseInt(11 - (s % 11), 0);
 
 };
+
+function setCookie(cname, cvalue, exdays) {
+    let d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
 
 export default Registry;
