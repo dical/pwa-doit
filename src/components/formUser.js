@@ -233,7 +233,7 @@ class Registry extends React.Component {
                         document.cookie = 'userId=' + JSON.parse(request.response)._id;
 
                         if ( JSON.parse(request.response).hasOwnProperty('business')) {
-                            setCookie('userRut', res.business.rut.body, 360);
+                            setCookie('userRut', JSON.parse(request.response).business.rut.body, 360);
                         }
 
                         document.getElementById('user').click();
