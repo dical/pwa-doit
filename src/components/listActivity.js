@@ -5,6 +5,7 @@ import Avatar from 'material-ui/Avatar';
 import Button from 'material-ui/Button';
 import Icon from 'material-ui/Icon';
 import List, { ListItem, ListItemText } from 'material-ui/List';
+import Typography from 'material-ui/Typography';
 
 class Activities extends Component {
     state = {
@@ -63,7 +64,10 @@ class Activities extends Component {
                     <Link key={this.state.data.length - i} to={'/activity/' + event._id} style={{textDecoration:'none'}}>
                         <ListItem button>
                             <Avatar src={'images/activity.jpg'} style={{height: 72, width: 72, borderRadius: 0}}/>
-                            <ListItemText classes={{text:'overflow-text'}} primary={event.name} secondary={"Disfruta de una clase asistida por un instructor en nuestra escuela, dos horas para conectarte con el mar en nuestra escuela ubicada en la avenida del mar"}/>
+                            <ListItemText classes={{text:'overflow-text'}} primary={event.name} secondary={event.details}/>
+                            <Typography type="caption" style={{position: 'absolute', right: 16, top: 16}}>
+                                {time(event.start)}
+                            </Typography>
                         </ListItem>
                     </Link>
                 ))}
@@ -76,6 +80,36 @@ class Activities extends Component {
             </List>
         );
     }
+}
+
+function time(etime) {
+    let start = new Date(etime), today = new Date(Date.now()), difference = (today.getTime() - start.getTime()) / 1000, add = 'seg';
+
+    if (difference < 0) {
+        return 0
+    }
+
+    if (difference > 60) {
+        add = 'min';
+        difference /= 60;
+    }
+
+    if (difference > 60) {
+        add = 'hr';
+        difference /= 60
+    }
+
+    if (difference > 24) {
+        add = 'dia(s)';
+        difference /= 24
+    }
+
+    if (difference > 31) {
+        add = 'año(s)';
+        difference /= 12
+    }
+
+    return difference.toFixed(0) + ' ' + add
 }
 
 function getCookie(cname) {
