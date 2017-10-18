@@ -100,9 +100,11 @@ class App extends React.Component {
                                 <Icon>shared</Icon>
                             </IconButton>
 
-                            <IconButton id="edit" color="inherit">
-                                <Icon>edit</Icon>
-                            </IconButton>
+                            <Link id='edit' to='/edit' style={{textDecoration: 'none', color: 'inherit', marginLeft: 0}}>
+                                <IconButton color="inherit">
+                                    <Icon>edit</Icon>
+                                </IconButton>
+                            </Link>
 
                             <Link id='settings' to='/settings' style={{textDecoration: 'none', color: 'inherit', marginLeft: 'auto'}}>
                                 <IconButton color="inherit">
@@ -121,6 +123,7 @@ class App extends React.Component {
                         <Route path="/add" component={AddActivity}/>
                         <Route path="/user" component={Profile}/>
                         <Route path="/settings" component={Settings}/>
+                        <Route path="/edit" component={AddActivity}/>
                     </Switch>
 
                     <BottomNavigation

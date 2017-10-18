@@ -231,6 +231,11 @@ class Registry extends React.Component {
                         break;
                     case 201:
                         document.cookie = 'userId=' + JSON.parse(request.response)._id;
+
+                        if (res.hasOwnProperty('business')) {
+                            setCookie('userRut', res.business.rut.body, 360);
+                        }
+
                         document.getElementById('user').click();
 
                         onSnacked("Registrado existosamente");

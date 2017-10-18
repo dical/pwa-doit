@@ -4,6 +4,7 @@ import List, { ListItem, ListItemText } from 'material-ui/List';
 
 class Settings extends Component {
     handleLogout = () => {
+        console.log('sd');
         document.cookie = "userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         document.cookie = "userRut=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         document.getElementById('login').click()
