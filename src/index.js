@@ -136,7 +136,7 @@ class App extends React.Component {
                             width: '100%'}}
                     >
                         <BottomNavigationButton onClick={this.handleComments} icon={<Icon>forum</Icon>}/>
-                        <BottomNavigationButton id="link-activities" onClick={this.handleActivities} icon={<Icon>directions_run</Icon>}/>
+                        <BottomNavigationButton id="link-activities" onClick={this.handleActivities} icon={<Icon>home</Icon>}/>
                         <BottomNavigationButton onClick={this.handleUser} icon={<Icon>person</Icon>}/>
                     </BottomNavigation>
 

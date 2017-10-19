@@ -57,9 +57,9 @@ class Activity extends Component {
     };
 
     handleUpdate = (data) => {
-        if (getCookie('userId') === data.own) {
-            document.getElementById('edit').style.display = '';
-        }
+        //if (getCookie('userId') === data.own) {
+            document.getElementById('edit').style.display = 'none';
+        //}
 
         this.setState({
             name: data.name,
@@ -97,7 +97,7 @@ class Activity extends Component {
                     onChange={null}
                 >
                     <Tab icon={<span><Icon style={{verticalAlign:'middle'}}>info</Icon></span>} style={{maxWidth:'100%'}}/>
-                    <Tab icon={<span><Icon style={{verticalAlign:'middle'}}>message</Icon> 64</span>} style={{maxWidth:'100%'}}/>
+                    <Tab icon={<span><Icon style={{verticalAlign:'middle'}}>message</Icon> 0</span>} style={{maxWidth:'100%'}}/>
                 </Tabs>
 
                 {
