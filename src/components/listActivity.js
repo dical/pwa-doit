@@ -63,7 +63,7 @@ class Activities extends Component {
                 {this.state.data.map((event, i) => (
                     <Link key={this.state.data.length - i} to={'/activity/' + event._id} style={{textDecoration:'none'}}>
                         <ListItem button>
-                            <Avatar src={'images/activity.jpg'} style={{height: 72, width: 72, borderRadius: 0}}/>
+                            <Avatar src={'images/activity.jpg'} style={{height: 64, width: 64}}/>
                             <ListItemText classes={{text:'overflow-text'}} primary={event.name} secondary={event.details}/>
                             <Typography type="caption" style={{position: 'absolute', right: 16, top: 16}}>
                                 {time(event.start)}
@@ -83,7 +83,7 @@ class Activities extends Component {
 }
 
 function time(etime) {
-    let start = new Date(etime), today = new Date(Date.now()), difference = (today.getTime() - start.getTime()) / 1000, add = 'seg';
+    let start = new Date(etime), today = new Date(Date.now()), difference = (start.getTime() - today.getTime()) / 1000, add = 'seg';
 
     if (difference < 0) {
         return 0
@@ -104,9 +104,9 @@ function time(etime) {
         difference /= 24
     }
 
-    if (difference > 31) {
+    if (difference > 365) {
         add = 'año(s)';
-        difference /= 12
+        difference /= 365
     }
 
     return difference.toFixed(0) + ' ' + add

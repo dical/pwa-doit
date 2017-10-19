@@ -219,6 +219,10 @@ class AddActivity extends Component {
             onProgress = this.handleProgress,
             onSnacked  = this.handleSnack;
 
+        let tagsData = this.state.chipData.map(function(e) {
+            return e.label
+        });
+
         onDisabled();
         onProgress();
         onSnacked();
@@ -240,7 +244,7 @@ class AddActivity extends Component {
                 quotas: document.getElementById('new-activity-quotas').value,
                 price: document.getElementById('new-activity-price').value,
                 details: document.getElementById('new-activity-details').value,
-                tags: document.getElementById('new-activity-tags').value,
+                tags: tagsData,
                 coordinates: "0z0n"
             })
         );
@@ -253,6 +257,8 @@ class AddActivity extends Component {
                 switch (request.status) {
                     case 201:
                         let link = document.getElementById('activity');
+
+                        console.log(link);
 
                         link.setAttribute('href', 'activity/' + JSON.parse(request.response)._id);
                         link.click();

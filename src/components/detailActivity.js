@@ -65,7 +65,8 @@ class Activity extends Component {
             name: data.name,
             city: data.address.city,
             start: data.start,
-            street: data.address.street
+            street: data.address.street,
+            details: data.details
         });
     };
 
@@ -85,7 +86,7 @@ class Activity extends Component {
                     style={{padding: '16px 96px 26px 26px', backgroundColor: '#212121', lineHeight: 1.2, color:'#fff'}}
                     type="body1"
                 >
-                    Disfruta de una clase asistida por un instructor en nuestra escuela, dos horas para conectarte con el mar en nuestra escuela ubicada en la avenida del mar
+                    {this.state.details}
                 </Typography>
 
                 <Tabs
@@ -117,9 +118,9 @@ class Activity extends Component {
 }
 
 function getDayOfWeek(date) {
-    let days = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+    let days = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'], start = (new Date(date));
 
-    return days[(new Date(date)).getDay() - 1]
+    return days[start.getDay()]
 }
 
 function getMonth(date) {
