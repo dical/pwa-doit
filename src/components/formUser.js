@@ -45,7 +45,7 @@ class Registry extends React.Component {
         tabs: 0,
         sex: {
             disabled: false,
-            value: 'masculino'
+            value: 'femenino'
         },
         snack: {
             message: '',
@@ -377,7 +377,7 @@ class Registry extends React.Component {
                             select
                             SelectProps={{ native: true }}
                             style={{ margin: '16px 0 0 16px' }}
-                            value={ this.state.sex.value }
+                            value={ null }
                         >
                             <option value="masculino">Masculino</option>
                             <option value="femenino">Femenino</option>
@@ -393,7 +393,7 @@ class Registry extends React.Component {
                             select
                             SelectProps={{ native: true }}
                             style={{ margin: '16px 0 0 16px' }}
-                            value={ this.state.city.value }
+                            value={ null }
                         >
                             <option value="La Serena">La Serena</option>
                             <option value="Coquimbo">Coquimbo</option>
