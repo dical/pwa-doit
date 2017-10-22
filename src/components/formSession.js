@@ -23,10 +23,6 @@ class Login extends Component {
         }
     };
 
-    componentWillMount() {
-
-    }
-
     componentDidMount() {
         document.getElementById('title').innerText = 'Iniciar sesion';
 
@@ -40,10 +36,10 @@ class Login extends Component {
 
         ['settings', 'search', 'filter', 'check', 'down', 'shared', 'edit'].forEach(function(id) {
             document.getElementById(id).style.display = 'none'
-        })
+        });
 
         if (getCookie('userId') !== '') {
-            document.getElementById('activities').click()
+            document.getElementById('nav-activities').click()
         }
     }
 
@@ -146,7 +142,7 @@ class Login extends Component {
                              setCookie('userRut', res.business.rut.body, 360);
                          }
 
-                         document.getElementById('link-activities').click();
+                         document.getElementById('nav-activities').click();
                         break;
                     case 403:
                         let errors = JSON.parse(request.responseText).errors

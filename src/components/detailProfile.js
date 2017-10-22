@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 
-import { CardMedia } from 'material-ui/Card';
-import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
+import { CardMedia } from 'material-ui/Card';
 import Icon from 'material-ui/Icon';
 import Tabs, { Tab } from 'material-ui/Tabs';
+import Typography from 'material-ui/Typography';
 
 class Profile extends Component {
     state = {
         tabs: 0,
-        names: 'Rick',
-        surnames: 'Sanchez',
-        username: 'ricks',
-        phrase: 'wubalubadubdub',
+        names: '',
+        surnames: '',
+        username: '',
+        phrase: '',
         activities: 0,
         votes: 0,
         comments: 0

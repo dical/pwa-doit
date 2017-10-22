@@ -74,8 +74,12 @@ class Registry extends React.Component {
 
         ['settings', 'search', 'filter', 'check', 'down', 'shared', 'edit'].forEach(function(id) {
             document.getElementById(id).style.display = 'none'
-        })
+        });
+
+        document.getElementById('back').setAttribute('href', '/login')
     }
+
+
 
     handleChange = (event, value) => {
         this.setState({ tabs: value })
@@ -377,7 +381,6 @@ class Registry extends React.Component {
                             select
                             SelectProps={{ native: true }}
                             style={{ margin: '16px 0 0 16px' }}
-                            value={ null }
                         >
                             <option value="masculino">Masculino</option>
                             <option value="femenino">Femenino</option>
@@ -393,7 +396,6 @@ class Registry extends React.Component {
                             select
                             SelectProps={{ native: true }}
                             style={{ margin: '16px 0 0 16px' }}
-                            value={ null }
                         >
                             <option value="La Serena">La Serena</option>
                             <option value="Coquimbo">Coquimbo</option>

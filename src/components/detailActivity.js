@@ -33,6 +33,8 @@ class Activity extends Component {
         document.getElementById('check').style.display = 'none';
         document.getElementById('down').style.display = 'none';
 
+        document.getElementById('nav-empty').click();
+
         this.handleRequest();
     }
 

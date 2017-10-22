@@ -32,7 +32,7 @@ const theme = createMuiTheme({
 class App extends React.Component {
     state = {
         title: 'newly added',
-        navigation: 0,
+        navigation: 2,
         search: ''
     };
 
@@ -41,7 +41,11 @@ class App extends React.Component {
     };
 
     handleBack = () => {
-        window.history.back()
+        if ( ['/registry', '/settings'].indexOf(window.location.pathname) > -1 ) {
+            document.getElementById('nav-profile').click()
+        } else {
+            document.getElementById('nav-activities').click()
+        }
     };
 
     handleChange = (event, value) => {
@@ -74,7 +78,7 @@ class App extends React.Component {
 
                     <AppBar id="header" color="primary" position="fixed">
                         <Toolbar style={{minHeight: 64}}>
-                            <IconButton id="back" color="inherit" style={{marginLeft:'-12px'}} onClick={this.handleBack}>
+                            <IconButton id='back' color="inherit" onClick={this.handleBack} style={{ marginLeft: '-12px' }}>
                                 <Icon>arrow_back</Icon>
                             </IconButton>
 
@@ -88,7 +92,7 @@ class App extends React.Component {
                                 <Icon>search</Icon>
                             </IconButton>
 
-                            <IconButton id="filter" color="inherit" style={this.state.btnSearch}>
+                            <IconButton id="filter" color="inherit">
                                 <Icon>filter_list</Icon>
                             </IconButton>
 
@@ -128,16 +132,17 @@ class App extends React.Component {
 
                     <BottomNavigation
                         value={navigation}
-                        onChange={this.handleChange}
+                        onChange={ this.handleChange }
                         style={{
                             backgroundColor: '#E3F2FD',
                             bottom: 0,
                             position: 'fixed',
                             width: '100%'}}
                     >
-                        <BottomNavigationButton onClick={this.handleComments} icon={<Icon>forum</Icon>}/>
-                        <BottomNavigationButton id="link-activities" onClick={this.handleActivities} icon={<Icon>home</Icon>}/>
-                        <BottomNavigationButton onClick={this.handleUser} icon={<Icon>person</Icon>}/>
+                        <BottomNavigationButton id="nav-comments" onClick={this.handleComments} icon={<Icon>forum</Icon>}/>
+                        <BottomNavigationButton id="nav-activities" onClick={this.handleActivities} icon={<Icon>home</Icon>}/>
+                        <BottomNavigationButton id="nav-profile" onClick={this.handleUser} icon={<Icon>person</Icon>}/>
+                        <BottomNavigationButton id="nav-empty" style={{ display: 'none' }}/>
                     </BottomNavigation>
 
                     <Link id='comments' to="/comments"/>
