@@ -8,11 +8,14 @@ import Typography from 'material-ui/Typography';
 
 class Activity extends Component {
     state = {
-        name: 'name',
-        city: 'city',
-        street: 'street',
-        start: Date.now(),
+        city: '',
+        image: '/images/event.jpg',
+        name: '',
+        own: { },
         price: 500,
+        quotas: 0,
+        street: '',
+        start: Date.now(),
         tabs: {
             value: 0
         }
@@ -23,15 +26,13 @@ class Activity extends Component {
         document.getElementById('header').style.boxShadow = 'none';
         document.getElementById('shell').style.padding = 0;
 
-        document.getElementById('back').style.display = '';
-        document.getElementById('shared').style.display = '';
+        ['back', 'shared'].forEach(function(id) {
+            document.getElementById(id).style.display = ''
+        });
 
-        document.getElementById('settings').style.display = 'none';
-        document.getElementById('title').style.display = 'none';
-        document.getElementById('search').style.display = 'none';
-        document.getElementById('filter').style.display = 'none';
-        document.getElementById('check').style.display = 'none';
-        document.getElementById('down').style.display = 'none';
+        ['settings', 'search', 'filter', 'check', 'down', 'title', 'edit'].forEach(function(id) {
+            document.getElementById(id).style.display = 'none'
+        });
 
         document.getElementById('nav-empty').click();
 
@@ -59,12 +60,16 @@ class Activity extends Component {
     };
 
     handleUpdate = (data) => {
-        //if (getCookie('userId') === data.own) {
-            document.getElementById('edit').style.display = 'none';
-        //}
+        if (getCookie('userId') === data.own._id) {
+            document.getElementById('edit').style.display = '';
+            document.getElementById('edit').setAttribute('href', '/edit/' + data._id)
+        }
+
+
 
         this.setState({
             name: data.name,
+            own: data.own,
             city: data.address.city,
             start: data.start,
             street: data.address.street,
@@ -75,42 +80,166 @@ class Activity extends Component {
     render() {
         return (
             <div>
-                <CardMedia image="/images/event.jpg" title="Contemplative Reptile" style={{ boxShadow: 'inset 0px 300px 180px -300px #000, inset 0px -300px 180px -300px #000' }}>
-                    <Typography type="display1" style={{color: '#fafafa', padding: '160px 16px 0'}}>{this.state.name}</Typography>
-                    <Typography type="subheading" style={{color: '#fafafa', padding: '0 16px 26px'}}>@{this.state.name}</Typography>
+                <CardMedia
+                    image={ this.state.image }
+                    title="Contemplative Reptile"
+                    style={{ boxShadow: 'inset 0px 300px 180px -300px #000, inset 0px -300px 180px -300px #000' }}
+                >
+                    <Typography
+                        type="display1"
+                        style={{
+                            color: '#fafafa',
+                            padding: '160px 16px 0',
+                            textShadow: 'rgba(0,0,0,.18) 1px 1px'
+                        }}
+                    >
+                        { this.state.name }
+                    </Typography>
+
+                    <Typography
+                        type="subheading"
+                        style={{
+                            color: '#fafafa',
+                            padding: '0 16px 26px',
+                            textShadow: 'rgba(0,0,0,.18) 1px 1px'
+                        }}
+                    >
+                        @{ this.state.own.username }
+                    </Typography>
                 </CardMedia>
 
-                <Button fab color="accent" aria-label="add" style={{margin:'-28px 16px 0 0', float: 'right'}}>
+                <Button
+                    fab
+                    color="accent"
+                    aria-label="add"
+                    style={{
+                        margin:'-28px 16px 0 0',
+                        float: 'right'
+                    }}
+                >
                     <Icon>person_add</Icon>
                 </Button>
 
                 <Typography
-                    style={{padding: '16px 96px 26px 26px', backgroundColor: '#212121', lineHeight: 1.2, color:'#fff'}}
+                    style={{
+                        padding: '16px 96px 26px 26px',
+                        backgroundColor: '#212121',
+                        lineHeight: 1.5,
+                        color:'#fff'
+                    }}
                     type="body1"
                 >
-                    {this.state.details}
+                    <Icon
+                        style={{
+                            marginRight: 10,
+                            verticalAlign: 'bottom'
+                        }}
+                    >
+                        attach_money
+                    </Icon>
+
+                    { this.state.price } CLP
+
+                    <br/>
+
+                    <Icon
+                        style={{
+                            marginRight: 10,
+                            verticalAlign: 'bottom'
+                        }}
+                    >
+                        group
+                    </Icon>
+
+                    { this.state.quotas } Cupos
                 </Typography>
 
                 <Tabs
-                    value={this.state.tabs.value}
+                    value={ this.state.tabs.value }
                     indicatorColor="primary"
                     textColor="primary"
                     fullWidth
                     onChange={null}
                 >
-                    <Tab icon={<span><Icon style={{verticalAlign:'middle'}}>info</Icon></span>} style={{maxWidth:'100%'}}/>
-                    <Tab icon={<span><Icon style={{verticalAlign:'middle'}}>message</Icon> 0</span>} style={{maxWidth:'100%'}}/>
+                    <Tab
+                        icon={
+                            <span>
+                                <Icon style={{verticalAlign:'middle'}}>info</Icon>
+                            </span>
+                        }
+                        style={{maxWidth:'100%'}}
+                    />
+
+                    <Tab
+                        icon={
+                            <span>
+                                <Icon style={{verticalAlign:'middle'}}>message</Icon> 0
+                            </span>
+                        }
+                        style={{maxWidth:'100%'}}
+                    />
                 </Tabs>
 
                 {
                     this.state.tabs.value === 0 &&
-                    <div style={{marginTop: 16}}>
-                        <Typography type="body1" style={{display: 'flex', padding:16}}>
-                            <Icon>access_time</Icon> <span style={{margin: 0, paddingLeft: 26, display: 'inline-block'}}>{getDayOfWeek(this.state.start)}, {getMonth(this.state.start)} {getDayOfMonth(this.state.start)} <br/> 12:00 — 1:00 PM</span>
+                    <div
+                        style={{ marginTop: 16 }}
+                    >
+                        <Typography
+                            type="body1"
+                            style={{
+                                display: 'flex',
+                                padding: '8px 16px'
+                            }}
+                        >
+                            <Icon>rate_review</Icon>
+                            <span
+                                style={{
+                                    margin: 0,
+                                    paddingLeft: 26,
+                                    display: 'inline-block'
+                                }}
+                            >
+                                { this.state.details === '' ? 'Sin comentarios' : this.state.details }
+                            </span>
                         </Typography>
 
-                        <Typography type="body1" style={{display: 'flex', padding:16}}>
-                            <Icon>location_on</Icon> <span style={{margin: 0, paddingLeft: 26, display: 'inline-block'}}> {this.state.street}, {this.state.city}, Chile</span>
+                        <Typography
+                            type="body1"
+                            style={{
+                                display: 'flex',
+                                padding: '8px 16px'
+                            }}
+                        >
+                            <Icon>access_time</Icon>
+                            <span
+                                style={{
+                                    margin: 0,
+                                    paddingLeft: 26,
+                                    display: 'inline-block'
+                                }}
+                            >
+                                { getDayOfWeek(this.state.start) }, { getMonth(this.state.start) } { getDayOfMonth(this.state.start) } <br/> 12:00 — 1:00 PM
+                            </span>
+                        </Typography>
+
+                        <Typography
+                            type="body1"
+                            style={{
+                                display: 'flex',
+                                padding: '8px 16px'
+                            }}
+                        >
+                            <Icon>location_on</Icon>
+                            <span
+                                style={{
+                                    margin: 0,
+                                    paddingLeft: 26,
+                                    display: 'inline-block'
+                                }}
+                            >
+                                {this.state.street}, {this.state.city}, Chile
+                            </span>
                         </Typography>
                     </div>
                 }

@@ -19,16 +19,13 @@ class Activities extends Component {
         document.getElementById('header').style.boxShadow = '';
         document.getElementById('shell').style.padding = '64px 0';
 
-        document.getElementById('title').style.display = '';
-        document.getElementById('search').style.display = '';
-        document.getElementById('filter').style.display = '';
-        document.getElementById('down').style.display = '';
+        ['title', 'search', 'filter', 'down'].forEach(function(id) {
+            document.getElementById(id).style.display = ''
+        });
 
-        document.getElementById('back').style.display = 'none';
-        document.getElementById('settings').style.display = 'none';
-        document.getElementById('check').style.display = 'none';
-        document.getElementById('shared').style.display = 'none';
-        document.getElementById('edit').style.display = 'none';
+        ['back', 'settings', 'check', 'shared', 'edit'].forEach(function(id) {
+            document.getElementById(id).style.display = 'none'
+        });
 
         if (getCookie('userRut') === '') {
             document.getElementById('add').style.display = 'none';
@@ -83,33 +80,36 @@ class Activities extends Component {
 }
 
 function time(etime) {
-    let start = new Date(etime), today = new Date(Date.now()), difference = (start.getTime() - today.getTime()) / 1000, add = 'seg';
+    let start = new Date(etime),
+        today = new Date(Date.now()),
+        diff = (start.getTime() - today.getTime()) / 1000,
+        end = ' seg';
 
-    if (difference < 0) {
-        return 0
+    if (diff > 60 || diff < -60) {
+        end = ' min';
+        diff /= 60;
     }
 
-    if (difference > 60) {
-        add = 'min';
-        difference /= 60;
+    if (diff > 60 || diff < -60) {
+        end = ' hr';
+        diff /= 60
     }
 
-    if (difference > 60) {
-        add = 'hr';
-        difference /= 60
+    if (diff > 24 || diff < -24) {
+        end = ' dia(s)';
+        diff /= 24
     }
 
-    if (difference > 24) {
-        add = 'dia(s)';
-        difference /= 24
+    if (diff > 365 || diff < -365) {
+        end = ' año(s)';
+        diff /= 365
     }
 
-    if (difference > 365) {
-        add = 'año(s)';
-        difference /= 365
+    if (diff > 0) {
+        return 'Queda(n) '+diff.toFixed(0) + end
+    } else {
+        return 'Hace ' + (diff * -1).toFixed(0) + end
     }
-
-    return difference.toFixed(0) + ' ' + add
 }
 
 function getCookie(cname) {

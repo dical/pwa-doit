@@ -17,15 +17,13 @@ class Settings extends Component {
         document.getElementById('header').style.boxShadow = '';
         document.getElementById('shell').style.padding = '64px 0';
 
-        document.getElementById('back').style.display = '';
-        document.getElementById('title').style.display = '';
+        ['back', 'title'].forEach(function(id) {
+            document.getElementById(id).style.display = ''
+        });
 
-        document.getElementById('settings').style.display = 'none';
-        document.getElementById('search').style.display = 'none';
-        document.getElementById('filter').style.display = 'none';
-        document.getElementById('check').style.display = 'none';
-        document.getElementById('down').style.display = 'none';
-        document.getElementById('shared').style.display = 'none';
+        ['settings', 'check', 'shared', 'edit', 'filter', 'down', 'search'].forEach(function(id) {
+            document.getElementById(id).style.display = 'none'
+        });
     }
 
     render() {

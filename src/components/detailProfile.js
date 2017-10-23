@@ -69,8 +69,27 @@ class Profile extends Component {
         return (
             <div>
                 <CardMedia image="/images/landscape.jpg" title="Contemplative Reptile">
-                    <Typography type="display1" style={{color: '#fafafa', padding: '160px 16px 0'}}>{this.state.names} {this.state.surnames}</Typography>
-                    <Typography type="subheading" style={{color: '#fafafa', padding: '0 16px 26px'}}>@{this.state.username}</Typography>
+                    <Typography
+                        type="display1"
+                        style={{
+                            color: '#fafafa',
+                            padding: '160px 16px 0',
+                            textShadow: 'rgba(0,0,0,.18) 1px 1px'
+                        }}
+                    >
+                        { this.state.names } { this.state.surnames }
+                    </Typography>
+
+                    <Typography
+                        type="subheading"
+                        style={{
+                            color: '#fafafa',
+                            padding: '0 16px 26px',
+                            textShadow: 'rgba(0,0,0,.18) 1px 1px'
+                        }}
+                    >
+                        @{ this.state.username }
+                    </Typography>
                 </CardMedia>
 
                 <Button fab color="accent" aria-label="add" style={{ margin: '-28px 0 0', position: 'absolute', right: 16 }}>
