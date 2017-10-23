@@ -65,15 +65,14 @@ class Activity extends Component {
             document.getElementById('edit').setAttribute('href', '/edit/' + data._id)
         }
 
-
-
         this.setState({
             name: data.name,
             own: data.own,
             city: data.address.city,
             start: data.start,
             street: data.address.street,
-            details: data.details
+            details: data.details,
+            image: data.image
         });
     };
 

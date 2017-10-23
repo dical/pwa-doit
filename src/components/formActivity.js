@@ -55,6 +55,10 @@ class AddActivity extends Component {
         chipData: [
             { key: 0, label: 'Deporte' },
         ],
+        image: {
+            disabled: false,
+            error: false
+        }
     };
 
     componentDidMount() {
@@ -245,7 +249,8 @@ class AddActivity extends Component {
                 price: document.getElementById('new-activity-price').value,
                 details: document.getElementById('new-activity-details').value,
                 tags: tagsData,
-                coordinates: "0z0n"
+                coordinates: "0z0n",
+                image: document.getElementById('new-activity-image').value
             })
         );
 
@@ -495,6 +500,16 @@ class AddActivity extends Component {
                         })
                     }
                 </div>
+
+                <TextField
+                    fullWidth
+                    id="new-activity-image"
+                    label="URL Imagen"
+                    type="text"
+                    disabled={ this.state.image.disabled }
+                    error={ this.state.image.error }
+                    style={{ marginBottom: 16 }}
+                />
 
                 <Button
                     raised
