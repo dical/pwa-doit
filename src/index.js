@@ -68,6 +68,10 @@ class App extends React.Component {
         document.querySelector('form button').click()
     };
 
+    handleEdit = () => {
+        document.getElementById('dialog-edit').click()
+    };
+
     render() {
         const { navigation } = this.state;
 
@@ -104,11 +108,9 @@ class App extends React.Component {
                                 <Icon>shared</Icon>
                             </IconButton>
 
-                            <Link id='edit' to='/edit' style={{textDecoration: 'none', color: 'inherit', marginLeft: 0}}>
-                                <IconButton color="inherit">
-                                    <Icon>edit</Icon>
-                                </IconButton>
-                            </Link>
+                            <IconButton id='edit' onClick={this.handleEdit} color="inherit" style={{textDecoration: 'none', color: 'inherit', marginLeft: 0}}>
+                                <Icon>edit</Icon>
+                            </IconButton>
 
                             <Link id='settings' to='/settings' style={{textDecoration: 'none', color: 'inherit', marginLeft: 'auto'}}>
                                 <IconButton color="inherit">

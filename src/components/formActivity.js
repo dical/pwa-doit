@@ -8,6 +8,10 @@ import TextField from 'material-ui/TextField';
 class AddActivity extends Component {
     state = {
         add: true,
+        update: true,
+        name: {
+            value: ''
+        },
         title: {
             disabled: false,
             error: false
@@ -34,7 +38,8 @@ class AddActivity extends Component {
         },
         address: {
             disabled: false,
-            error: false
+            error: false,
+            value: ''
         },
         quotas: {
             disabled: false,
@@ -46,20 +51,26 @@ class AddActivity extends Component {
         },
         details: {
             disabled: false,
-            error: false
+            error: false,
+            value: ''
         },
         tags: {
             disabled: false,
             error: false
         },
         chipData: [
-            { key: 0, label: 'Deporte' },
+            { key: 0, label: 'Ddfsddfsdfeporte' },
         ],
         image: {
             disabled: false,
-            error: false
+            error: false,
+            value: '/images/event.jpg'
         }
     };
+
+    componentWillMount() {
+        console.log(this.props.method)
+    }
 
     componentDidMount() {
         document.getElementById('title').innerText = 'Agregar actividad';
@@ -74,29 +85,75 @@ class AddActivity extends Component {
 
         ['settings', 'search', 'filter', 'check', 'down', 'shared', 'edit'].forEach(function(id) {
             document.getElementById(id).style.display = 'none'
-        })
+        });
+
+        if (this.props.method === 'patch') {
+            let start = new Date(this.props.activity.start),
+                end = new Date(this.props.activity.end),
+                chipData = this.props.activity.tags.map(function (e, i) {
+                    return { key: i, label: e }
+                });
+
+            document.getElementById('quotas').style.display = 'none';
+            document.getElementById('new-activity-name').value = this.props.activity.name;
+
+            document.getElementById('new-activity-start-date').value = start.toLocaleDateString().split('/').reverse().join('-');
+            document.getElementById('new-activity-start-time').value = start.toLocaleTimeString();
+
+            document.getElementById('new-activity-end-date').value = end.toLocaleDateString().split('/').reverse().join('-');
+            document.getElementById('new-activity-end-time').value = end.toLocaleTimeString();
+
+            this.setState({
+                name: {
+                    value: this.props.activity.name
+                },
+                city: {
+                    disabled: this.state.city.disabled,
+                    value: this.props.activity.city
+                },
+                details: {
+                    disabled: this.state.details.disabled,
+                    error: this.state.details.error,
+                    value: this.props.activity.details
+                },
+                chipData: chipData
+            });
+
+            document.getElementById('new-activity-image').value = this.props.activity.image;
+        }
     }
 
+    checkForm = () => {
+        return this.state.name.error ||
+        this.state.startDate.error ||
+        this.state.startTime.error ||
+        this.state.endDate.error ||
+        this.state.endTime.error ||
+        this.state.city.error ||
+        this.state.address.error ||
+        this.state.quotas.error ||
+        this.state.price.error ||
+        document.getElementById('new-activity-name').value.replace(' ','') === '' ||
+        document.getElementById('new-activity-start-date').value.replace(' ','') === '' ||
+        document.getElementById('new-activity-start-time').value.replace(' ','') === '' ||
+        document.getElementById('new-activity-end-date').value.replace(' ','') === '' ||
+        document.getElementById('new-activity-end-time').value.replace(' ','') === '' ||
+        document.getElementById('new-activity-address').value.replace(' ','') === '' ||
+        (
+            this.props.method !== 'patch' &&
+            (
+                document.getElementById('new-activity-quotas').value.replace(' ','') === '' ||
+                document.getElementById('new-activity-price').value.replace(' ','') === ''
+            )
+        )
+    };
+
     handleCheckAdd = () => {
+        console.log(this.checkForm());
+
         this.setState({
-            add:
-            this.state.title.error ||
-            this.state.startDate.error ||
-            this.state.startTime.error ||
-            this.state.endDate.error ||
-            this.state.endTime.error ||
-            this.state.city.error ||
-            this.state.address.error ||
-            this.state.quotas.error ||
-            this.state.price.error ||
-            document.getElementById('new-activity-name').value.replace(' ','') === '' ||
-            document.getElementById('new-activity-start-date').value.replace(' ','') === '' ||
-            document.getElementById('new-activity-start-time').value.replace(' ','') === '' ||
-            document.getElementById('new-activity-end-date').value.replace(' ','') === '' ||
-            document.getElementById('new-activity-end-time').value.replace(' ','') === '' ||
-            document.getElementById('new-activity-address').value.replace(' ','') === '' ||
-            document.getElementById('new-activity-quotas').value.replace(' ','') === '' ||
-            document.getElementById('new-activity-price').value.replace(' ','') === ''
+            add: this.checkForm(),
+            update: this.checkForm()
         });
     };
 
@@ -118,8 +175,6 @@ class AddActivity extends Component {
             endDate = new Date(dateEnd[0], dateEnd[1] - 1, dateEnd[2], timeEnd[0], timeEnd[1]),
             dateError = Date.now() > startDate || startDate > endDate;
 
-        console.log(startDate);
-
         this.setState({
             startDate: {
                 disabled: this.state.startDate.disabled,
@@ -140,11 +195,32 @@ class AddActivity extends Component {
         }, this.handleCheckAdd);
     };
 
-    handleCheckTitle = (event) => {
+    handleCheckDetails = (event) => {
         this.setState({
-            title: {
+            details: {
+                disabled: this.state.details.disabled,
+                error: this.state.details.error,
+                value: event.target.value
+            }
+        })
+    };
+
+    handleCheckImage = (event) => {
+        this.setState({
+            image: {
+                disabled: this.state.image.disabled,
+                error: this.state.image.error,
+                value: event.target.value
+            }
+        }, this.handleCheckAdd);
+    };
+
+    handleCheckName = (event) => {
+        this.setState({
+            name: {
                 disabled: false,
-                error: !(new RegExp("[A-Za-z 0-9]{5,50}")).test(event.target.value) && !(event.target.value.replace(' ', '') === '')
+                error: !(new RegExp("[A-Za-z 0-9]{5,50}")).test(event.target.value) && !(event.target.value.replace(' ', '') === ''),
+                value: event.target.value
             }
         }, this.handleCheckAdd);
     };
@@ -231,7 +307,9 @@ class AddActivity extends Component {
         onProgress();
         onSnacked();
 
-        request.open('POST', 'http://' + window.location.hostname + ':8081/events', true);
+        let method = this.props.method.toLowerCase() === 'patch' ? 'PATCH' : 'POST';
+
+        request.open(method, 'http://' + window.location.hostname + ':8081/events', true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
 
         request.send(
@@ -262,8 +340,6 @@ class AddActivity extends Component {
                 switch (request.status) {
                     case 201:
                         let link = document.getElementById('activity');
-
-                        console.log(link);
 
                         link.setAttribute('href', 'activity/' + JSON.parse(request.response)._id);
                         link.click();
@@ -296,6 +372,15 @@ class AddActivity extends Component {
         let progress = document.getElementById('progress'); progress.style.display = progress.style.display === 'none' ? '' : 'none';
     };
 
+    handleSetCity = (event) => {
+        this.setState({
+            city: {
+                disabled: this.state.city.disabled,
+                value: event.target.value
+            }
+        })
+    };
+
     handleSnack = (message) => {
         this.setState({
             snack: {
@@ -317,10 +402,11 @@ class AddActivity extends Component {
                     id="new-activity-name"
                     label="Titulo *"
                     type="text"
-                    disabled={ this.state.title.disabled }
-                    error={ this.state.title.error }
+                    disabled={ this.state.name.disabled }
+                    error={ this.state.name.error }
                     onChange={ this.handleCheckTitle }
                     style={{ marginBottom: 16 }}
+                    value={ this.state.name.value }
                 />
 
                 <div
@@ -406,6 +492,7 @@ class AddActivity extends Component {
                         label="Ciudad"
                         select
                         value={ this.state.city.value }
+                        onChange={ this.handleSetCity }
                         SelectProps={{ native: true }}
                         disabled={ this.state.city.disabled }
                         style={{
@@ -430,6 +517,7 @@ class AddActivity extends Component {
                 </div>
 
                 <div
+                    id="quotas"
                     style={{
                         display: 'flex',
                         justifyContent: 'space-between'
@@ -470,6 +558,7 @@ class AddActivity extends Component {
                     error={ this.state.details.error }
                     onChange={ this.handleCheckDetails }
                     style={{ marginBottom: 16 }}
+                    value={ this.state.details.value }
                 />
 
                 <TextField
@@ -502,27 +591,50 @@ class AddActivity extends Component {
                 </div>
 
                 <TextField
-                    fullWidth
                     id="new-activity-image"
-                    label="URL Imagen"
-                    type="text"
                     disabled={ this.state.image.disabled }
                     error={ this.state.image.error }
+                    fullWidth
+                    label="URL Imagen"
+                    onChange={ this.handleCheckImage }
                     style={{ marginBottom: 16 }}
+                    type="text"
+                    value={ this.state.image.value }
                 />
 
-                <Button
-                    raised
-                    color="primary"
-                    onClick={ this.handleRequest }
-                    disabled={ this.state.add }
-                    style={{
-                        margin: '16px 0',
-                        width: '100%'
-                    }}
-                >
-                    Agregar
-                </Button>
+                {
+                    this.props.method !== 'patch' &&
+
+                    <Button
+                        raised
+                        color="primary"
+                        onClick={ this.handleRequest }
+                        disabled={ this.state.add }
+                        style={{
+                            margin: '16px 0',
+                            width: '100%'
+                        }}
+                    >
+                        Agregar
+                    </Button>
+                }
+
+                {
+                    this.props.method === 'patch' &&
+
+                    <Button
+                        raised
+                        color="primary"
+                        onClick={ this.handleRequest }
+                        disabled={ this.state.update }
+                        style={{
+                            margin: '16px 0',
+                            width: '100%'
+                        }}
+                    >
+                        Actualizar
+                    </Button>
+                }
 
                 <Snackbar
                     anchorOrigin={{

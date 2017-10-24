@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 import Button from 'material-ui/Button';
 import { CardMedia } from 'material-ui/Card';
+import Dialog from 'material-ui/Dialog';
 import Icon from 'material-ui/Icon';
+import Slide from 'material-ui/transitions/Slide';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Typography from 'material-ui/Typography';
+
+import AddActivity from './formActivity';
 
 class Activity extends Component {
     state = {
@@ -16,9 +21,13 @@ class Activity extends Component {
         quotas: 0,
         street: '',
         start: Date.now(),
+        end: Date.now(),
         tabs: {
             value: 0
-        }
+        },
+        participants: [],
+        participantButton: false,
+        open: false
     };
 
     componentDidMount() {
@@ -65,15 +74,59 @@ class Activity extends Component {
             document.getElementById('edit').setAttribute('href', '/edit/' + data._id)
         }
 
+        let isParticipant = false;
+
+        if (data.participants.indexOf(getCookie('userId')) > -1) {
+            isParticipant = true
+        }
+
         this.setState({
             name: data.name,
             own: data.own,
             city: data.address.city,
             start: data.start,
+            end: data.end,
             street: data.address.street,
             details: data.details,
-            image: data.image
+            image: data.image,
+            participants: data.participants,
+            participantButton: isParticipant,
+            price: data.price,
+            tags: data.tags
         });
+    };
+
+    handleParticipate = () => {
+        let request = new XMLHttpRequest(), onUpdate = this.handleUpdate, participants = this.state.participants;
+
+        participants.push(getCookie('userId'));
+
+        request.open('PATCH', 'http://' + window.location.hostname + ':8081/events/' + window.location.pathname.split('/').pop() , true);
+        request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
+
+        request.onreadystatechange = function() {
+            if (request.readyState === 4) {
+                switch (request.status) {
+                    case 200:
+                        onUpdate(JSON.parse(request.response));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
+
+        request.send(
+            JSON.stringify({
+                participants: { $each: participants }
+            })
+        )
+    };
+
+    handleOpen = () => {
+        this.setState({
+            open: !this.state.open
+        })
     };
 
     render() {
@@ -103,14 +156,21 @@ class Activity extends Component {
                             textShadow: 'rgba(0,0,0,.18) 1px 1px'
                         }}
                     >
-                        @{ this.state.own.username }
+                        <Link
+                            to={ "/user/" + this.state.own._id }
+                            style={{ textDecoration: 'none', color: 'inherit' }}
+                        >
+                            @{ this.state.own.username }
+                        </Link>
                     </Typography>
                 </CardMedia>
 
                 <Button
                     fab
+                    disabled={ this.state.participantButton }
                     color="accent"
                     aria-label="add"
+                    onClick={ this.handleParticipate }
                     style={{
                         margin:'-28px 16px 0 0',
                         float: 'right'
@@ -150,7 +210,7 @@ class Activity extends Component {
                         group
                     </Icon>
 
-                    { this.state.quotas } Cupos
+                    { this.state.participants.length } Participantes
                 </Typography>
 
                 <Tabs
@@ -210,7 +270,13 @@ class Activity extends Component {
                                 padding: '8px 16px'
                             }}
                         >
-                            <Icon>access_time</Icon>
+                            <Icon
+                                style={{
+                                    lineHeight: 1.5
+                                }}
+                            >
+                                access_time
+                            </Icon>
                             <span
                                 style={{
                                     margin: 0,
@@ -218,7 +284,9 @@ class Activity extends Component {
                                     display: 'inline-block'
                                 }}
                             >
-                                { getDayOfWeek(this.state.start) }, { getMonth(this.state.start) } { getDayOfMonth(this.state.start) } <br/> 12:00 — 1:00 PM
+                                { getDayOfWeek(this.state.start) }, { getMonth(this.state.start) } { getDayOfMonth(this.state.start) }
+                                <br/>
+                                { (new Date(this.state.start)).getHours() }:{ (new Date(this.state.start)).getMinutes() } — 1:00 PM
                             </span>
                         </Typography>
 
@@ -242,6 +310,17 @@ class Activity extends Component {
                         </Typography>
                     </div>
                 }
+
+                <Dialog
+                    fullScreen
+                    open={ this.state.open }
+                    onRequestClose={ this.handleRequestClose }
+                    transition={<Slide direction="up" />}
+                >
+                    <AddActivity method="patch" activity={ this.state }/>
+                </Dialog>
+
+                <Button id="dialog-edit" onClick={ this.handleOpen } style={{ display: 'none' }}> </Button>
             </div>
         );
     }
