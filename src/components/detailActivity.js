@@ -81,7 +81,7 @@ class Activity extends Component {
             participants = data.participants;
         }
 
-        if (data.participants.indexOf(getCookie('userId')) > -1) {
+        if (participants.indexOf(getCookie('userId')) > -1) {
             isParticipant = true
         }
 
