@@ -43,11 +43,13 @@ class AddActivity extends Component {
         },
         quotas: {
             disabled: false,
-            error: false
+            error: false,
+            value: 1
         },
         price: {
             disabled: false,
-            error: false
+            error: false,
+            value: 0
         },
         details: {
             disabled: false,
@@ -94,6 +96,8 @@ class AddActivity extends Component {
                     return { key: i, label: e }
                 });
 
+            document.getElementById('title').innerText = 'Editar actividad';
+
             document.getElementById('quotas').style.display = 'none';
             document.getElementById('new-activity-name').value = this.props.activity.name;
 
@@ -111,10 +115,30 @@ class AddActivity extends Component {
                     disabled: this.state.city.disabled,
                     value: this.props.activity.city
                 },
+                address: {
+                    disabled: this.state.address.disabled,
+                    error: this.state.address.error,
+                    value: this.props.activity.street
+                },
                 details: {
                     disabled: this.state.details.disabled,
                     error: this.state.details.error,
                     value: this.props.activity.details
+                },
+                image: {
+                    disabled: this.state.image.disabled,
+                    error: this.state.image.error,
+                    value: this.props.activity.image
+                },
+                price: {
+                    disabled: this.state.price.disabled,
+                    error: this.state.price.error,
+                    value: this.props.activity.price
+                },
+                quotas: {
+                    disabled: this.state.quotas.disabled,
+                    error: this.state.quotas.error,
+                    value: this.props.activity.quotas
                 },
                 chipData: chipData
             });
@@ -202,7 +226,7 @@ class AddActivity extends Component {
                 error: this.state.details.error,
                 value: event.target.value
             }
-        })
+        }, this.handleCheckAdd)
     };
 
     handleCheckImage = (event) => {
@@ -272,7 +296,7 @@ class AddActivity extends Component {
             },
             address: {
                 disabled: !this.state.address.disabled,
-                error: this.state.address.error
+                error: this.state.address.error,
             },
             quotas: {
                 disabled: !this.state.quotas.disabled,
@@ -284,7 +308,8 @@ class AddActivity extends Component {
             },
             details: {
                 disabled: !this.state.details.disabled,
-                error: this.state.details.error
+                error: this.state.details.error,
+                value: ''
             },
             tags: {
                 disabled: !this.state.tags.disabled,
@@ -297,7 +322,9 @@ class AddActivity extends Component {
         let request = new XMLHttpRequest(),
             onDisabled = this.handleDisabled,
             onProgress = this.handleProgress,
-            onSnacked  = this.handleSnack;
+            onSnacked  = this.handleSnack,
+            method = this.props.method.toLowerCase() === 'patch' ? 'PATCH' : 'POST',
+            id = this.props.method.toLowerCase() === 'patch' ? this.props.activity.id : '';
 
         let tagsData = this.state.chipData.map(function(e) {
             return e.label
@@ -307,9 +334,7 @@ class AddActivity extends Component {
         onProgress();
         onSnacked();
 
-        let method = this.props.method.toLowerCase() === 'patch' ? 'PATCH' : 'POST';
-
-        request.open(method, 'http://' + window.location.hostname + ':8081/events', true);
+        request.open(method, 'http://' + window.location.hostname + ':8081/events/' + id, true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
 
         request.send(
@@ -344,6 +369,9 @@ class AddActivity extends Component {
                         link.setAttribute('href', 'activity/' + JSON.parse(request.response)._id);
                         link.click();
                         break;
+                    case 200:
+                        document.getElementById('edit').click();
+                        break;
                     case 403:
                         onSnacked(snack(request.response));
                         break;
@@ -360,12 +388,16 @@ class AddActivity extends Component {
             this.state.chipData.push({ key: this.state.chipData.length, label: event.target.value });
             this.setState({ chipData: this.state.chipData })
         }
+
+        this.handleCheckAdd()
     };
 
     handleRequestDelete = data => () => {
         const chipData = [...this.state.chipData], chipToDelete = chipData.indexOf(data);
         chipData.splice(chipToDelete, 1);
         this.setState({ chipData });
+
+        this.handleCheckAdd()
     };
 
     handleProgress = () => {
@@ -404,7 +436,7 @@ class AddActivity extends Component {
                     type="text"
                     disabled={ this.state.name.disabled }
                     error={ this.state.name.error }
-                    onChange={ this.handleCheckTitle }
+                    onChange={ this.handleCheckName }
                     style={{ marginBottom: 16 }}
                     value={ this.state.name.value }
                 />
@@ -513,6 +545,7 @@ class AddActivity extends Component {
                         error={ this.state.address.error }
                         onChange={ this.handleCheckAddress }
                         style={{ margin: '0 0 16px 16px' }}
+                        value={ this.state.address.value }
                     />
                 </div>
 
@@ -533,6 +566,7 @@ class AddActivity extends Component {
                         error={ this.state.quotas.error }
                         onChange={ this.handleCheckQuotas }
                         style={{ margin: '0 16px 16px 0' }}
+                        value={ this.state.quotas.value }
                     />
 
                     <TextField
@@ -545,6 +579,7 @@ class AddActivity extends Component {
                         error={ this.state.price.error }
                         onChange={ this.handleCheckPrice }
                         style={{ margin: '0 0 16px 16px' }}
+                        value={ this.state.price.value }
                     />
                 </div>
 

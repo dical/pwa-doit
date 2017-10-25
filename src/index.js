@@ -44,7 +44,11 @@ class App extends React.Component {
         if ( ['/registry', '/settings'].indexOf(window.location.pathname) > -1 ) {
             document.getElementById('nav-profile').click()
         } else {
-            document.getElementById('nav-activities').click()
+            if ( document.getElementById('dialog-edit-div') !== null ) {
+                document.getElementById('edit').click()
+            } else {
+                document.getElementById('nav-activities').click()
+            }
         }
     };
 
@@ -72,6 +76,18 @@ class App extends React.Component {
         document.getElementById('dialog-edit').click()
     };
 
+    handleDown = () => {
+        document.getElementById('open-tags').click()
+    };
+
+    handleFilters = () => {
+        document.getElementById('open-filters').click()
+    };
+
+    handleSearch = () => {
+        document.getElementById('div-search').style.display = document.getElementById('div-search').style.display === 'none' ? '' : 'none';
+    };
+
     render() {
         const { navigation } = this.state;
 
@@ -88,15 +104,15 @@ class App extends React.Component {
 
                             <Typography id='title' color="inherit" type="title">{this.state.title}</Typography>
 
-                            <IconButton id="down" color="inherit">
+                            <IconButton id="down" color="inherit" onClick={ this.handleDown }>
                                 <Icon>keyboard_arrow_down</Icon>
                             </IconButton>
 
-                            <IconButton id="search" color="inherit" style={{marginLeft: 'auto'}}>
+                            <IconButton id="search" color="inherit" onClick={ this.handleSearch } style={{marginLeft: 'auto'}}>
                                 <Icon>search</Icon>
                             </IconButton>
 
-                            <IconButton id="filter" color="inherit">
+                            <IconButton id="filter" color="inherit" onClick={ this.handleFilters }>
                                 <Icon>filter_list</Icon>
                             </IconButton>
 

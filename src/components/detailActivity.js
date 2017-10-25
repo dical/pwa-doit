@@ -13,6 +13,7 @@ import AddActivity from './formActivity';
 
 class Activity extends Component {
     state = {
+        id: '',
         city: '',
         image: '/images/event.jpg',
         name: '',
@@ -81,6 +82,7 @@ class Activity extends Component {
         }
 
         this.setState({
+            id: data._id,
             name: data.name,
             own: data.own,
             city: data.address.city,
@@ -92,6 +94,7 @@ class Activity extends Component {
             participants: data.participants,
             participantButton: isParticipant,
             price: data.price,
+            quotas: data.quotas,
             tags: data.tags
         });
     };
@@ -124,6 +127,10 @@ class Activity extends Component {
     };
 
     handleOpen = () => {
+        if (this.state.open) {
+            this.componentDidMount()
+        }
+
         this.setState({
             open: !this.state.open
         })
@@ -210,7 +217,7 @@ class Activity extends Component {
                         group
                     </Icon>
 
-                    { this.state.participants.length } Participantes
+                    { this.state.participants.length } Participante(s)
                 </Typography>
 
                 <Tabs
@@ -312,10 +319,12 @@ class Activity extends Component {
                 }
 
                 <Dialog
+                    id="dialog-edit-div"
                     fullScreen
                     open={ this.state.open }
                     onRequestClose={ this.handleRequestClose }
                     transition={<Slide direction="up" />}
+                    style={{ top: 64 }}
                 >
                     <AddActivity method="patch" activity={ this.state }/>
                 </Dialog>

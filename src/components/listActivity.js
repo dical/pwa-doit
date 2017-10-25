@@ -3,13 +3,19 @@ import { Link } from 'react-router-dom';
 
 import Avatar from 'material-ui/Avatar';
 import Button from 'material-ui/Button';
+import Dialog from 'material-ui/Dialog';
 import Icon from 'material-ui/Icon';
 import List, { ListItem, ListItemText } from 'material-ui/List';
+import Slide from 'material-ui/transitions/Slide';
 import Typography from 'material-ui/Typography';
 
 class Activities extends Component {
     state = {
-        data: []
+        data: [],
+        dialogs: {
+            tags: false,
+            filters: false
+        }
     };
 
     componentDidMount() {
@@ -54,27 +60,88 @@ class Activities extends Component {
         this.setState({ data: data });
     };
 
+    handleDialogTags = () => {
+        this.setState({
+            dialogs: {
+                tags: !this.state.dialogs.tags,
+                filters: this.state.dialogs.filters
+            }
+        })
+    };
+
+    handleDialogFilters = () => {
+        this.setState({
+            dialogs: {
+                tags: this.state.dialogs.tags,
+                filters: !this.state.dialogs.filters
+            }
+        })
+    };
+
     render() {
         return (
-            <List>
-                {this.state.data.map((event, i) => (
-                    <Link key={this.state.data.length - i} to={'/activity/' + event._id} style={{textDecoration:'none'}}>
-                        <ListItem button>
-                            <Avatar src={'images/activity.jpg'} style={{height: 64, width: 64}}/>
-                            <ListItemText classes={{text:'overflow-text'}} primary={event.name} secondary={event.details}/>
-                            <Typography type="caption" style={{position: 'absolute', right: 16, top: 16}}>
-                                {time(event.start)}
-                            </Typography>
-                        </ListItem>
-                    </Link>
-                ))}
+            <div>
+                <div
+                    id="div-search"
+                    style={{
+                        padding: 16,
+                        display: 'none'
+                    }}
+                >
+                    Buscar
+                </div>
 
-                <Link id="add" to='/add' style={{textDecoration:'none'}}>
-                    <Button fab color="accent" style={{position: 'fixed', right: 16, bottom: 72}}>
-                        <Icon>add</Icon>
-                    </Button>
-                </Link>
-            </List>
+                <List>
+                    {this.state.data.map((event, i) => (
+                        <Link key={this.state.data.length - i} to={'/activity/' + event._id} style={{textDecoration:'none'}}>
+                            <ListItem button>
+                                <Avatar src={event.image} style={{height: 64, width: 64}} classes={ { img: 'avatar-250' }  }/>
+                                <ListItemText classes={{text:'overflow-text'}} primary={event.name} secondary={event.details}/>
+                                <Typography type="caption" style={{position: 'absolute', right: 16, top: 16}}>
+                                    {time(event.start)}
+                                </Typography>
+                            </ListItem>
+                        </Link>
+                    ))}
+
+                    <Link id="add" to='/add' style={{textDecoration:'none'}}>
+                        <Button fab color="accent" style={{position: 'fixed', right: 16, bottom: 72}}>
+                            <Icon>add</Icon>
+                        </Button>
+                    </Link>
+                </List>
+
+                <Button id="open-tags" onClick={ this.handleDialogTags } style={{ display: 'none' }}> </Button>
+                <Button id="open-filters" onClick={ this.handleDialogFilters } style={{ display: 'none' }}> </Button>
+
+                <Dialog
+                    id="dialog-tags"
+                    fullScreen
+                    open={ this.state.dialogs.tags }
+                    transition={<Slide direction="up" />}
+                    style={{ top: 64 }}
+                >
+                    <div
+                        style={{ padding: '32px 16px' }}
+                    >
+                        Categorias Generales
+                    </div>
+                </Dialog>
+
+                <Dialog
+                    id="dialog-filters"
+                    fullScreen
+                    open={ this.state.dialogs.filters }
+                    transition={<Slide direction="up" />}
+                    style={{ top: 64 }}
+                >
+                    <div
+                        style={{ padding: '32px 16px' }}
+                    >
+                        Filtros Generales
+                    </div>
+                </Dialog>
+            </div>
         );
     }
 }
