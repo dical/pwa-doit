@@ -75,7 +75,11 @@ class Activity extends Component {
             document.getElementById('edit').setAttribute('href', '/edit/' + data._id)
         }
 
-        let isParticipant = false;
+        let isParticipant = false, participants = [];
+
+        if (typeof data.participants !== 'undefined') {
+            participants = data.participants;
+        }
 
         if (data.participants.indexOf(getCookie('userId')) > -1) {
             isParticipant = true
@@ -91,7 +95,7 @@ class Activity extends Component {
             street: data.address.street,
             details: data.details,
             image: data.image,
-            participants: data.participants,
+            participants: participants,
             participantButton: isParticipant,
             price: data.price,
             quotas: data.quotas,
