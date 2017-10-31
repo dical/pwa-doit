@@ -1,0 +1,65 @@
+#back {
+    margin-left: -12px;
+    margin-right: 12px;
+}
+
+#bottom-navigation {
+    bottom: 0;
+    position: fixed;
+    width: 100%
+}
+
+#dialog-tags,
+#dialog-filters,
+#dialog-tags div:first-child,
+#dialog-filters div:first-child {
+    top: 64px
+}
+
+#header,
+#bottom-navigation {
+    background: linear-gradient(90deg, #18252d 30%, #0a1014 90%)
+}
+
+#login-form {
+    padding: 0 16px;
+    text-align: center
+}
+
+#logo {
+    width: 60%
+}
+
+#nav-empty {
+    display: none
+}
+
+#progress {
+    display: none;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1200
+}
+
+#search,
+#shared,
+#settings {
+    margin-left: auto
+}
+
+#shell {
+    padding: 64px 0
+}
+
+#toolbar {
+    min-height: 64px
+}
+
+.mb-8 {
+    margin-bottom: 16px !important
+}
+
+.transparent {
+    background: transparent !important
+}
