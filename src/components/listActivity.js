@@ -9,6 +9,8 @@ import List, { ListItem, ListItemText } from 'material-ui/List';
 import Slide from 'material-ui/transitions/Slide';
 import Typography from 'material-ui/Typography';
 
+import Categories from './formCategories'
+
 class Activities extends Component {
     state = {
         data: [],
@@ -21,15 +23,15 @@ class Activities extends Component {
     componentDidMount() {
         document.getElementById('title').innerText = 'Recientes';
 
-        document.getElementById('header').style.backgroundColor = '';
-        document.getElementById('header').style.boxShadow = '';
+        document.getElementById('header').classList.remove('transparent');
+        
         document.getElementById('shell').style.padding = '64px 0';
 
         ['title', 'search', 'filter', 'down'].forEach(function(id) {
             document.getElementById(id).style.display = ''
         });
 
-        ['back', 'settings', 'check', 'shared', 'edit'].forEach(function(id) {
+        ['back', 'settings', 'shared', 'edit'].forEach(function(id) {
             document.getElementById(id).style.display = 'none'
         });
 
@@ -61,6 +63,9 @@ class Activities extends Component {
     };
 
     handleDialogTags = () => {
+        document.getElementById('filter').style.display = document.getElementById('filter').style.display === 'none' ? '' : 'none';
+        document.getElementById('search').style.display = document.getElementById('search').style.display === 'none' ? '' : 'none';
+
         this.setState({
             dialogs: {
                 tags: !this.state.dialogs.tags,
@@ -111,20 +116,26 @@ class Activities extends Component {
                     </Link>
                 </List>
 
-                <Button id="open-tags" onClick={ this.handleDialogTags } style={{ display: 'none' }}> </Button>
+                <Button
+                    id="toggle-tags"
+                    onClick={ this.handleDialogTags }
+                    style={{ display: 'none' }}
+                >
+                    TOGGLE_TAGS
+                </Button>
+
                 <Button id="open-filters" onClick={ this.handleDialogFilters } style={{ display: 'none' }}> </Button>
 
                 <Dialog
                     id="dialog-tags"
                     fullScreen
                     open={ this.state.dialogs.tags }
-                    transition={<Slide direction="up" />}
-                    style={{ top: 64 }}
+                    transition={ <Slide direction="up" /> }
                 >
                     <div
                         style={{ padding: '32px 16px' }}
                     >
-                        Categorias Generales
+                        <Categories/>
                     </div>
                 </Dialog>
 

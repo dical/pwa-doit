@@ -3,8 +3,8 @@ import { render } from 'react-dom';
 import { BrowserRouter, Route, Switch, Link } from 'react-router-dom';
 
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
-import blue from 'material-ui/colors/blue';
-import purple from 'material-ui/colors/purple';
+import blueGrey from 'material-ui/colors/blueGrey';
+import purple from 'material-ui/colors/deepOrange';
 
 import AppBar from 'material-ui/AppBar';
 import BottomNavigation, { BottomNavigationButton } from 'material-ui/BottomNavigation';
@@ -24,13 +24,19 @@ import Settings from "./components/listSettings";
 
 const theme = createMuiTheme({
     palette: {
-        primary: blue,
+        primary: blueGrey,
         secondary: purple
     }
 });
 
 class App extends React.Component {
     state = {
+        bottomNavigation: {
+            value: 2
+        },
+        down: {
+            icon: 'keyboard_arrow_down'
+        },
         title: 'newly added',
         navigation: 2,
         search: ''
@@ -52,32 +58,24 @@ class App extends React.Component {
         }
     };
 
-    handleChange = (event, value) => {
-        this.setState({ navigation: value });
+    handleBottomNavigation = (event, value) => {
+        this.setState({ bottomNavigation: { value: value } })
     };
 
     handleComments = () => {
         document.getElementById('comments').click()
     };
 
-    handleUser = () => {
-        if (getCookie('userId') === '') {
-            document.getElementById('login').click()
-        } else {
-            document.getElementById('user').click()
-        }
-    };
-
-    handleConfirm = () => {
-        document.querySelector('form button').click()
+    handleDown = () => {
+        this.setState({
+            down: {
+                icon: this.state.down.icon === 'keyboard_arrow_down' ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
+            }
+        }, document.getElementById('toggle-tags').click())
     };
 
     handleEdit = () => {
         document.getElementById('dialog-edit').click()
-    };
-
-    handleDown = () => {
-        document.getElementById('open-tags').click()
     };
 
     handleFilters = () => {
@@ -88,51 +86,86 @@ class App extends React.Component {
         document.getElementById('div-search').style.display = document.getElementById('div-search').style.display === 'none' ? '' : 'none';
     };
 
-    render() {
-        const { navigation } = this.state;
+    handleUser = () => {
+        if (getCookie('userId') === '') {
+            document.getElementById('login').click()
+        } else {
+            document.getElementById('user').click()
+        }
+    };
 
+    render() {
         return <MuiThemeProvider theme={theme}>
             <BrowserRouter>
-                <div id="shell" style={{padding: '64px 0'}}>
-                    <LinearProgress id="progress" color="accent" style={{position: 'fixed', top: 0, width: '100%', zIndex: 1200, display: 'none'}}/>
-
-                    <AppBar id="header" color="primary" position="fixed">
-                        <Toolbar style={{minHeight: 64}}>
-                            <IconButton id='back' color="inherit" onClick={this.handleBack} style={{ marginLeft: '-12px' }}>
+                <div id="shell">
+                    <LinearProgress id="progress"/>
+                    <AppBar
+                        id="header"
+                        position="fixed"
+                    >
+                        <Toolbar id="toolbar">
+                            <IconButton
+                                color="inherit"
+                                id='back'
+                                onClick={ this.handleBack }
+                            >
                                 <Icon>arrow_back</Icon>
                             </IconButton>
 
-                            <Typography id='title' color="inherit" type="title">{this.state.title}</Typography>
+                            <Typography
+                                color="inherit"
+                                id='title'
+                                type="title"
+                            >
+                                { this.state.title }
+                            </Typography>
 
-                            <IconButton id="down" color="inherit" onClick={ this.handleDown }>
-                                <Icon>keyboard_arrow_down</Icon>
+                            <IconButton
+                                color="inherit"
+                                id="down"
+                                onClick={ this.handleDown }
+                            >
+                                <Icon>{ this.state.down.icon }</Icon>
                             </IconButton>
 
-                            <IconButton id="search" color="inherit" onClick={ this.handleSearch } style={{marginLeft: 'auto'}}>
+                            <IconButton
+                                color="inherit"
+                                id="search"
+                                onClick={ this.handleSearch }
+                            >
                                 <Icon>search</Icon>
                             </IconButton>
 
-                            <IconButton id="filter" color="inherit" onClick={ this.handleFilters }>
+                            <IconButton
+                                color="inherit"
+                                id="filter"
+                                onClick={ this.handleFilters }
+                            >
                                 <Icon>filter_list</Icon>
                             </IconButton>
 
-                            <IconButton id="check" disabled color="inherit" style={{marginLeft: 'auto'}} onClick={this.handleConfirm}>
-                                <Icon>check</Icon>
-                            </IconButton>
-
-                            <IconButton id="shared" color="inherit" style={{marginLeft: 'auto'}}>
+                            <IconButton
+                                color="inherit"
+                                id="shared"
+                            >
                                 <Icon>shared</Icon>
                             </IconButton>
 
-                            <IconButton id='edit' onClick={this.handleEdit} color="inherit" style={{textDecoration: 'none', color: 'inherit', marginLeft: 0}}>
+                            <IconButton
+                                color="inherit"
+                                id='edit'
+                                onClick={ this.handleEdit }
+                            >
                                 <Icon>edit</Icon>
                             </IconButton>
 
-                            <Link id='settings' to='/settings' style={{textDecoration: 'none', color: 'inherit', marginLeft: 'auto'}}>
-                                <IconButton color="inherit">
-                                    <Icon>settings</Icon>
-                                </IconButton>
-                            </Link>
+                            <IconButton
+                                color="inherit"
+                                id="settings"
+                                onClick={ this.handleSettings }
+                            >
+                                <Icon>settings</Icon>
+                            </IconButton>
                         </Toolbar>
                     </AppBar>
 
@@ -149,18 +182,29 @@ class App extends React.Component {
                     </Switch>
 
                     <BottomNavigation
-                        value={navigation}
-                        onChange={ this.handleChange }
-                        style={{
-                            backgroundColor: '#E3F2FD',
-                            bottom: 0,
-                            position: 'fixed',
-                            width: '100%'}}
+                        id="bottom-navigation"
+                        onChange={ this.handleBottomNavigation }
+                        value={ this.state.bottomNavigation.value }
                     >
-                        <BottomNavigationButton id="nav-comments" onClick={this.handleComments} icon={<Icon>forum</Icon>}/>
-                        <BottomNavigationButton id="nav-activities" onClick={this.handleActivities} icon={<Icon>home</Icon>}/>
-                        <BottomNavigationButton id="nav-profile" onClick={this.handleUser} icon={<Icon>person</Icon>}/>
-                        <BottomNavigationButton id="nav-empty" style={{ display: 'none' }}/>
+                        <BottomNavigationButton
+                            id="nav-comments"
+                            onClick={this.handleComments}
+                            icon={ <Icon>forum</Icon> }
+                        />
+
+                        <BottomNavigationButton
+                            id="nav-activities"
+                            onClick={this.handleActivities}
+                            icon={ <Icon>home</Icon> }
+                        />
+
+                        <BottomNavigationButton
+                            id="nav-profile"
+                            onClick={this.handleUser}
+                            icon={ <Icon>person</Icon> }
+                        />
+
+                        <BottomNavigationButton id="nav-empty"/>
                     </BottomNavigation>
 
                     <Link id='comments' to="/comments"/>

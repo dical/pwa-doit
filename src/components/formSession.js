@@ -10,160 +10,112 @@ class Login extends Component {
     state = {
         login: true,
         password: {
+            disabled: false,
             error: false,
-            disabled: false
+            value: ''
         },
         snack: {
             open: false,
             message: ''
         },
         user: {
+            disabled: false,
             error: false,
-            disabled: false
+            value: ''
         }
     };
 
     componentDidMount() {
         document.getElementById('title').innerText = 'Iniciar sesion';
 
-        document.getElementById('header').style.backgroundColor = '';
-        document.getElementById('header').style.boxShadow = '';
-        document.getElementById('shell').style.padding = '64px 0';
-
-        ['back', 'title'].forEach(function(id) {
-            document.getElementById(id).style.display = ''
-        });
-
-        ['settings', 'search', 'filter', 'check', 'down', 'shared', 'edit'].forEach(function(id) {
-            document.getElementById(id).style.display = 'none'
-        });
+        ['back', 'title'].forEach(function(id) { document.getElementById(id).style.display = '' });
+        ['settings', 'search', 'filter', 'down', 'shared', 'edit'].forEach(function(id) { document.getElementById(id).style.display = 'none' });
 
         if (getCookie('userId') !== '') {
             document.getElementById('nav-activities').click()
         }
     }
 
-    handleAllError = () => {
-        this.setState({
-            password: {
-                disabled: false,
-                error: true
-            },
-            user: {
-                disabled: false,
-                error: true
-            }
-        })
-    };
-
-    handleCheckLogin = () => {
+    handleCheck = () => {
         this.setState({
             login:
             this.state.user.error ||
             this.state.password.error ||
-            document.getElementById('login-user').value.replace(' ', '') === '' ||
-            document.getElementById('login-password').value.replace(' ', '') === ''
+            this.state.user.value.replace(' ', '') === '' ||
+            this.state.password.value.replace(' ', '') === ''
         })
     };
 
-    handleCheckUserName = (event) => {
-        this.setState({
-            user: {
-                error:
-                !(new RegExp("[a-z0-9!?-]{5,20}")).test(event.target.value) &&
-                !(event.target.value.replace(' ', '') === ''),
-                disabled: this.state.user.disabled
-            }
-        }, this.handleCheckLogin)
-    };
-
-    handleCheckUserPassword = (event) => {
+    handleCheckPassword = (event) => {
         this.setState({
             password: {
-                error:
-                !(new RegExp("[A-Za-z0-9!?-]{8,16}")).test(event.target.value) &&
-                !(event.target.value.replace(' ', '') === ''),
-                disabled: this.state.password.disabled
+                disabled: this.state.password.disabled,
+                error: !(new RegExp("[A-Za-z0-9!?-]{8,16}")).test(event.target.value) && !(event.target.value.replace(' ', '') === ''),
+                value: event.target.value
             }
-        }, this.handleCheckLogin)
+        }, this.handleCheck)
+    };
+
+    handleCheckUser = (event) => {
+        this.setState({
+            user: {
+                disabled: this.state.user.disabled,
+                error: !(new RegExp("[a-z0-9!?-]{5,20}")).test(event.target.value) && !(event.target.value.replace(' ', '') === ''),
+                value: event.target.value
+            }
+        }, this.handleCheck)
     };
 
     handleDisabled = () => {
         this.setState({
             user: {
+                disabled: !this.state.user.disabled,
                 error: this.state.user.error,
-                disabled: !this.state.user.disabled
+                value: this.state.user.value
             },
             password: {
+                disabled: !this.state.user.disabled,
                 error: this.state.user.error,
-                disabled: !this.state.user.disabled
+                value: this.state.password.value
             },
             login: !this.state.login
-        })
-    };
+        });
 
-    handleProgress = () => {
-        let progress = document.getElementById('progress'); progress.style.display = progress.style.display === 'none' ? '' : 'none';
+        document.getElementById('progress').style.display = document.getElementById('progress').style.display === 'block' ? '' : 'block';
     };
 
     handleRequest = () => {
-        let request = new XMLHttpRequest()
-            , onSnacked = this.handleSnack
-            , onDisabled = this.handleDisabled
-            , onProgress = this.handleProgress
-            , onError = this.handleAllError;
+        let request = new XMLHttpRequest(),
+            snack = this.handleSnack,
+            disable = this.handleDisabled;
 
-        onDisabled();
-        onProgress();
-        onSnacked("Iniciando sesion...");
+        disable();
+        snack("Iniciando sesion...");
 
         request.open('POST', 'http://' + window.location.hostname + ':8081/sessions', true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
+
+        request.onreadystatechange = function() {
+            if (request.readyState === 4) {
+                switch (request.status) {
+                    case 201: setUser(JSON.parse(request.response));
+                        break;
+                    case 403: snack("Datos incorrectos");
+                        break;
+                    default: snack("El servicio no responde");
+                        break;
+                }
+
+                disable()
+            }
+        };
 
         request.send(
             JSON.stringify({
                 username: document.getElementById('login-user').value,
                 password: document.getElementById('login-password').value
             })
-        );
-
-        request.onreadystatechange = function() {
-            if (request.readyState === 4) {
-                onDisabled();
-                onProgress();
-
-                switch (request.status) {
-                    case 201:
-                        let res = JSON.parse(request.response);
-
-                         setCookie('userId', res._id, 360);
-
-                         if (res.hasOwnProperty('business')) {
-                             setCookie('userRut', res.business.rut.body, 360);
-                         }
-
-                         document.getElementById('nav-activities').click();
-                        break;
-                    case 403:
-                        let errors = JSON.parse(request.responseText).errors
-                            , text = ''
-                            , property;
-
-                        for (property in errors) {
-                            if (errors.hasOwnProperty(property)) {
-                                text += errors[property].message + '\n'
-                            }
-                        }
-
-                        onError();
-                        onSnacked(text);
-                        break;
-                    default:
-                        onSnacked("Sin conexion");
-                        break;
-                }
-            }
-        }
+        )
     };
 
     handleSnack = (message) => {
@@ -177,40 +129,34 @@ class Login extends Component {
 
     render() {
         return (
-            <form
-                style={{
-                    margin: 16,
-                    textAlign: 'center'
-                }}
-            >
-                <Typography
-                    style={{ padding: '72px 0' }}
-                    type="title"
-                >
-                    DoItExp
-                </Typography>
+            <form id="login-form">
+                <img
+                    id="logo"
+                    src={ "/images/logo.png" }
+                    alt={""}
+                />
 
                 <TextField
                     id="login-user"
                     autoComplete="off"
+                    classes={{ root: "mb-8" }}
                     disabled={ this.state.user.disabled }
                     error={ this.state.user.error }
                     fullWidth
                     label="Usuario"
-                    onChange={ this.handleCheckUserName }
-                    style={{ margin: '8px 0' }}
+                    onChange={ this.handleCheckUser }
                     type="text"
                 />
 
                 <TextField
                     id="login-password"
                     autoComplete="off"
+                    classes={{ root: "mb-8" }}
                     disabled={ this.state.password.disabled}
                     error={ this.state.password.error}
                     fullWidth
                     label="Contraseña"
-                    onChange={this.handleCheckUserPassword}
-                    style={{ margin: '8px 0' }}
+                    onChange={ this.handleCheckPassword }
                     type="password"
                 />
 
@@ -263,27 +209,42 @@ class Login extends Component {
     }
 }
 
-function getCookie(cname) {
-    let name = cname + "=";
-    let decodedCookie = decodeURIComponent(document.cookie);
-    let ca = decodedCookie.split(';');
-    for(let i = 0; i <ca.length; i++) {
+function getCookie(cookie) {
+    let name = cookie + "=",
+        decode = decodeURIComponent(document.cookie),
+        ca = decode.split(';');
+
+    for (let i = 0; i <ca.length; i++) {
         let c = ca[i];
+
         while (c.charAt(0) === ' ') {
             c = c.substring(1);
         }
+
         if (c.indexOf(name) === 0) {
             return c.substring(name.length, c.length);
         }
     }
+
     return "";
 }
 
-function setCookie(cname, cvalue, exdays) {
-    let d = new Date();
-    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-    let expires = "expires="+d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+function setCookie(name, value, days) {
+    let date = new Date();
+
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+
+    document.cookie = name + "=" + value + ";expires=" + date.toUTCString() + ";path=/"
+}
+
+function setUser(res) {
+    setCookie('userId', res._id, 360);
+
+    if (res.hasOwnProperty('business')) {
+        setCookie('userRut', res.business.rut.body, 360)
+    }
+
+    document.getElementById('nav-activities').click()
 }
 
 export default Login;

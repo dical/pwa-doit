@@ -19,8 +19,7 @@ class Profile extends Component {
     };
 
     componentDidMount() {
-        document.getElementById('header').style.backgroundColor = 'transparent';
-        document.getElementById('header').style.boxShadow = 'none';
+        document.getElementById('header').classList.add('transparent');
         document.getElementById('shell').style.padding = 0;
 
         document.getElementById('back').style.display = '';
@@ -29,7 +28,6 @@ class Profile extends Component {
         document.getElementById('title').style.display = 'none';
         document.getElementById('search').style.display = 'none';
         document.getElementById('filter').style.display = 'none';
-        document.getElementById('check').style.display = 'none';
         document.getElementById('down').style.display = 'none';
         document.getElementById('shared').style.display = 'none';
         document.getElementById('edit').style.display = 'none';

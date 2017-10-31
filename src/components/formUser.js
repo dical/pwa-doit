@@ -64,22 +64,9 @@ class Registry extends React.Component {
     componentDidMount() {
         document.getElementById('title').innerText = 'Registrarse';
 
-        document.getElementById('header').style.backgroundColor = '';
-        document.getElementById('header').style.boxShadow = 'none';
-        document.getElementById('shell').style.padding = '64px 0';
-
-        ['back', 'title'].forEach(function(id) {
-            document.getElementById(id).style.display = ''
-        });
-
-        ['settings', 'search', 'filter', 'check', 'down', 'shared', 'edit'].forEach(function(id) {
-            document.getElementById(id).style.display = 'none'
-        });
-
-        document.getElementById('back').setAttribute('href', '/login')
+        ['back', 'title'].forEach(function(id) { document.getElementById(id).style.display = '' });
+        ['settings', 'search', 'filter', 'down', 'shared', 'edit'].forEach(function(id) { document.getElementById(id).style.display = 'none' });
     }
-
-
 
     handleChange = (event, value) => {
         this.setState({ tabs: value })
@@ -324,7 +311,7 @@ class Registry extends React.Component {
                     fullWidth
                     label={ this.state.tabs === 0 ? 'Nombre(s) *' : 'Razon social *' }
                     onChange={ this.handleCheckName }
-                    style={{ margin: '26px 0 0' }}
+                    style={{ margin: '16px 0 0' }}
                     type="text"
                 />
 
