@@ -10,8 +10,10 @@
 }
 
 #dialog-tags,
+#dialog-edit,
 #dialog-filters,
 #dialog-tags div:first-child,
+#dialog-edit div:first-child,
 #dialog-filters div:first-child {
     top: 64px
 }
@@ -32,6 +34,10 @@
 
 #nav-empty {
     display: none
+}
+
+#nav-comments, #nav-activities, #nav-profile {
+    color: #fff
 }
 
 #progress {
@@ -61,5 +67,6 @@
 }
 
 .transparent {
-    background: transparent !important
+    background: transparent !important;
+    box-shadow: none !important
 }

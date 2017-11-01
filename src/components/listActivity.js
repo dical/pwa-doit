@@ -100,7 +100,7 @@ class Activities extends Component {
                     {this.state.data.map((event, i) => (
                         <Link key={this.state.data.length - i} to={'/activity/' + event._id} style={{textDecoration:'none'}}>
                             <ListItem button>
-                                <Avatar src={event.image} style={{height: 64, width: 64}} classes={ { img: 'avatar-250' }  }/>
+                                <Avatar src={event.image} style={{height: 64, width: 64, border: '2px solid black'}} classes={ { img: 'avatar-250' }  }/>
                                 <ListItemText classes={{text:'overflow-text'}} primary={event.name} secondary={event.details}/>
                                 <Typography type="caption" style={{position: 'absolute', right: 16, top: 16}}>
                                     {time(event.start)}

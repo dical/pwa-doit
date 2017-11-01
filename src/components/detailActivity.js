@@ -32,15 +32,14 @@ class Activity extends Component {
     };
 
     componentDidMount() {
-        document.getElementById('header').style.backgroundColor = 'transparent';
-        document.getElementById('header').style.boxShadow = 'none';
+        document.getElementById('header').classList.add('transparent');
         document.getElementById('shell').style.padding = 0;
 
         ['back', 'shared'].forEach(function(id) {
             document.getElementById(id).style.display = ''
         });
 
-        ['settings', 'search', 'filter', 'check', 'down', 'title', 'edit'].forEach(function(id) {
+        ['settings', 'search', 'filter', 'down', 'title', 'edit'].forEach(function(id) {
             document.getElementById(id).style.display = 'none'
         });
 
@@ -323,7 +322,7 @@ class Activity extends Component {
                 }
 
                 <Dialog
-                    id="dialog-edit-div"
+                    id="dialog-edit"
                     fullScreen
                     open={ this.state.open }
                     onRequestClose={ this.handleRequestClose }
@@ -333,7 +332,7 @@ class Activity extends Component {
                     <AddActivity method="patch" activity={ this.state }/>
                 </Dialog>
 
-                <Button id="dialog-edit" onClick={ this.handleOpen } style={{ display: 'none' }}> </Button>
+                <Button id="toggle-edit" onClick={ this.handleOpen } style={{ display: 'none' }}> </Button>
             </div>
         );
     }

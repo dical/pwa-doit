@@ -50,7 +50,7 @@ class App extends React.Component {
         if ( ['/registry', '/settings'].indexOf(window.location.pathname) > -1 ) {
             document.getElementById('nav-profile').click()
         } else {
-            if ( document.getElementById('dialog-edit-div') !== null ) {
+            if ( document.getElementById('dialog-edit') !== null ) {
                 document.getElementById('edit').click()
             } else {
                 document.getElementById('nav-activities').click()
@@ -75,7 +75,7 @@ class App extends React.Component {
     };
 
     handleEdit = () => {
-        document.getElementById('dialog-edit').click()
+        document.getElementById('toggle-edit').click()
     };
 
     handleFilters = () => {
@@ -159,13 +159,11 @@ class App extends React.Component {
                                 <Icon>edit</Icon>
                             </IconButton>
 
-                            <IconButton
-                                color="inherit"
-                                id="settings"
-                                onClick={ this.handleSettings }
-                            >
-                                <Icon>settings</Icon>
-                            </IconButton>
+                            <Link id='settings' to='/settings' style={{ textDecoration: 'none', color: 'inherit' }}>
+                                <IconButton color="inherit">
+                                    <Icon>settings</Icon>
+                                </IconButton>
+                            </Link>
                         </Toolbar>
                     </AppBar>
 

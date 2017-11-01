@@ -61,7 +61,7 @@ class AddActivity extends Component {
             error: false
         },
         chipData: [
-            { key: 0, label: 'Ddfsddfsdfeporte' },
+            { key: 0, label: 'Deporte' },
         ],
         image: {
             disabled: false,
@@ -77,15 +77,14 @@ class AddActivity extends Component {
     componentDidMount() {
         document.getElementById('title').innerText = 'Agregar actividad';
 
-        document.getElementById('header').style.backgroundColor = '';
-        document.getElementById('header').style.boxShadow = '';
+        document.getElementById('header').classList.remove('transparent');
         document.getElementById('shell').style.padding = '64px 0';
 
         ['back', 'title'].forEach(function(id) {
             document.getElementById(id).style.display = ''
         });
 
-        ['settings', 'search', 'filter', 'check', 'down', 'shared', 'edit'].forEach(function(id) {
+        ['settings', 'search', 'filter', 'down', 'shared', 'edit'].forEach(function(id) {
             document.getElementById(id).style.display = 'none'
         });
 
