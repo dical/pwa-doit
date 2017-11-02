@@ -10,6 +10,7 @@ import Tabs, { Tab } from 'material-ui/Tabs';
 import Typography from 'material-ui/Typography';
 
 import AddActivity from './formActivity';
+import Users from './listUsers';
 
 class Activity extends Component {
     state = {
@@ -28,7 +29,10 @@ class Activity extends Component {
         },
         participants: [],
         participantButton: false,
-        open: false
+        open: false,
+        users: {
+            open: false
+        }
     };
 
     componentDidMount() {
@@ -69,7 +73,7 @@ class Activity extends Component {
     };
 
     handleUpdate = (data) => {
-        if (getCookie('userId') === data.own._id) {
+        if (getCookie('userId') === data.own._id && (new Date(data.end)) > Date.now()) {
             document.getElementById('edit').style.display = '';
             document.getElementById('edit').setAttribute('href', '/edit/' + data._id)
         }
@@ -80,7 +84,7 @@ class Activity extends Component {
             participants = data.participants;
         }
 
-        if (participants.indexOf(getCookie('userId')) > -1) {
+        if (participants.indexOf(getCookie('userId')) > -1 || (new Date(data.end)) < Date.now()) {
             isParticipant = true
         }
 
@@ -124,7 +128,7 @@ class Activity extends Component {
 
         request.send(
             JSON.stringify({
-                participants: { $each: participants }
+                $addToSet: { participants: { $each: participants } }
             })
         )
     };
@@ -138,6 +142,19 @@ class Activity extends Component {
             open: !this.state.open
         })
     };
+
+    handleUsers = () => {
+        if (this.state.users.open) {
+            this.componentDidMount()
+        }
+
+        this.setState({
+            users: {
+                open: !this.state.users.open
+            }
+        })
+    };
+
 
     render() {
         return (
@@ -220,7 +237,13 @@ class Activity extends Component {
                         group
                     </Icon>
 
-                    { this.state.participants.length } Participante(s)
+                    <span
+                        id="toggle-users"
+                        onClick={ this.handleUsers }
+                        style={{ cursor: 'pointer' }}
+                    >
+                        { this.state.participants.length } Participante(s)
+                    </span>
                 </Typography>
 
                 <Tabs
@@ -296,7 +319,9 @@ class Activity extends Component {
                             >
                                 { getDayOfWeek(this.state.start) }, { getMonth(this.state.start) } { getDayOfMonth(this.state.start) }
                                 <br/>
-                                { (new Date(this.state.start)).getHours() }:{ (new Date(this.state.start)).getMinutes() } — 1:00 PM
+                                { (new Date(this.state.start)).getHours() }:{ ((new Date(this.state.start)).getMinutes() < 10 ? '0' : '') + (new Date(this.state.start)).getMinutes() } { (new Date(this.state.start)).getHours() < 13 ? 'AM' : 'PM' }
+                                 —
+                                { (new Date(this.state.end)).getHours() }:{ ((new Date(this.state.end)).getMinutes() < 10 ? '0' : '') + (new Date(this.state.end)).getMinutes() } { (new Date(this.state.start)).getHours() < 13 ? 'AM' : 'PM' }
                             </span>
                         </Typography>
 
@@ -330,6 +355,16 @@ class Activity extends Component {
                     style={{ top: 64 }}
                 >
                     <AddActivity method="patch" activity={ this.state }/>
+                </Dialog>
+
+                <Dialog
+                    id="dialog-users"
+                    fullScreen
+                    open={ this.state.users.open }
+                    onRequestClose={ this.handleUsers }
+                    transition={<Slide direction="up" />}
+                >
+                    <Users list={ this.state.participants }/>
                 </Dialog>
 
                 <Button id="toggle-edit" onClick={ this.handleOpen } style={{ display: 'none' }}> </Button>

@@ -252,7 +252,8 @@ class AddActivity extends Component {
         this.setState({
             quotas: {
                 disabled: false,
-                error: !(new RegExp("[0-9]{2,250}")).test(event.target.value) && event.target.value < 1
+                error: !(new RegExp("[0-9]{2,250}")).test(event.target.value) && event.target.value < 1,
+                value: event.target.value
             }
         }, this.handleCheckAdd);
     };
@@ -318,12 +319,14 @@ class AddActivity extends Component {
     };
 
     handleRequest = () => {
+        console.log(this.props.method);
+
         let request = new XMLHttpRequest(),
             onDisabled = this.handleDisabled,
             onProgress = this.handleProgress,
             onSnacked  = this.handleSnack,
-            method = this.props.method.toLowerCase() === 'patch' ? 'PATCH' : 'POST',
-            id = this.props.method.toLowerCase() === 'patch' ? this.props.activity.id : '';
+            method = this.props.method === 'patch' ? 'PATCH' : 'POST',
+            id = this.props.method === 'patch' ? this.props.activity.id : '';
 
         let tagsData = this.state.chipData.map(function(e) {
             return e.label
@@ -363,10 +366,7 @@ class AddActivity extends Component {
 
                 switch (request.status) {
                     case 201:
-                        let link = document.getElementById('activity');
-
-                        link.setAttribute('href', 'activity/' + JSON.parse(request.response)._id);
-                        link.click();
+                        window.location.href = 'activity/' + JSON.parse(request.response)._id;
                         break;
                     case 200:
                         document.getElementById('edit').click();

@@ -50,11 +50,15 @@ class App extends React.Component {
         if ( ['/registry', '/settings'].indexOf(window.location.pathname) > -1 ) {
             document.getElementById('nav-profile').click()
         } else {
-            if ( document.getElementById('dialog-edit') !== null ) {
-                document.getElementById('edit').click()
-            } else {
-                document.getElementById('nav-activities').click()
+            if ( document.getElementById('dialog-edit') !== null) {
+                return document.getElementById('edit').click()
             }
+
+            if ( document.getElementById('dialog-users') !== null) {
+                return document.getElementById('toggle-users').click()
+            }
+
+            document.getElementById('nav-activities').click()
         }
     };
 
