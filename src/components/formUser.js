@@ -65,7 +65,7 @@ class Registry extends React.Component {
         document.getElementById('title').innerText = 'Registrarse';
 
         ['back', 'title'].forEach(function(id) { document.getElementById(id).style.display = '' });
-        ['settings', 'search', 'filter', 'down', 'shared', 'edit'].forEach(function(id) { document.getElementById(id).style.display = 'none' });
+        ['settings', 'search', 'filter', 'down', 'shared', 'edit', 'bottom-navigation'].forEach(function(id) { document.getElementById(id).style.display = 'none' });
     }
 
     handleChange = (event, value) => {

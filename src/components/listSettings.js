@@ -19,7 +19,7 @@ class Settings extends Component {
             document.getElementById(id).style.display = ''
         });
 
-        ['settings', 'shared', 'edit', 'filter', 'down', 'search'].forEach(function(id) {
+        ['settings', 'shared', 'edit', 'filter', 'down', 'search', 'bottom-navigation'].forEach(function(id) {
             document.getElementById(id).style.display = 'none'
         });
     }

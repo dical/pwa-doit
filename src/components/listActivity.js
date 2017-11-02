@@ -27,7 +27,7 @@ class Activities extends Component {
         
         document.getElementById('shell').style.padding = '64px 0';
 
-        ['title', 'search', 'filter', 'down'].forEach(function(id) {
+        ['title', 'search', 'filter', 'down', 'bottom-navigation'].forEach(function(id) {
             document.getElementById(id).style.display = ''
         });
 

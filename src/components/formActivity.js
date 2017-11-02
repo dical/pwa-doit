@@ -84,7 +84,7 @@ class AddActivity extends Component {
             document.getElementById(id).style.display = ''
         });
 
-        ['settings', 'search', 'filter', 'down', 'shared', 'edit'].forEach(function(id) {
+        ['settings', 'search', 'filter', 'down', 'shared', 'edit', 'bottom-navigation'].forEach(function(id) {
             document.getElementById(id).style.display = 'none'
         });
 

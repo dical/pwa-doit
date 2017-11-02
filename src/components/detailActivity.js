@@ -43,7 +43,7 @@ class Activity extends Component {
             document.getElementById(id).style.display = ''
         });
 
-        ['settings', 'search', 'filter', 'down', 'title', 'edit'].forEach(function(id) {
+        ['settings', 'search', 'filter', 'down', 'title', 'edit', 'bottom-navigation'].forEach(function(id) {
             document.getElementById(id).style.display = 'none'
         });
 

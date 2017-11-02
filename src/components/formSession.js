@@ -33,7 +33,7 @@ class Login extends Component {
         document.getElementById('shell').style.padding = '';
 
         ['back', 'title'].forEach(function(id) { document.getElementById(id).style.display = '' });
-        ['settings', 'search', 'filter', 'down', 'shared', 'edit'].forEach(function(id) { document.getElementById(id).style.display = 'none' });
+        ['settings', 'search', 'filter', 'down', 'shared', 'edit', 'bottom-navigation'].forEach(function(id) { document.getElementById(id).style.display = 'none' });
 
         if (getCookie('userId') !== '') {
             document.getElementById('nav-activities').click()
