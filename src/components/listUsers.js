@@ -80,7 +80,7 @@ class Users extends Component {
                                 <ListItemText
                                     classes={{ text:'overflow-text' }}
                                     primary={ user.names }
-                                    secondary={ user.mail }
+                                    secondary={ '@' + user.username }
                                 />
                             </ListItem>
                         </Link>

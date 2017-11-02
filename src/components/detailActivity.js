@@ -81,7 +81,7 @@ class Activity extends Component {
         let isParticipant = false, participants = [];
 
         if (typeof data.participants !== 'undefined') {
-            participants = data.participants;
+            participants = data.participants.filter(function(e) { return e !== '' });
         }
 
         if (participants.indexOf(getCookie('userId')) > -1 || (new Date(data.end)) < Date.now()) {
@@ -107,30 +107,34 @@ class Activity extends Component {
     };
 
     handleParticipate = () => {
-        let request = new XMLHttpRequest(), onUpdate = this.handleUpdate, participants = this.state.participants;
+        if (getCookie('userId') === '') {
+            window.location.href = '/login'
+        } else {
+            let request = new XMLHttpRequest(), onUpdate = this.handleUpdate, participants = this.state.participants;
 
-        participants.push(getCookie('userId'));
+            participants.push(getCookie('userId'));
 
-        request.open('PATCH', 'http://' + window.location.hostname + ':8081/events/' + window.location.pathname.split('/').pop() , true);
-        request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
+            request.open('PATCH', 'http://' + window.location.hostname + ':8081/events/' + window.location.pathname.split('/').pop() , true);
+            request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
 
-        request.onreadystatechange = function() {
-            if (request.readyState === 4) {
-                switch (request.status) {
-                    case 200:
-                        onUpdate(JSON.parse(request.response));
-                        break;
-                    default:
-                        break;
+            request.onreadystatechange = function() {
+                if (request.readyState === 4) {
+                    switch (request.status) {
+                        case 200:
+                            onUpdate(JSON.parse(request.response));
+                            break;
+                        default:
+                            break;
+                    }
                 }
-            }
-        };
+            };
 
-        request.send(
-            JSON.stringify({
-                $addToSet: { participants: { $each: participants } }
-            })
-        )
+            request.send(
+                JSON.stringify({
+                    $addToSet: { participants: { $each: participants } }
+                })
+            )
+        }
     };
 
     handleOpen = () => {

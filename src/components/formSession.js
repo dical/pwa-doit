@@ -28,6 +28,10 @@ class Login extends Component {
     componentDidMount() {
         document.getElementById('title').innerText = 'Iniciar sesion';
 
+        document.getElementById('header').classList.remove('transparent');
+
+        document.getElementById('shell').style.padding = '';
+
         ['back', 'title'].forEach(function(id) { document.getElementById(id).style.display = '' });
         ['settings', 'search', 'filter', 'down', 'shared', 'edit'].forEach(function(id) { document.getElementById(id).style.display = 'none' });
 
