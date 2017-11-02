@@ -27,6 +27,18 @@ class Settings extends Component {
     render() {
         return (
             <List>
+                <ListItem button>
+                    <ListItemText
+                        primary="Imagen"
+                        secondary="Nada"
+                    />
+                </ListItem>
+                <ListItem button>
+                    <ListItemText
+                        primary="Frase"
+                        secondary="Nada"
+                    />
+                </ListItem>
                 <ListItem button onClick={this.props.action}>
                     <ListItemText
                         primary="Salir"

@@ -212,7 +212,7 @@ class App extends React.Component {
                     <Link id='comments' to="/comments"/>
                     <Link id='activities' to="/activities"/>
                     <Link id='login' to="/login"/>
-                    <Link id='user' to='/user'/>
+                    <Link id='user' to={'/user/' + getCookie('userId')}/>
                     <Link id='activity' to='/activity'/>
                 </div>
             </BrowserRouter>
