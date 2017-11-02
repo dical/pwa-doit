@@ -13,7 +13,7 @@
 #dialog-edit,
 #dialog-filters,
 #dialog-tags div:first-child,
-#dialog-edit div:first-child,
+#dialog-edit > div:first-child,
 #dialog-filters div:first-child {
     top: 64px
 }
