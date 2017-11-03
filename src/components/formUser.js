@@ -145,7 +145,7 @@ class Registry extends React.Component {
     handleCheckRut = (event) => {
         this.setState({
             rut: {
-                error: !(new RegExp("[K|k|0-9]{2,16}")).test(event.target.value) || !checkDigit11(event.target.value),
+                error: !(new RegExp("[K|k|0-9]{2,16}")).test(event.target.value.replace('-','').replace('.','')) || !checkDigit11(event.target.value),
                 disabled: false
             }
         }, this.handleCheckRegistry)
@@ -171,7 +171,7 @@ class Registry extends React.Component {
 
     handleCheckPassword = (event) => {
         this.setState({
-            user: {
+            password: {
                 error: !(new RegExp("[A-Za-z0-9!?-]{8,16}")).test(event.target.value),
                 disabled: false
             }
@@ -188,6 +188,24 @@ class Registry extends React.Component {
         let progress = document.getElementById('progress'); progress.style.display = progress.style.display === 'none' ? '' : 'none';
     };
 
+    handleErrorUserName = () => {
+        this.setState({
+            user: {
+                error: true,
+                disabled: this.state.user.disabled
+            }
+        }, this.handleCheckRegistry)
+    };
+
+    handleErrorRut = () => {
+        this.setState({
+            rut: {
+                error: true,
+                disabled: this.state.rut.disabled
+            }
+        }, this.handleCheckRegistry)
+    };
+
     handleRequest = () => {
         let request = new XMLHttpRequest()
             , onDisabled = this.handleDisabled
@@ -197,6 +215,9 @@ class Registry extends React.Component {
         onDisabled();
         onProgress();
         onSnacked("Registrando usuario...");
+
+        let errorUserName = this.handleErrorUserName;
+        let errorRut = this.handleErrorRut;
 
         request.open('POST', 'http://' + window.location.hostname + ':8081/users', true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
@@ -212,9 +233,21 @@ class Registry extends React.Component {
                             , text = ''
                             , property;
 
-                        for (property in errors) {
-                            if (errors.hasOwnProperty(property)) {
-                                text += errors[property].message + '\n'
+                        if (JSON.parse(request.responseText).hasOwnProperty('code')) {
+                            if (JSON.parse(request.responseText).errmsg.indexOf('username') > 0) {
+                                text = "Nombre de usuario ya registrado";
+                                errorUserName()
+                            }
+
+                            if (JSON.parse(request.responseText).errmsg.indexOf('business.rut') > 0) {
+                                text = "Rut ya registrado";
+                                errorRut()
+                            }
+                        } else {
+                            for (property in errors) {
+                                if (errors.hasOwnProperty(property)) {
+                                    text += errors[property].message + '\n'
+                                }
                             }
                         }
 
@@ -227,7 +260,7 @@ class Registry extends React.Component {
                             setCookie('userRut', JSON.parse(request.response).business.rut.body, 360);
                         }
 
-                        document.getElementById('user').click();
+                        window.location.href = '/user/' + JSON.parse(request.response)._id;
 
                         onSnacked("Registrado existosamente");
                         break;

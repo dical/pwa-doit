@@ -121,7 +121,7 @@ class Activity extends Component {
                 if (request.readyState === 4) {
                     switch (request.status) {
                         case 200:
-                            onUpdate(JSON.parse(request.response));
+                            window.location.reload();
                             break;
                         default:
                             break;
