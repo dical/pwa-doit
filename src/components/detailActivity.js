@@ -110,7 +110,7 @@ class Activity extends Component {
         if (getCookie('userId') === '') {
             window.location.href = '/login'
         } else {
-            let request = new XMLHttpRequest(), onUpdate = this.handleUpdate, participants = this.state.participants;
+            let request = new XMLHttpRequest(), participants = this.state.participants;
 
             participants.push(getCookie('userId'));
 
