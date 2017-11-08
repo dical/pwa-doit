@@ -69,7 +69,7 @@ class Users extends Component {
                         >
                             <ListItem button>
                                 <Avatar
-                                    src={ '/images/user.png' }
+                                    src={ user.image === '/images/landscape.jpg' ? '/images/user.png' : user.image }
                                     style={{
                                         height: 64,
                                         width: 64,
