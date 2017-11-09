@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
+import Avatar from 'material-ui/Avatar';
+import List, { ListItem, ListItemText } from 'material-ui/List';
+
 import Button from 'material-ui/Button';
 import { CardMedia } from 'material-ui/Card';
 import Dialog from 'material-ui/Dialog';
 import Icon from 'material-ui/Icon';
 import Slide from 'material-ui/transitions/Slide';
 import Tabs, { Tab } from 'material-ui/Tabs';
+import TextField from 'material-ui/TextField';
 import Typography from 'material-ui/Typography';
 
 import AddActivity from './formActivity';
@@ -32,7 +36,8 @@ class Activity extends Component {
         open: false,
         users: {
             open: false
-        }
+        },
+        messages: []
     };
 
     componentDidMount() {
@@ -50,7 +55,35 @@ class Activity extends Component {
         document.getElementById('nav-empty').click();
 
         this.handleRequest();
+        this.handleRequestComments(this.handleUpdateComments);
     }
+
+    handleUpdateComments = (data) => {
+        this.setState({
+            messages: data
+        })
+    };
+
+    handleRequestComments = (update) => {
+        let request = new XMLHttpRequest();
+
+        request.open('GET', 'http://' + window.location.hostname + ':8081/messages?event=' + window.location.pathname.split('/').pop(), true);
+        request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
+
+        request.onreadystatechange = function() {
+            if (request.readyState === 4) {
+                switch (request.status) {
+                    case 200:
+                        update(JSON.parse(request.response));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
+
+        request.send()
+    };
 
     handleRequest = () => {
         let request = new XMLHttpRequest(), onUpdate = this.handleUpdate;
@@ -159,6 +192,43 @@ class Activity extends Component {
         })
     };
 
+    handleTabs = (event, value) => {
+        this.setState({
+            tabs: {
+                value: value
+            }
+        })
+    };
+
+    handleComment = (event) => {
+        if (event.charCode === 13) {
+            let request = new XMLHttpRequest();
+
+            request.open('POST', 'http://' + window.location.hostname + ':8081/messages', true);
+            request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
+
+            request.onreadystatechange = function() {
+                if (request.readyState === 4) {
+                    switch (request.status) {
+                        case 201:
+                            window.location.reload();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            };
+
+            request.send(
+                JSON.stringify({
+                    user: getCookie('userId'),
+                    event: window.location.pathname.split('/').pop(),
+                    type: 'comment',
+                    details: document.getElementById('add-comment').value
+                })
+            )
+        }
+    };
 
     render() {
         return (
@@ -255,7 +325,7 @@ class Activity extends Component {
                     indicatorColor="primary"
                     textColor="primary"
                     fullWidth
-                    onChange={null}
+                    onChange={ this.handleTabs }
                 >
                     <Tab
                         icon={
@@ -269,7 +339,7 @@ class Activity extends Component {
                     <Tab
                         icon={
                             <span>
-                                <Icon style={{verticalAlign:'middle'}}>message</Icon> 0
+                                <Icon style={{verticalAlign:'middle'}}>message</Icon> { this.state.messages.length }
                             </span>
                         }
                         style={{maxWidth:'100%'}}
@@ -348,6 +418,47 @@ class Activity extends Component {
                             </span>
                         </Typography>
                     </div>
+                }
+
+                {
+                    this.state.tabs.value === 1 &&
+                    <List style={{ padding: '16px' }} >
+                        <TextField
+                            id="add-comment"
+                            autoComplete="off"
+                            fullWidth
+                            label="Agregar mensaje..."
+                            onKeyPress={ this.handleComment }
+                            type="text"
+                        />
+
+                        {
+                            this.state.messages.map((message, i) => (
+                                <Link
+                                    key={ this.state.messages.length - i }
+                                    to={ '/user/' + message.user._id }
+                                    style={{ textDecoration:'none' }}
+                                >
+                                    <ListItem button>
+                                        <Avatar
+                                            src={ message.user.image === '/images/landscape.jpg' ? '/images/user.png' : message.user.image }
+                                            style={{
+                                                height: 64,
+                                                width: 64,
+                                                border: '2px solid black'
+                                            }}
+                                        />
+
+                                        <ListItemText
+                                            classes={{ text:'overflow-text' }}
+                                            primary={ message.user.names }
+                                            secondary={ message.details }
+                                        />
+                                    </ListItem>
+                                </Link>
+                            ))
+                        }
+                    </List>
                 }
 
                 <Dialog

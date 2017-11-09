@@ -17,6 +17,7 @@ import Typography from 'material-ui/Typography';
 import Activities from './components/listActivity';
 import Activity from './components/detailActivity';
 import AddActivity from './components/formActivity';
+import Comments from "./components/listComments";
 import Login from './components/formSession';
 import Registry from './components/formUser';
 import Profile from "./components/detailProfile";
@@ -67,7 +68,11 @@ class App extends React.Component {
     };
 
     handleComments = () => {
-        document.getElementById('comments').click()
+        if (getCookie('userId') === '') {
+            document.getElementById('login').click()
+        } else {
+            document.getElementById('comments').click()
+        }
     };
 
     handleDown = () => {
@@ -181,6 +186,7 @@ class App extends React.Component {
                         <Route path="/user" component={Profile}/>
                         <Route path="/settings" component={Settings}/>
                         <Route path="/edit" component={AddActivity}/>
+                        <Route path="/comments" component={Comments}/>
                     </Switch>
 
                     <BottomNavigation
@@ -190,7 +196,7 @@ class App extends React.Component {
                     >
                         <BottomNavigationButton
                             id="nav-comments"
-                            onClick={this.handleComments}
+                            onClick={ this.handleComments }
                             icon={ <Icon>forum</Icon> }
                         />
 

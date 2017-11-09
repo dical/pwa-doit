@@ -40,7 +40,7 @@ class Profile extends Component {
         }
 
         this.handleRequest('get', 'http://' + window.location.hostname + ':8081/events?users=' + window.location.pathname.split('/').pop(), this.handleUpdateActivities, true);
-        this.handleRequest('get', 'http://' + window.location.hostname + ':8081/notifications?user=' + window.location.pathname.split('/').pop(), this.handleUpdateComments, true);
+        this.handleRequest('get', 'http://' + window.location.hostname + ':8081/messages?user=' + window.location.pathname.split('/').pop(), this.handleUpdateComments, true);
         this.handleRequest('get', 'http://' + window.location.hostname + ':8081/users/' + window.location.pathname.split('/').pop(), this.handleUpdateUser, true)
     }
 
