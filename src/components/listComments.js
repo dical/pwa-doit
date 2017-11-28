@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Avatar from 'material-ui/Avatar';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
-import List, { ListItem, ListItemText, ListItemSecondaryAction } from 'material-ui/List';
+import List, { ListItem, ListItemIcon, ListItemText, ListItemSecondaryAction } from 'material-ui/List';
 import Typography from 'material-ui/Typography';
 
 class ListComments extends Component {
@@ -121,6 +121,17 @@ class ListComments extends Component {
                             </ListItemSecondaryAction>
                         </ListItem>
                     ))
+                }
+
+                {
+                    this.state.messages.length === 0 &&
+                    <ListItem button>
+                        <ListItemIcon>
+                            <Icon children="mood_bad" />
+                        </ListItemIcon>
+
+                        <ListItemText primary={ 'No hay comentarios aun' }/>
+                    </ListItem>
                 }
             </List>
         );
