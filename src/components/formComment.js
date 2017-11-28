@@ -11,7 +11,6 @@ import TextField from 'material-ui/TextField';
 
 class FormComment extends Component {
     state = {
-        user: {},
         comment: {
             disable: false,
             error: false,
@@ -20,7 +19,8 @@ class FormComment extends Component {
         snack: {
             message: '',
             open: false
-        }
+        },
+        user: {}
     };
 
     handleChange = (event) => {
@@ -102,7 +102,12 @@ class FormComment extends Component {
                 classes={{ paper: 'w-80' }}
                 fullScreen
                 transition={<Slide direction="up"/>}
-                style={{ marginTop: 'calc(100vh - 64px)' }}
+                style={{
+                    position: 'absolute',
+                    height: 'auto',
+                    bottom: 0,
+                    top: 'auto'
+                }}
             >
                 <List style={{ padding: 0 }}>
                     <ListItem>
@@ -111,9 +116,11 @@ class FormComment extends Component {
                         <ListItemText
                             primary={
                                 <TextField
+                                    autoFocus
                                     autoComplete="off"
                                     disabled={ this.state.comment.disable }
                                     fullWidth
+                                    multiline
                                     onChange={ this.handleChange }
                                     placeholder="Agregar un comentario..."
                                     rowsMax="4"
@@ -123,13 +130,16 @@ class FormComment extends Component {
                             }
                         />
 
-                        <ListItemSecondaryAction
-                            children={
-                                <IconButton onClick={ this.handleRequest }>
-                                    <Icon>send</Icon>
-                                </IconButton>
-                            }
-                        />
+                        {
+                            this.state.comment.value !== '' &&
+                            <ListItemSecondaryAction
+                                children={
+                                    <IconButton onClick={ this.handleRequest }>
+                                        <Icon>send</Icon>
+                                    </IconButton>
+                                }
+                            />
+                        }
                     </ListItem>
                 </List>
 

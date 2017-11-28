@@ -9,7 +9,10 @@ import Typography from 'material-ui/Typography';
 
 class ListComments extends Component {
     state = {
-        messages: []
+        messages: [],
+        request: {
+            status: 'No hay comentarios aun'
+        }
     };
 
     componentDidMount() {
@@ -49,6 +52,12 @@ class ListComments extends Component {
         request.open('GET', 'http://' + window.location.hostname + ':8081/messages?' + this.decodeQuery(this.props.query), true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
 
+        this.setState({
+            request: {
+                status: 'Obteniendo comentarios...'
+            }
+        });
+
         request.onreadystatechange = function() {
             if (request.readyState === 4) {
                 switch (request.status) {
@@ -66,7 +75,10 @@ class ListComments extends Component {
 
     handleUpdate = (data) => {
         this.setState({
-            messages: data.reverse()
+            messages: data.reverse(),
+            request: {
+                status: data.length === 0 ? 'No hay comentarios aun' : 'Comentarios obtenidos'
+            }
         })
     };
 
@@ -74,6 +86,7 @@ class ListComments extends Component {
         return (
             <List
                 style={{
+                    padding: '16px 0',
                     position: 'absolute',
                     width: '-webkit-fill-available',
                     height: 'calc(100% - 250px - 90px - 48px - 16px)',
@@ -130,7 +143,7 @@ class ListComments extends Component {
                             <Icon children="mood_bad" />
                         </ListItemIcon>
 
-                        <ListItemText primary={ 'No hay comentarios aun' }/>
+                        <ListItemText primary={ this.state.request.status }/>
                     </ListItem>
                 }
             </List>

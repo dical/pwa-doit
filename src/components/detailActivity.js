@@ -336,7 +336,7 @@ class Activity extends Component {
                     {
                         this.isLogged() && this.isParticipant() &&
                         <Tab
-                            icon={ <Icon>message</Icon> }
+                            icon={ <Icon>question_answer</Icon> }
                             id="comments"
                             style={{ maxWidth: '100%' }}
                         />
