@@ -8,7 +8,10 @@ import Dialog, {
 } from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
 import List, { ListItem, ListItemText } from 'material-ui/List';
-import TextField from 'material-ui/TextField'
+import TextField from 'material-ui/TextField';
+import Menu, { MenuItem } from 'material-ui/Menu';
+
+import FormImage from './formImage';
 
 class Settings extends Component {
     state = {
@@ -19,6 +22,9 @@ class Settings extends Component {
         phrase: {
             open: false,
             value: ''
+        },
+        menu: {
+            value: 1
         }
     };
 
@@ -45,7 +51,7 @@ class Settings extends Component {
         this.handleRequest('get', 'http://' + window.location.hostname + ':8081/users/' + getCookie('userId'), this.handleUpdateSettings, true)
     }
 
-    handleDialogImage = () => {
+    handleImage = () => {
         this.setState({
             image: {
                 open: !this.state.image.open,
@@ -55,6 +61,8 @@ class Settings extends Component {
     };
 
     handleCheckImage = (event) => {
+        console.log(event);
+
         this.setState({
             image: {
                 open: true,
@@ -130,13 +138,32 @@ class Settings extends Component {
         this.handleRequest('patch', 'http://' + window.location.hostname + ':8081/users/' + getCookie('userId'), this.handleUpdateSettings, true);
     };
 
+    handleClickListItem = () => {
+        this.setState({ open: true });
+    };
+
+    handleMenuItemClick = (event, index) => {
+        this.setState({ menu: { value: index }, open: false });
+    };
+
+    handleRequestClose = () => {
+        this.setState({ open: false });
+    };
+
     render() {
+        const options = [
+            'Plan 0',
+            'Plan 1',
+            'Plan 2',
+            'Plan 3',
+        ];
+
         return (
             <List>
                 <ListItem button>
                     <ListItemText
-                        onClick={ this.handleDialogImage }
-                        primary="Imagen"
+                        onClick={ this.handleImage }
+                        primary="Imagen de usuario"
                         secondary={ this.state.image.value }
                     />
                 </ListItem>
@@ -148,6 +175,37 @@ class Settings extends Component {
                         secondary={ this.state.phrase.value }
                     />
                 </ListItem>
+
+                <ListItem
+                    button
+                    aria-haspopup="true"
+                    aria-controls="lock-menu"
+                    aria-label="Plan"
+                    onClick={this.handleClickListItem}
+                >
+                    <ListItemText
+                        primary="Plan seleccionado"
+                        secondary={options[this.state.menu.value]}
+                    />
+                </ListItem>
+
+                <Menu
+                    id="lock-menu"
+                    anchorEl={this.state.anchorEl}
+                    open={this.state.open}
+                    onRequestClose={this.handleRequestClose}
+                >
+                    {options.map((option, index) => (
+                        <MenuItem
+                            key={option}
+                            disabled={index === 0}
+                            selected={index === this.state.selectedIndex}
+                            onClick={event => this.handleMenuItemClick(event, index)}
+                        >
+                            {option}
+                        </MenuItem>
+                    ))}
+                </Menu>
 
                 <Divider />
 
@@ -162,37 +220,14 @@ class Settings extends Component {
                     />
                 </ListItem>
 
-                <Dialog
+                <FormImage
+                    onChange={ this.handleCheckImage }
+                    onDefaultClick={ this.handleImage }
+                    onPrimaryClick={ this.handleRequestImage }
+                    onRequestClose={ this.handleImage }
                     open={ this.state.image.open }
-                    onRequestClose={ this.handleDialogImage }
-                    classes={{ paper: 'w-80' }}
-                >
-                    <DialogTitle>{ "Imagen de usuario" }</DialogTitle>
-                    <DialogContent>
-                        <TextField
-                            id="image"
-                            label="Imagen"
-                            value={ this.state.image.value }
-                            onChange={ this.handleCheckImage }
-                            fullWidth
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button
-                            onClick={ this.handleDialogImage }
-                            color="primary"
-                        >
-                            Cancelar
-                        </Button>
-                        <Button
-                            onClick={ this.handleRequestImage }
-                            color="primary"
-                            autoFocus
-                        >
-                            Actualizar
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                    value={ this.state.image.value }
+                />
 
                 <Dialog
                     open={ this.state.phrase.open }
@@ -230,20 +265,8 @@ class Settings extends Component {
     }
 }
 
-function getCookie(cname) {
-    let name = cname + "=";
-    let decodedCookie = decodeURIComponent(document.cookie);
-    let ca = decodedCookie.split(';');
-    for(let i = 0; i <ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) === 0) {
-            return c.substring(name.length, c.length);
-        }
-    }
-    return "";
+function getCookie(name) {
+    let match = document.cookie.match(new RegExp(name + '=([^;]+)')); if (match) return match[1]
 }
 
 export default Settings;

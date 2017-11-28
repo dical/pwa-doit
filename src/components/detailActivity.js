@@ -1,43 +1,67 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import Avatar from 'material-ui/Avatar';
-import List, { ListItem, ListItemText } from 'material-ui/List';
-
 import Button from 'material-ui/Button';
 import { CardMedia } from 'material-ui/Card';
-import Dialog from 'material-ui/Dialog';
+import Dialog, { DialogActions, DialogContent, DialogTitle } from 'material-ui/Dialog';
 import Icon from 'material-ui/Icon';
 import Slide from 'material-ui/transitions/Slide';
 import Tabs, { Tab } from 'material-ui/Tabs';
-import TextField from 'material-ui/TextField';
 import Typography from 'material-ui/Typography';
 
 import AddActivity from './formActivity';
-import Users from './listUsers';
+import Snack from './snackDefault';
+
+import FormComment from "./formComment";
+import FormShare from "./formShare";
+
+import ListComments from "./listComments"
+import ListDetail from './listDetail';
+import ListMoments from './listMoments';
+import ListUsers from './listUsers';
 
 class Activity extends Component {
     state = {
-        id: '',
-        city: '',
-        image: '/images/event.jpg',
-        name: '',
-        own: { },
-        price: 500,
-        quotas: 0,
-        street: '',
-        start: Date.now(),
-        end: Date.now(),
+        button: {
+            function: this.handleShare,
+            icon: 'share'
+        },
+        comment: {
+            open: false
+        },
+        moment: {
+            open: false
+        },
+        event: {
+            address: {
+                street: ''
+            },
+            city: '',
+            coordinates: '',
+            details: '',
+            end: '',
+            id: '',
+            image: '',
+            name: '',
+            own: {},
+            participants: [],
+            price: 0,
+            quotas: 0,
+            start: ''
+        },
+        share: {
+            open: false
+        },
+        snack: {
+            open: false,
+            message: ''
+        },
         tabs: {
             value: 0
         },
-        participants: [],
-        participantButton: false,
-        open: false,
         users: {
             open: false
-        },
-        messages: []
+        }
     };
 
     componentDidMount() {
@@ -54,27 +78,51 @@ class Activity extends Component {
 
         document.getElementById('nav-empty').click();
 
-        this.handleRequest();
-        this.handleRequestComments(this.handleUpdateComments);
+        /*
+         *
+         */
+        this.handleRequest(
+            'get',
+            'http://' + window.location.hostname + ':8081/events/' + window.location.pathname.split('/').pop(),
+            this.handleUpdateEvent,
+            true
+        );
     }
 
-    handleUpdateComments = (data) => {
+    handleComment = () => {
         this.setState({
-            messages: data
+            comment: {
+                open: !this.state.comment.open
+            }
         })
     };
 
-    handleRequestComments = (update) => {
+    handleMoment = () => {
+        this.setState({
+            moment: {
+                open: !this.state.moment.open
+            }
+        })
+    };
+
+    handleRequest = (type, url, callback, async, data = {}) => {
         let request = new XMLHttpRequest();
 
-        request.open('GET', 'http://' + window.location.hostname + ':8081/messages?event=' + window.location.pathname.split('/').pop(), true);
+        request.open(type.toUpperCase(), url, async);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
 
         request.onreadystatechange = function() {
             if (request.readyState === 4) {
                 switch (request.status) {
                     case 200:
-                        update(JSON.parse(request.response));
+                        callback(JSON.parse(request.response));
+                        break;
+                    case 201:
+                        callback(JSON.parse(request.response));
+                        break;
+                    case 403:
+                        break;
+                    case 500:
                         break;
                     default:
                         break;
@@ -82,60 +130,29 @@ class Activity extends Component {
             }
         };
 
-        request.send()
+        request.send(JSON.stringify(data))
     };
 
-    handleRequest = () => {
-        let request = new XMLHttpRequest(), onUpdate = this.handleUpdate;
-
-        request.open('GET', 'http://' + window.location.hostname + ':8081/events/' + window.location.pathname.split('/').pop() , true);
-
-        request.onreadystatechange = function() {
-            if (request.readyState === 4) {
-                switch (request.status) {
-                    case 200:
-                        onUpdate(JSON.parse(request.response));
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
-
-        request.send()
-    };
-
-    handleUpdate = (data) => {
-        if (getCookie('userId') === data.own._id && (new Date(data.end)) > Date.now()) {
-            document.getElementById('edit').style.display = '';
-            document.getElementById('edit').setAttribute('href', '/edit/' + data._id)
-        }
-
-        let isParticipant = false, participants = [];
-
-        if (typeof data.participants !== 'undefined') {
-            participants = data.participants.filter(function(e) { return e !== '' });
-        }
-
-        if (participants.indexOf(getCookie('userId')) > -1 || (new Date(data.end)) < Date.now()) {
-            isParticipant = true
-        }
-
+    handleShare = () => {
         this.setState({
-            id: data._id,
-            name: data.name,
-            own: data.own,
-            city: data.address.city,
-            start: data.start,
-            end: data.end,
-            street: data.address.street,
-            details: data.details,
-            image: data.image,
-            participants: participants,
-            participantButton: isParticipant,
-            price: data.price,
-            quotas: data.quotas,
-            tags: data.tags
+            share: {
+                open: !this.state.share.open
+            }
+        })
+    };
+
+    handleUpdateEvent = (event) => {
+        this.setState({
+            event: event
+        }, this.setButton);
+    };
+
+    handleSnack = (message) => {
+        this.setState({
+            snack: {
+                open: typeof message === "string",
+                message: typeof message === "string" ? message : ''
+            }
         });
     };
 
@@ -200,43 +217,21 @@ class Activity extends Component {
         })
     };
 
-    handleComment = (event) => {
-        if (event.charCode === 13) {
-            let request = new XMLHttpRequest();
+    isLogged = () => {
+        return document.cookie.indexOf('userId') !== -1
+    };
 
-            request.open('POST', 'http://' + window.location.hostname + ':8081/messages', true);
-            request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
-
-            request.onreadystatechange = function() {
-                if (request.readyState === 4) {
-                    switch (request.status) {
-                        case 201:
-                            window.location.reload();
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            };
-
-            request.send(
-                JSON.stringify({
-                    user: getCookie('userId'),
-                    event: window.location.pathname.split('/').pop(),
-                    type: 'comment',
-                    details: document.getElementById('add-comment').value
-                })
-            )
-        }
+    isParticipant = () => {
+        return this.state.event.participants.indexOf(getCookie('userId')) !== -1
     };
 
     render() {
         return (
             <div>
                 <CardMedia
-                    image={ this.state.image }
+                    image={ this.state.event.image }
                     title="Contemplative Reptile"
-                    style={{ boxShadow: 'inset 0px 300px 180px -300px #000, inset 0px -300px 180px -300px #000' }}
+                    style={{ boxShadow: 'inset 0px 350px 180px -300px #000, inset 0px -350px 180px -300px #000' }}
                 >
                     <Typography
                         type="display1"
@@ -246,7 +241,7 @@ class Activity extends Component {
                             textShadow: 'rgba(0,0,0,.18) 1px 1px'
                         }}
                     >
-                        { this.state.name }
+                        { this.state.event.name }
                     </Typography>
 
                     <Typography
@@ -258,31 +253,31 @@ class Activity extends Component {
                         }}
                     >
                         <Link
-                            to={ "/user/" + this.state.own._id }
+                            to={ "/user/" + this.state.event.own._id + "?from_url=/event/" + this.state.event._id }
                             style={{ textDecoration: 'none', color: 'inherit' }}
                         >
-                            @{ this.state.own.username }
+                            @{ this.state.event.own.username }
                         </Link>
                     </Typography>
                 </CardMedia>
 
                 <Button
                     fab
-                    disabled={ this.state.participantButton }
                     color="accent"
                     aria-label="add"
-                    onClick={ this.handleParticipate }
+                    onClick={ this.state.button.function }
                     style={{
                         margin:'-28px 16px 0 0',
                         float: 'right'
                     }}
                 >
-                    <Icon>person_add</Icon>
+                    <Icon>{ this.state.button.icon }</Icon>
                 </Button>
 
                 <Typography
+                    id="header-event"
                     style={{
-                        padding: '16px 96px 26px 26px',
+                        padding: '16px 96px 26px 16px',
                         backgroundColor: '#212121',
                         lineHeight: 1.5,
                         color:'#fff'
@@ -295,10 +290,10 @@ class Activity extends Component {
                             verticalAlign: 'bottom'
                         }}
                     >
-                        attach_money
+                        { this.state.event.price === 0 ? 'money_off' : 'attach_money' }
                     </Icon>
 
-                    { this.state.price } CLP
+                    { this.state.event.price === 0 ? "Gratuito" : this.state.event.price + " CLP" }
 
                     <br/>
 
@@ -316,7 +311,7 @@ class Activity extends Component {
                         onClick={ this.handleUsers }
                         style={{ cursor: 'pointer' }}
                     >
-                        { this.state.participants.length } Participante(s)
+                        { this.state.event.participants.length + '/' + this.state.event.quotas }
                     </span>
                 </Typography>
 
@@ -326,139 +321,56 @@ class Activity extends Component {
                     textColor="primary"
                     fullWidth
                     onChange={ this.handleTabs }
+                    style={{
+                        boxShadow: '0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12)'
+                    }}
                 >
-                    <Tab
-                        icon={
-                            <span>
-                                <Icon style={{verticalAlign:'middle'}}>info</Icon>
-                            </span>
-                        }
-                        style={{maxWidth:'100%'}}
-                    />
+                    <Tab id="loading" style={{ display: 'none' }}>&nbsp;</Tab>
 
                     <Tab
-                        icon={
-                            <span>
-                                <Icon style={{verticalAlign:'middle'}}>message</Icon> { this.state.messages.length }
-                            </span>
-                        }
-                        style={{maxWidth:'100%'}}
+                        icon={ <Icon>info</Icon> }
+                        id="information"
+                        style={{ maxWidth: '100%' }}
                     />
+
+                    {
+                        this.isLogged() && this.isParticipant() &&
+                        <Tab
+                            icon={ <Icon>message</Icon> }
+                            id="comments"
+                            style={{ maxWidth: '100%' }}
+                        />
+                    }
+
+                    {
+                        this.isLogged() && this.isParticipant() && new Date(Date.now()) > new Date(this.state.event.end) &&
+                        <Tab
+                            icon={ <Icon>collections</Icon> }
+                            style={{ maxWidth: '100%' }}
+                        />
+                    }
                 </Tabs>
 
                 {
-                    this.state.tabs.value === 0 &&
-                    <div
-                        style={{ marginTop: 16 }}
-                    >
-                        <Typography
-                            type="body1"
-                            style={{
-                                display: 'flex',
-                                padding: '8px 16px'
-                            }}
-                        >
-                            <Icon>rate_review</Icon>
-                            <span
-                                style={{
-                                    margin: 0,
-                                    paddingLeft: 26,
-                                    display: 'inline-block'
-                                }}
-                            >
-                                { this.state.details === '' ? 'Sin comentarios' : this.state.details }
-                            </span>
-                        </Typography>
-
-                        <Typography
-                            type="body1"
-                            style={{
-                                display: 'flex',
-                                padding: '8px 16px'
-                            }}
-                        >
-                            <Icon
-                                style={{
-                                    lineHeight: 1.5
-                                }}
-                            >
-                                access_time
-                            </Icon>
-                            <span
-                                style={{
-                                    margin: 0,
-                                    paddingLeft: 26,
-                                    display: 'inline-block'
-                                }}
-                            >
-                                { getDayOfWeek(this.state.start) }, { getMonth(this.state.start) } { getDayOfMonth(this.state.start) }
-                                <br/>
-                                { (new Date(this.state.start)).getHours() }:{ ((new Date(this.state.start)).getMinutes() < 10 ? '0' : '') + (new Date(this.state.start)).getMinutes() } { (new Date(this.state.start)).getHours() < 13 ? 'AM' : 'PM' }
-                                 —
-                                { (new Date(this.state.end)).getHours() }:{ ((new Date(this.state.end)).getMinutes() < 10 ? '0' : '') + (new Date(this.state.end)).getMinutes() } { (new Date(this.state.start)).getHours() < 13 ? 'AM' : 'PM' }
-                            </span>
-                        </Typography>
-
-                        <Typography
-                            type="body1"
-                            style={{
-                                display: 'flex',
-                                padding: '8px 16px'
-                            }}
-                        >
-                            <Icon>location_on</Icon>
-                            <span
-                                style={{
-                                    margin: 0,
-                                    paddingLeft: 26,
-                                    display: 'inline-block'
-                                }}
-                            >
-                                {this.state.street}, {this.state.city}, Chile
-                            </span>
-                        </Typography>
-                    </div>
+                    this.state.tabs.value === 1 &&
+                    <ListDetail
+                        detail={ this.state.event.details }
+                        date={{
+                            start: this.state.event.start,
+                            end: this.state.event.end
+                        }}
+                        location={ this.state.event.address.street + ', ' + this.state.event.address.city + ', Chile' }
+                    />
                 }
 
                 {
-                    this.state.tabs.value === 1 &&
-                    <List style={{ padding: '16px' }} >
-                        <TextField
-                            id="add-comment"
-                            autoComplete="off"
-                            fullWidth
-                            label="Agregar mensaje..."
-                            onKeyPress={ this.handleComment }
-                            type="text"
-                        />
+                    this.state.tabs.value === 2 &&
+                    <ListComments query={{ event: this.state.event._id, type: 'comment', sort: 1 }}/>
+                }
 
-                        {
-                            this.state.messages.map((message, i) => (
-                                <Link
-                                    key={ this.state.messages.length - i }
-                                    to={ '/user/' + message.user._id }
-                                    style={{ textDecoration:'none' }}
-                                >
-                                    <ListItem button>
-                                        <Avatar
-                                            src={ message.user.image === '/images/landscape.jpg' ? '/images/user.png' : message.user.image }
-                                            style={{
-                                                height: 64,
-                                                width: 64,
-                                                border: '2px solid black'
-                                            }}
-                                        />
-
-                                        <ListItemText
-                                            classes={{ text:'overflow-text' }}
-                                            primary={ message.user.names }
-                                            secondary={ message.details }
-                                        />
-                                    </ListItem>
-                                </Link>
-                            ))
-                        }
-                    </List>
+                {
+                    this.state.tabs.value === 3 && new Date(Date.now()) > new Date(this.state.event.end) &&
+                    <ListMoments query={{ event: this.state.event._id }}/>
                 }
 
                 <Dialog
@@ -472,52 +384,53 @@ class Activity extends Component {
                     <AddActivity method="patch" activity={ this.state }/>
                 </Dialog>
 
-                <Dialog
-                    id="dialog-users"
-                    fullScreen
-                    open={ this.state.users.open }
+                <ListUsers
+                    list={ this.state.event.participants }
                     onRequestClose={ this.handleUsers }
-                    transition={<Slide direction="up" />}
-                >
-                    <Users list={ this.state.participants }/>
-                </Dialog>
+                    open={ this.state.users.open }
+                />
 
-                <Button id="toggle-edit" onClick={ this.handleOpen } style={{ display: 'none' }}> </Button>
+                <FormComment
+                    avatar={ '/images/user.png' }
+                    onClose={ this.handleComment }
+                    onSuccess={ this.setTabComments }
+                    open={ this.state.comment.open }
+                />
+
+                <FormShare
+                    onClose={ this.handleShare }
+                    open={ this.state.share.open }
+                />
+
+                <Snack
+                    open={ this.state.snack.open }
+                    message={ this.state.snack.message }
+                    close={ this.handleSnack }
+                />
             </div>
         );
     }
-}
 
-function getDayOfWeek(date) {
-    let days = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'], start = (new Date(date));
+    setButton = () => {
+        this.setState({
+            button: {
+                function: this.isLogged() ? ( this.isParticipant() ? this.handleComment : this.handleParticipate ) : this.handleShare,
+                icon: this.isLogged() ? ( this.isParticipant() ? 'message' : 'person_add' ) : 'share'
+            }
+        }, this.setTabInformation )
+    };
 
-    return days[start.getDay()]
-}
+    setTabComments = () => {
+        document.getElementById('loading').click(); document.getElementById('comments').click()
+    };
 
-function getMonth(date) {
-    let days = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-
-    return days[(new Date(date)).getMonth()]
-}
-
-function getDayOfMonth(date) {
-    return (new Date(date)).getDate()
-}
-
-function getCookie(cname) {
-    let name = cname + "=";
-    let decodedCookie = decodeURIComponent(document.cookie);
-    let ca = decodedCookie.split(';');
-    for(let i = 0; i <ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) === 0) {
-            return c.substring(name.length, c.length);
-        }
+    setTabInformation = () => {
+        document.getElementById('information').click();
     }
-    return "";
+}
+
+function getCookie(name) {
+    let match = document.cookie.match(new RegExp(name + '=([^;]+)')); if (match) return match[1]
 }
 
 export default Activity;

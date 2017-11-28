@@ -42,7 +42,9 @@ class Registry extends React.Component {
             error: false,
             disabled: false
         },
-        tabs: 0,
+        tabs: {
+            value: 0
+        },
         sex: {
             disabled: false,
             value: 'femenino'
@@ -64,12 +66,32 @@ class Registry extends React.Component {
     componentDidMount() {
         document.getElementById('title').innerText = 'Registrarse';
 
-        ['back', 'title'].forEach(function(id) { document.getElementById(id).style.display = '' });
-        ['settings', 'search', 'filter', 'down', 'shared', 'edit', 'bottom-navigation'].forEach(function(id) { document.getElementById(id).style.display = 'none' });
+        [
+            'back',
+            'title'
+        ].forEach(function(id) {
+            document.getElementById(id).style.display = ''
+        });
+
+        [
+            'settings',
+            'search',
+            'filter',
+            'down',
+            'shared',
+            'edit',
+            'bottom-navigation'
+        ].forEach(function(id) {
+            document.getElementById(id).style.display = 'none'
+        })
     }
 
     handleChange = (event, value) => {
-        this.setState({ tabs: value })
+        this.setState({
+            tabs: {
+                value: value
+            }
+        })
     };
 
     handleCheckAddress = (event) => {
@@ -324,7 +346,7 @@ class Registry extends React.Component {
                         margin: '0 -16px'
                     }}
                     textColor="primary"
-                    value={ this.state.tabs }
+                    value={ this.state.tabs.value }
                 >
                     <Tab
                         icon={ <Icon>person</Icon> }
@@ -425,10 +447,11 @@ class Registry extends React.Component {
 
                 { this.state.tabs === 1 &&
                     <TextField
-                        id="registry-address"
                         disabled={ this.state.address.disabled }
                         error={ this.state.address.error }
                         fullWidth
+                        helperText={ "Formato: Calle #Numero" }
+                        id="registry-address"
                         label="Direccion *"
                         onChange={ this.handleCheckAddress }
                         style={{ margin: '16px 0 0' }}

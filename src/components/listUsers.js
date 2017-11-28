@@ -2,36 +2,30 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import Avatar from 'material-ui/Avatar';
+import Dialog from 'material-ui/Dialog';
 import List, { ListItem, ListItemText } from 'material-ui/List';
+import Slide from 'material-ui/transitions/Slide';
 
-class Users extends Component {
+import AppBar from 'material-ui/AppBar';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
+
+import Icon from 'material-ui/Icon';
+import IconButton from 'material-ui/IconButton';
+
+class ListUsers extends Component {
     state = {
-        users: {
-            list: this.props.list
-        }
+        users: []
     };
 
-    componentDidMount() {
-        document.getElementById('title').innerText = 'Participantes';
-
-        document.getElementById('header').classList.remove('transparent');
-        document.getElementById('shell').style.padding = '64px 0';
-
-        ['back', 'title'].forEach(function(id) {
-            document.getElementById(id).style.display = ''
-        });
-
-        ['settings', 'shared', 'edit', 'filter', 'down', 'search'].forEach(function(id) {
-            document.getElementById(id).style.display = 'none'
-        });
-
+    componentWillReceiveProps() {
         this.handleRequest()
     }
 
     handleRequest = () => {
         let request = new XMLHttpRequest(), onUpdate = this.handleUpdate;
 
-        request.open('GET', 'http://' + window.location.hostname + ':8081/users?ids=' + this.state.users.list.join(','), true);
+        request.open('GET', 'http://' + window.location.hostname + ':8081/users?ids=' + this.props.list.join(','), true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
 
         request.onreadystatechange = function() {
@@ -51,44 +45,55 @@ class Users extends Component {
 
     handleUpdate = (data) => {
         this.setState({
-            users: {
-                list: data
-            }
+            users: data
         })
     };
 
     render() {
         return (
-            <List>
-                {
-                    this.state.users.list.map((user, i) => (
-                        <Link
-                            key={ this.state.users.list.length - i }
-                            to={ '/user/' + user._id }
-                            style={{ textDecoration:'none' }}
-                        >
-                            <ListItem button>
-                                <Avatar
-                                    src={ user.image === '/images/landscape.jpg' ? '/images/user.png' : user.image }
-                                    style={{
-                                        height: 64,
-                                        width: 64,
-                                        border: '2px solid black'
-                                    }}
-                                />
+            <Dialog
+                fullScreen
+                open={ this.props.open }
+                transition={<Slide direction="up"/>}
+            >
+                <AppBar position="static">
+                    <Toolbar>
+                        <IconButton color="contrast" onClick={ this.props.onRequestClose } style={{ margin: '0 12px 0 -12px' }}>
+                            <Icon>close</Icon>
+                        </IconButton>
+                        <Typography type="title" color="inherit">
+                            Participantes
+                        </Typography>
+                    </Toolbar>
+                </AppBar>
 
-                                <ListItemText
-                                    classes={{ text:'overflow-text' }}
-                                    primary={ user.names }
-                                    secondary={ '@' + user.username }
-                                />
-                            </ListItem>
-                        </Link>
-                    ))
-                }
-            </List>
+                <List>
+                    {
+                        this.state.users.map((user, i) => (
+                            <Link
+                                key={ this.state.users.length - i }
+                                to={ '/user/' + user._id }
+                                style={{ textDecoration:'none' }}
+                            >
+                                <ListItem button>
+                                    <Avatar
+                                        src={ user.image === '/images/landscape.jpg' ? '/images/user.png' : user.image }
+                                        style={{ border: '2px solid black' }}
+                                    />
+
+                                    <ListItemText
+                                        classes={{ text:'overflow-text' }}
+                                        primary={ user.names }
+                                        secondary={ '@' + user.username }
+                                    />
+                                </ListItem>
+                            </Link>
+                        ))
+                    }
+                </List>
+            </Dialog>
         );
     }
 }
 
-export default Users;
+export default ListUsers;

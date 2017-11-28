@@ -2,34 +2,51 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import Avatar from 'material-ui/Avatar';
-import List, { ListItem, ListItemText } from 'material-ui/List';
+import Icon from 'material-ui/Icon';
+import IconButton from 'material-ui/IconButton';
+import List, { ListItem, ListItemText, ListItemSecondaryAction } from 'material-ui/List';
+import Typography from 'material-ui/Typography';
 
-class Comments extends Component {
+class ListComments extends Component {
     state = {
         messages: []
     };
 
     componentDidMount() {
-        document.getElementById('title').innerText = 'Mensajes';
+        if (this.props.hasOwnProperty('filter') && this.props.filter.hasOwnProperty('user')) {
+            document.getElementById('title').innerText = 'Mensajes';
 
-        document.getElementById('header').classList.remove('transparent');
-        document.getElementById('shell').style.padding = '64px 0';
+            document.getElementById('header').classList.remove('transparent');
+            document.getElementById('shell').style.padding = '64px 0';
 
-        ['back', 'title'].forEach(function(id) {
-            document.getElementById(id).style.display = ''
-        });
+            ['back', 'title'].forEach(function(id) {
+                document.getElementById(id).style.display = ''
+            });
 
-        ['settings', 'shared', 'edit', 'filter', 'down', 'search', 'bottom-navigation'].forEach(function(id) {
-            document.getElementById(id).style.display = 'none'
-        });
+            ['settings', 'shared', 'edit', 'filter', 'down', 'search', 'bottom-navigation'].forEach(function(id) {
+                document.getElementById(id).style.display = 'none'
+            });
+        }
 
         this.handleRequest(this.handleUpdate)
     }
 
+    decodeQuery = (objQuery) => {
+        let str = '';
+
+        for (let p in objQuery) {
+            if (objQuery.hasOwnProperty(p)) {
+                str += p + '=' + objQuery[p] + '&';
+            }
+        }
+
+        return str;
+    };
+
     handleRequest = (update) => {
         let request = new XMLHttpRequest();
 
-        request.open('GET', 'http://' + window.location.hostname + ':8081/messages?user=' + getCookie('userId'), true);
+        request.open('GET', 'http://' + window.location.hostname + ':8081/messages?' + this.decodeQuery(this.props.query), true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
 
         request.onreadystatechange = function() {
@@ -49,37 +66,60 @@ class Comments extends Component {
 
     handleUpdate = (data) => {
         this.setState({
-            messages: data
+            messages: data.reverse()
         })
     };
 
     render() {
         return (
-            <List>
+            <List
+                style={{
+                    position: 'absolute',
+                    width: '-webkit-fill-available',
+                    height: 'calc(100% - 250px - 90px - 48px - 16px)',
+                    overflowY: 'scroll'
+                }}
+            >
                 {
                     this.state.messages.map((message, i) => (
-                        <Link
-                            key={ this.state.messages.length - i }
-                            to={ '/user/' + message.user._id }
-                            style={{ textDecoration:'none' }}
-                        >
-                            <ListItem button>
+                        <ListItem button>
+                            <Link
+                                key={ this.state.messages.length - i }
+                                to={ '/user/' + message.user._id }
+                                style={{ textDecoration:'none' }}
+                            >
                                 <Avatar
                                     src={ message.user.image === '/images/landscape.jpg' ? '/images/user.png' : message.user.image }
                                     style={{
-                                        height: 64,
-                                        width: 64,
                                         border: '2px solid black'
                                     }}
                                 />
+                            </Link>
 
-                                <ListItemText
-                                    classes={{ text:'overflow-text' }}
-                                    primary={ message.user.names + ' - ' + message.event.name  }
-                                    secondary={ message.details }
-                                />
-                            </ListItem>
-                        </Link>
+                            <ListItemText
+                                classes={{ text: 'overflow-text comment' }}
+                                secondary={ message.user.username + ' • ' + getDiffDate(message.date) }
+                                primary={ message.details }
+                            />
+
+                            <Typography
+                                gutterBottom
+                                type="caption"
+                                style={{
+                                    position: 'absolute',
+                                    right: 16,
+                                    top: 16
+                                }}
+                            >
+                                {  }
+                            </Typography>
+
+                            <ListItemSecondaryAction>
+                                <IconButton aria-label="Comments">
+                                    <Icon>message</Icon>
+                                </IconButton>
+                            </ListItemSecondaryAction>
+                        </ListItem>
                     ))
                 }
             </List>
@@ -87,20 +127,30 @@ class Comments extends Component {
     }
 }
 
-function getCookie(cname) {
-    let name = cname + "=";
-    let decodedCookie = decodeURIComponent(document.cookie);
-    let ca = decodedCookie.split(';');
-    for(let i = 0; i <ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) === 0) {
-            return c.substring(name.length, c.length);
-        }
+function getDiffDate(date) {
+    let diff = ((new Date(Date.now())).getTime() - (new Date(date)).getTime()) / 1000,
+        text = ' segundo';
+
+    if (diff > 59) {
+        text = ' minuto';
+        diff /= 60;
     }
-    return "";
+
+    if (diff > 59 && text === ' minuto') {
+        text = ' hora';
+        diff /= 60;
+    }
+
+    if (diff > 23 && text === ' hora') {
+        text = ' dia';
+        diff /= 24;
+    }
+
+    if (diff.toFixed(0) > 1) {
+        text = text + 's'
+    }
+
+    return 'Hace ' + diff.toFixed(0) + text
 }
 
-export default Comments;
+export default ListComments;

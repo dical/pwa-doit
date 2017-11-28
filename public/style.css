@@ -21,6 +21,7 @@
 }
 
 #header,
+#header-event,
 #bottom-navigation {
     background: linear-gradient(90deg, #18252d 30%, #0a1014 90%)
 }
@@ -42,6 +43,10 @@
 
 #nav-comments, #nav-activities, #nav-profile {
     color: #fff
+}
+
+#new-message p {
+    text-align: right
 }
 
 #progress {
@@ -78,3 +83,8 @@
 .w-80 {
     width: 80%;
 }
+
+p.comment {
+    font-size: 13px;
+}
+
