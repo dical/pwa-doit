@@ -27,7 +27,8 @@ class Registry extends React.Component {
         },
         name: {
             error: false,
-            disabled: false
+            disabled: false,
+            value: ''
         },
         mail: {
             error: false,
@@ -138,7 +139,8 @@ class Registry extends React.Component {
                 error:
                 !(new RegExp("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{2,48}")).test(event.target.value) &&
                 !(event.target.value.replace(' ', '') === ''),
-                disabled: false
+                disabled: false,
+                value: event.target.value
             }
         }, this.handleCheckRegistry)
     };
@@ -293,7 +295,7 @@ class Registry extends React.Component {
             }
         };
 
-        if (this.state.tabs === 0) {
+        if (this.state.tabs.value === 0) {
             request.send(
                 JSON.stringify({
                     names: document.getElementById('registry-name').value,
@@ -364,13 +366,13 @@ class Registry extends React.Component {
                     disabled={ this.state.name.disabled }
                     error={ this.state.name.error }
                     fullWidth
-                    label={ this.state.tabs === 0 ? 'Nombre(s) *' : 'Razon social *' }
+                    label={ this.state.tabs.value === 0 ? 'Nombre(s) *' : 'Razon social *' }
                     onChange={ this.handleCheckName }
                     style={{ margin: '16px 0 0' }}
                     type="text"
                 />
 
-                { this.state.tabs === 0 &&
+                { this.state.tabs.value === 0 &&
                     <TextField
                         id="registry-surname"
                         disabled={ this.state.surname.disabled }
@@ -383,7 +385,7 @@ class Registry extends React.Component {
                     />
                 }
 
-                { this.state.tabs === 1 &&
+                { this.state.tabs.value === 1 &&
                     <TextField
                         id="registry-rut"
                         disabled={ this.state.rut.disabled }
@@ -407,14 +409,15 @@ class Registry extends React.Component {
                         disabled={ this.state.born.disabled }
                         error={ this.state.born.error }
                         fullWidth
+                        helperText="DD/MM/YYYY"
                         InputLabelProps={{ shrink: true }}
-                        label={ this.state.tabs === 0 ? "Fecha de nacimiento *" : "Fecha de fundacion *" }
+                        label={ this.state.tabs.value === 0 ? "Fecha de nacimiento *" : "Fecha de fundacion *" }
                         onChange={ this.handleCheckBorn }
                         style={{ margin: '16px 16px 0 0' }}
                         type="date"
                     />
 
-                    { this.state.tabs === 0 &&
+                    { this.state.tabs.value === 0 &&
                         <TextField
                             id="registry-sex"
                             disabled={ this.state.sex.disabled }
@@ -429,7 +432,7 @@ class Registry extends React.Component {
                         </TextField>
                     }
 
-                    { this.state.tabs === 1 &&
+                    { this.state.tabs.value === 1 &&
                         <TextField
                             id="registry-city"
                             disabled={ this.state.city.disabled }
@@ -445,7 +448,7 @@ class Registry extends React.Component {
                     }
                 </div>
 
-                { this.state.tabs === 1 &&
+                { this.state.tabs.value === 1 &&
                     <TextField
                         disabled={ this.state.address.disabled }
                         error={ this.state.address.error }

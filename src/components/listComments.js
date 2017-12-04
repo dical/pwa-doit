@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import Avatar from 'material-ui/Avatar';
+import { CircularProgress } from 'material-ui/Progress';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 import List, { ListItem, ListItemIcon, ListItemText, ListItemSecondaryAction } from 'material-ui/List';
@@ -89,7 +90,7 @@ class ListComments extends Component {
                     padding: '16px 0',
                     position: 'absolute',
                     width: '-webkit-fill-available',
-                    height: 'calc(100% - 250px - 90px - 48px - 16px)',
+                    height: 'calc(100% - 48px - 32px)',
                     overflowY: 'scroll'
                 }}
             >
@@ -128,8 +129,8 @@ class ListComments extends Component {
                             </Typography>
 
                             <ListItemSecondaryAction>
-                                <IconButton aria-label="Comments">
-                                    <Icon>message</Icon>
+                                <IconButton>
+                                    <Icon>{ message.user._id === getCookie('userId') ? 'edit' : 'message' }</Icon>
                                 </IconButton>
                             </ListItemSecondaryAction>
                         </ListItem>
@@ -140,7 +141,7 @@ class ListComments extends Component {
                     this.state.messages.length === 0 &&
                     <ListItem button>
                         <ListItemIcon>
-                            <Icon children="mood_bad" />
+                            { this.state.request.status === 'Obteniendo comentarios...' ? <CircularProgress/> : <Icon children="mood_bad" />}
                         </ListItemIcon>
 
                         <ListItemText primary={ this.state.request.status }/>
@@ -175,6 +176,10 @@ function getDiffDate(date) {
     }
 
     return 'Hace ' + diff.toFixed(0) + text
+}
+
+function getCookie(name) {
+    let match = document.cookie.match(new RegExp(name + '=([^;]+)')); if (match) return match[1]
 }
 
 export default ListComments;

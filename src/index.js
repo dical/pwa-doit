@@ -96,7 +96,7 @@ class App extends React.Component {
     };
 
     handleUser = () => {
-        if (getCookie('userId') === '') {
+        if (getCookie('userId') === undefined) {
             document.getElementById('login').click()
         } else {
             document.getElementById('user').click()
