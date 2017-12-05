@@ -5,27 +5,78 @@ import Dialog, { DialogActions, DialogContent, DialogTitle } from 'material-ui/D
 import Snack from './snackDefault'
 import TextField from 'material-ui/TextField';
 
-class FormShare extends Component {
+class FormMoment extends Component {
     state = {
-        comment: {
+        moment: {
             disable: false,
             error: false,
             value: ''
         },
         snack: {
-            open: true
+            message: '',
+            open: false
         }
     };
 
-    componentDidUpdate() {
-        if (document.getElementById('href') !== null) {
-            document.getElementById('href').select(); document.execCommand("Copy");
-        }
-    }
+    handleChange = (event) => {
+        this.setState({
+            moment: {
+                disable: false,
+                error: false,
+                value: event.target.value
+            }
+        })
+    };
 
-    handleSnack = () => {
+    handleDisable = () => {
+        this.setState({
+            moment: {
+                disable: !this.state.moment.disable,
+                error: this.state.moment.error,
+                value: this.state.moment.value
+            }
+        })
+    };
+
+    handleRequest = () => {
+        let request = new XMLHttpRequest(),
+            disable = this.handleDisable,
+            message = this.handleSnack,
+            success = this.props.onRequestClose;
+
+        request.open('POST', 'http://' + window.location.hostname + ':8081/moments', true);
+        request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
+
+        request.onreadystatechange = function() {
+            if (request.readyState === 4) {
+                switch (request.status) {
+                    case 201: success();
+                        break;
+                    case 403: message("No se pudo agregar el momento");
+                        break;
+                    default : message("El servicio no responde");
+                        break;
+                }
+
+                disable()
+            }
+        };
+
+        disable();
+
+        request.send(
+            JSON.stringify({
+                event: window.location.pathname.split('/').pop(),
+                img: this.state.moment.value,
+                user: getCookie('userId')
+            })
+        )
+    };
+
+    handleSnack = (message) => {
         this.setState({
             snack: {
+                message: typeof message === 'string' ? message : '',
                 open: !this.state.snack.open
             }
         })
@@ -35,37 +86,49 @@ class FormShare extends Component {
         return (
             <Dialog
                 open={ this.props.open }
-                onRequestClose={ this.props.onClose }
+                onRequestClose={ this.props.onRequestClose }
                 classes={{ paper: 'w-80' }}
             >
-                <DialogTitle>{ "Compartir" }</DialogTitle>
+                <DialogTitle>{ "New Moment" }</DialogTitle>
                 <DialogContent>
                     <TextField
-                        autoComplete="off"
-                        fullWidth
-                        id="href"
+                        id="moment-source"
+                        label="URL"
                         multiline
-                        rowsMax="4"
-                        value={ window.location.href }
+                        value={ this.state.moment.value }
+                        onChange={ this.handleChange }
+                        fullWidth
                     />
                 </DialogContent>
                 <DialogActions>
                     <Button
-                        autoFocus
-                        color="primary"
-                        onClick={ this.props.onClose }
+                        onClick={ this.props.onRequestClose }
+                        color="default"
                     >
                         Cancel
+                    </Button>
+                    <Button
+                        autoFocus
+                        color="primary"
+                        disabled={ !(new RegExp("https?:\\/\\/.*\\.(?:png|jpg)")).test(this.state.moment.value) }
+                        onClick={ this.handleRequest }
+                    >
+                        Add
                     </Button>
                 </DialogActions>
 
                 <Snack
                     open={ this.state.snack.open }
-                    message="Copiado al portapapeles"
+                    message={ this.state.snack.message }
+                    close={ this.handleSnack }
                 />
             </Dialog>
         );
     }
 }
 
-export default FormShare;
+function getCookie(name) {
+    let match = document.cookie.match(new RegExp(name + '=([^;]+)')); if (match) return match[1]
+}
+
+export default FormMoment;

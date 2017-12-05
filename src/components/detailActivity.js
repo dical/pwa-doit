@@ -97,14 +97,6 @@ class Activity extends Component {
         })
     };
 
-    handleMoment = () => {
-        this.setState({
-            moment: {
-                open: !this.state.moment.open
-            }
-        })
-    };
-
     handleRequest = (type, url, callback, async, data = {}) => {
         let request = new XMLHttpRequest();
 
