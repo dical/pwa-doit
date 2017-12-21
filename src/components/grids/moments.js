@@ -86,9 +86,10 @@ class GridMoments extends React.Component {
             <GridListTile
                 key={ -1 }
                 cols={ 4 }
-                style={{ height: 'auto' }}
+                style={{ height: 'auto', display: 'none' }}
             >
                 <Button
+                    id='add'
                     onClick={ this.handleForm }
                     style={{
                         height: '100%',

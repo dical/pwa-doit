@@ -69,6 +69,14 @@ class Event extends Component {
         })
     };
 
+    handleMoment = () => {
+        this.setState({
+            tabs: {
+                value: 3
+            }
+        }, function() { document.getElementById('add').click() })
+    };
+
     handleParticipate = () => {
         this.handleRequest(
             'post',
@@ -156,8 +164,8 @@ class Event extends Component {
                 icon_button     = 'comment';
             }
 
-            if (Date.now() > json_event.end) {
-                function_button = this.handleComment;
+            if (Date.now() > new Date(json_event.end)) {
+                function_button = this.handleMoment;
                 icon_button     = 'add_to_photos';
             }
         }
@@ -273,7 +281,7 @@ class Event extends Component {
                     }
 
                     {
-                        this.state.event.end < Date.now() &&
+                        new Date(this.state.event.end) < Date.now() &&
                         <Tab
                             icon={ <Icon>photo_library</Icon> }
                             style={{ maxWidth: '100%' }}
