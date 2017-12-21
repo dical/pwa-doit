@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Button from 'material-ui/Button';
 import Dialog, { DialogActions, DialogContent, DialogTitle } from 'material-ui/Dialog';
-import Snack from './snackDefault'
+import Snack from './snackDefault';
 import TextField from 'material-ui/TextField';
 
 class FormMoment extends Component {

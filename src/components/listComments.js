@@ -90,7 +90,7 @@ class ListComments extends Component {
                     padding: '16px 0',
                     position: 'absolute',
                     width: '-webkit-fill-available',
-                    height: 'calc(100% - 48px - 32px)',
+                    maxHeight: 'calc(100% - 48px - 32px)',
                     overflowY: 'scroll'
                 }}
             >

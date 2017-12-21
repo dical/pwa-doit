@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import { LinearProgress } from 'material-ui/Progress';
 import TextField from 'material-ui/TextField';
@@ -6,16 +6,18 @@ import Typography from 'material-ui/Typography';
 
 import Snack from './snackDefault'
 
-class Registry extends React.Component {
+class FormBusiness extends Component {
     state = {
-        names: '',
-        surnames: '',
-        born: '',
-        sex: '',
+        name: '',
+        rutBody: '',
+        rutCheck: '',
         mail: '',
         street: '',
         number: '',
         city: '',
+        state: '',
+        zip: '',
+        country: '',
         username: '',
         password: '',
         confirm: '',
@@ -23,7 +25,7 @@ class Registry extends React.Component {
             disabled: false
         },
         snack: {
-            message: 'Signing user',
+            message: 'Signing business',
             open: false
         }
     };
@@ -48,8 +50,8 @@ class Registry extends React.Component {
             message = this.handleSnack,
             success = this.props.onRequestSucess;
 
-        message("Signing user");
-        document.getElementById('progress-user').style.display = '';
+        message("Signing business");
+        document.getElementById('progress-business').style.display = '';
 
         request.open('POST', 'http://' + window.location.hostname + ':8081/users', true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
@@ -59,14 +61,14 @@ class Registry extends React.Component {
                 switch (request.status) {
                     case 201: success(request.response);
                         break;
-                    case 403: message("Can't add the user\n" + getErrors(request.response));
+                    case 403: message("Can't add the business\n" + getErrors(request.response));
                         break;
                     default : message("Service don't respond");
                         break;
                 }
 
                 disable();
-                document.getElementById('progress-user').style.display = 'none';
+                document.getElementById('progress-business').style.display = 'none';
             }
         };
 
@@ -77,7 +79,12 @@ class Registry extends React.Component {
                 username: this.state.username,
                 password: this.state.password,
                 names: this.state.name,
-                born: this.state.born,
+                business: {
+                    rut: {
+                        body: this.state.rutBody,
+                        checker: this.state.rutCheck
+                    }
+                },
                 mail: this.state.mail,
                 address: {
                     city: this.state.city,
@@ -101,11 +108,11 @@ class Registry extends React.Component {
         return (
             <form
                 autoComplete='off'
-                id='form-user'
+                id='form-business'
                 style={{ lineHeight: 4, paddingBottom: 48 }}
             >
                 <LinearProgress
-                    id='progress-user'
+                    id='progress-business'
                     style={{
                         position: 'fixed',
                         left: 0,
@@ -132,29 +139,42 @@ class Registry extends React.Component {
                     />
 
                     <TextField
-                        error={ !test("^(?!\\s)(?!.*\\s$)(?=.*[a-zA-Z0-9])[a-zA-Z0-9 '~?!]{2,32}$", this.state.names) }
+                        error={ !test("^(?!\\s)(?!.*\\s$)(?=.*[a-zA-Z0-9])[a-zA-Z0-9 '~?!]{2,32}$", this.state.name) }
                         fullWidth
                         helperText='Enter between 2 to 32 characters or/and digit number'
-                        onChange={ this.handleChange('names') }
-                        placeholder='Name(s) *'
+                        onChange={ this.handleChange('name') }
+                        placeholder='Business name *'
                         type="text"
-                        value={ this.state.names }
+                        value={ this.state.name }
                     />
 
                     <TextField
-                        error={ !test("^(?!\\s)(?!.*\\s$)(?=.*[a-zA-Z0-9])[a-zA-Z0-9 '~?!]{2,32}$", this.state.surnames) }
+                        error={ !test("^\\d+$", this.state.rutBody) }
                         fullWidth
-                        helperText='Enter between 2 to 32 characters or/and digit number'
-                        onChange={ this.handleChange('surnames') }
-                        placeholder='Surname(s) *'
-                        type="text"
-                        value={ this.state.surnames }
+                        helperText='Enter min 1-digit number'
+                        onChange={ this.handleChange('rutBody') }
+                        placeholder='RUT *'
+                        style={{ width: '55%', margin: '0 16px 0 0' }}
+                        type="number"
+                        value={ this.state.rutBody }
+                    />
+
+                    <TextField
+                        error={ !test("^\\d+$", this.state.rutCheck) }
+                        fullWidth
+                        helperText='Enter check digit'
+                        onChange={ this.handleChange('rutCheck') }
+                        inputProps={{ min: 0, max: 9 }}
+                        placeholder='Check Digit *'
+                        style={{ width: '35%' }}
+                        type="number"
+                        value={ this.state.rutCheck }
                     />
 
                     <TextField
                         error={ !test("^(([^<>()[\\]\\\\.,;:\\s@\\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\\"]+)*)|(\\\".+\\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$", this.state.mail) }
                         fullWidth
-                        helperText='Format: user@doit.com'
+                        helperText='Format: business@doit.com'
                         onChange={ this.handleChange('mail') }
                         placeholder='Mail *'
                         type="mail"
@@ -162,37 +182,72 @@ class Registry extends React.Component {
                     />
 
                     <Typography
-                        children='Born information'
+                        children='Billing address'
                         color='inherit'
                         style={{ flex: 1, marginTop: 24 }}
                         type='title'
                     />
 
                     <TextField
+                        error={ !test("^[a-zA-Z0-9\\s,'-,{1}]{2,}$", this.state.street) }
                         fullWidth
-                        helperText='DD/MM/AAAA'
-                        onChange={ this.handleChange('born') }
-                        placeholder='Fecha de nacimiento *'
-                        style={{ width: '50%', margin: '0 16px 0 0' }}
-                        type="date"
-                        value={ this.state.born }
+                        helperText='Enter min 2 characters'
+                        onChange={ this.handleChange('street') }
+                        placeholder='Street *'
+                        style={{ width: '55%', margin: '0 16px 0 0' }}
+                        type="text"
+                        value={ this.state.street }
                     />
 
                     <TextField
+                        error={ !test("^[\\d]{1,}$", this.state.number) }
                         fullWidth
-                        onChange={ this.handleChange('sex') }
-                        placeholder='Sexo *'
-                        select
-                        SelectProps={{ native: true }}
-                        style={{
-                            lineHeight: 1,
-                            width: 'calc(50% - 16px)'
-                        }}
-                        value={ this.state.sex }
-                    >
-                        <option value='F'>Femenino</option>
-                        <option value='M'>Masculino</option>
-                    </TextField>
+                        helperText='Enter min 1-digit number'
+                        onChange={ this.handleChange('number') }
+                        placeholder='Number *'
+                        style={{ width: 'calc(45% - 16px)' }}
+                        type="number"
+                        value={ this.state.number }
+                    />
+
+                    <TextField
+                        error={ !test("^[a-zA-Z0-9\\s,'-,#]{2,}$", this.state.city) }
+                        fullWidth
+                        onChange={ this.handleChange('city') }
+                        placeholder='City *'
+                        style={{ width: '55%', margin: '0 16px 0 0' }}
+                        type="text"
+                        value={ this.state.city }
+                    />
+
+                    <TextField
+                        disabled={ true }
+                        fullWidth
+                        placeholder='State'
+                        style={{ width: '35%' }}
+                        type="text"
+                        value={ 'Coquimbo' }
+                    />
+
+                    <TextField
+                        error={ !test("^\\d{6,}$", this.state.zip) }
+                        fullWidth
+                        helperText='Enter min 6-digit number'
+                        onChange={ this.handleChange('zip') }
+                        placeholder='Zip Code *'
+                        style={{ width: '55%', margin: '0 16px 0 0' }}
+                        type="text"
+                        value={ this.state.zip }
+                    />
+
+                    <TextField
+                        disabled={ true }
+                        fullWidth
+                        placeholder='Country'
+                        style={{ width: '35%' }}
+                        type="text"
+                        value={ 'Chile' }
+                    />
 
                     <Typography
                         children='Sign in information'
@@ -239,10 +294,30 @@ class Registry extends React.Component {
 
                     <button type='button' onClick={ this.handleRequest } hidden>&nbsp;</button>
                 </fieldset>
-
             </form>
         );
     }
+}
+
+function checkDigit11(r) {
+    let n = r.replace('.','').replace('-',''),
+        c = n.slice(0, -1),
+        v = n.slice(-1).toLowerCase(),
+        s = 0,
+        m = 2;
+
+    for(let i = 1; i <= c.length; i++) {
+        let index = m * n.charAt(c.length - i);
+
+        s = s + index;
+
+        if(m < 7) { m = m + 1; } else { m = 2; }
+    }
+
+    v = (v === 'k') ? 10 : v;
+    v = (v === '0') ? 11 : v;
+
+    return parseInt(v, 0) === parseInt(11 - (s % 11), 0);
 }
 
 function getErrors(response) {
@@ -274,4 +349,4 @@ let textFields = {
     'mail': 'Correo electrónico'
 };
 
-export default Registry;
+export default FormBusiness;

@@ -9,21 +9,21 @@ class ListUsers extends Component {
         users: []
     };
 
-    componentWillReceiveProps() {
-        this.handleRequest()
+    componentDidMount() {
+        this.handleRequest(this.handleUpdate)
     }
 
-    handleRequest = () => {
-        let request = new XMLHttpRequest(), onUpdate = this.handleUpdate;
+    handleRequest = (callback) => {
+        let request = new XMLHttpRequest();
 
-        request.open('GET', 'http://' + window.location.hostname + ':8081/users?ids=' + this.props.list.join(','), true);
+        request.open('GET', 'http://' + window.location.hostname + ':8081/users?ids=' + this.props.users.join(','), true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
 
         request.onreadystatechange = function() {
             if (request.readyState === 4) {
                 switch (request.status) {
                     case 200:
-                        onUpdate(JSON.parse(request.response));
+                        callback(request.response);
                         break;
                     default:
                         break;
@@ -34,15 +34,15 @@ class ListUsers extends Component {
         request.send()
     };
 
-    handleUpdate = (data) => {
+    handleUpdate = (response) => {
         this.setState({
-            users: data
+            users: JSON.parse(response)
         })
     };
 
     render() {
         return (
-            <List>
+            <List style={{ marginTop: 64 }}>
                 {
                     this.state.users.map((user, i) => (
                         <Link
@@ -51,14 +51,11 @@ class ListUsers extends Component {
                             style={{ textDecoration:'none' }}
                         >
                             <ListItem button>
-                                <Avatar
-                                    src={ user.image === '/images/landscape.jpg' ? '/images/user.png' : user.image }
-                                    style={{ border: '2px solid black' }}
-                                />
+                                <Avatar src={ user.image !== undefined ? user.image : '/images/user.png' }/>
 
                                 <ListItemText
                                     classes={{ text:'overflow-text' }}
-                                    primary={ user.names }
+                                    primary={ user.names + ' ' + user.surnames }
                                     secondary={ '@' + user.username }
                                 />
                             </ListItem>

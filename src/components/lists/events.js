@@ -7,14 +7,27 @@ import Icon from 'material-ui/Icon';
 import List, { ListItem, ListItemText } from 'material-ui/List';
 import Typography from 'material-ui/Typography';
 
+import DialogEvent from '../dialogs/event';
+
 class ListEvents extends Component {
     state = {
-        events: []
+        event: {
+            open: false
+        },
+        events: [],
     };
 
     componentDidMount() {
         this.handleRequest(this.handleUpdate, '')
     }
+
+    handleEvent = () => {
+        this.setState({
+            event: {
+                open: !this.state.event.open
+            }
+        })
+    };
 
     handleRequest = (callback, query) => {
         let request = new XMLHttpRequest();
@@ -61,7 +74,7 @@ class ListEvents extends Component {
                                 />
 
                                 <Typography
-                                    children={ '24 hr' }
+                                    children={ time(event.start) }
                                     gutterBottom
                                     type="body2"
                                 />
@@ -74,13 +87,48 @@ class ListEvents extends Component {
                 <Button
                     fab
                     color="accent"
-                    onClick={ this.handleCreate }
+                    onClick={ this.handleEvent }
                     style={{position: 'fixed', right: 16, bottom: 72}}
                 >
                     <Icon>add</Icon>
                 </Button>
+
+                <DialogEvent open={ this.state.event.open } onClose={ this.handleEvent } />
             </List>
         );
+    }
+}
+
+function time(etime) {
+    let start = new Date(etime),
+        today = new Date(Date.now()),
+        diff = (start.getTime() - today.getTime()) / 1000,
+        end = ' seg';
+
+    if (diff > 60 || diff < -60) {
+        end = ' min';
+        diff /= 60;
+    }
+
+    if (diff > 60 || diff < -60) {
+        end = ' hr';
+        diff /= 60
+    }
+
+    if (diff > 24 || diff < -24) {
+        end = ' dia(s)';
+        diff /= 24
+    }
+
+    if (diff > 365 || diff < -365) {
+        end = ' año(s)';
+        diff /= 365
+    }
+
+    if (diff > 0) {
+        return 'Queda(n) '+diff.toFixed(0) + end
+    } else {
+        return 'Hace ' + (diff * -1).toFixed(0) + end
     }
 }
 
