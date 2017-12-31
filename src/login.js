@@ -30,10 +30,14 @@ class Login extends Component {
 
         document.cookie = "userId=" + JSON.parse(response)._id + ";expires="+ expires.toUTCString() +";path=/";
 
+        if (JSON.parse(response).hasOwnProperty('business')) {
+            document.cookie = "userRut=" + JSON.parse(response).business.rut.body + ";expires="+ expires.toUTCString() +";path=/";
+        }
+
         this.setState({
             _id: JSON.parse(response)._id
         }, function() {
-            document.getElementById('to-user').click()
+            window.location.href = '/'
         })
     };
 
@@ -43,29 +47,14 @@ class Login extends Component {
                 id='login'
                 style={{ marginTop: 72 }}
             >
-                <AppBar position='fixed'>
-                    <div id='header-radial-gradient'/>
-
+                <AppBar position='fixed' style={{ background: 'linear-gradient(90deg, #18252d 30%, #0a1014 90%)' }}>
                     <Toolbar>
                         <Link to='/'>
-                            <IconButton
-                                children={ <Icon>arrow_back</Icon> }
-                                color="contrast"
-                            />
+                            <IconButton children={ <Icon>arrow_back</Icon> } color='contrast'/>
                         </Link>
 
-                        <Typography
-                            children='Login'
-                            color='inherit'
-                            style={{ flex: 1, marginLeft: 16 }}
-                            type='title'
-                        />
-
-                        <IconButton
-                            children={ <Icon classes={{ root: 'bold' }}>check</Icon> }
-                            color="accent"
-                            onClick={ this.handleClick }
-                        />
+                        <Typography children='Ingresar' color='inherit' style={{ marginLeft: 16 }} type='title'/>
+                        <IconButton children={ <Icon>check</Icon> } color='contrast' onClick={ this.handleClick } style={{ background: 'rgba(255, 255, 255, .26)', marginLeft: 'auto' }}/>
                     </Toolbar>
                 </AppBar>
 

@@ -12,6 +12,7 @@ import Typography from 'material-ui/Typography';
 
 import CardImage from './components/cardImage';
 import DialogUsers from './components/dialogs/users';
+import DialogEvent from './components/dialogs/event';
 import FormShare from './components/forms/share';
 import GridMoments from './components/grids/moments';
 import ListDetail from './components/lists/details';
@@ -24,6 +25,9 @@ class Event extends Component {
             function: this.handleShare,
             icon: 'share'
         },
+        edit: {
+            open: false
+        },
         event: {
             name: '',
             details: '',
@@ -31,9 +35,9 @@ class Event extends Component {
                 names: '',
                 image: ''
             },
-            address: {},
-            participants: []
+            address: {}
         },
+        inscriptions: [],
         share: {
             open: false
         },
@@ -69,6 +73,14 @@ class Event extends Component {
         })
     };
 
+    handleEdit = () => {
+        this.setState({
+            edit: {
+                open: !this.state.edit.open
+            }
+        })
+    };
+
     handleMoment = () => {
         this.setState({
             tabs: {
@@ -85,7 +97,7 @@ class Event extends Component {
                 event: this.state.event._id,
                 user: getCookie('userId')
             },
-            this.handleResponseInscription
+            this.handleRefresh
         )
     };
 
@@ -94,8 +106,49 @@ class Event extends Component {
             'get',
             'http://' + window.location.hostname + ':8081/events/' + window.location.pathname.split('/').pop(),
             {},
-            this.handleResponseEvent
+            this.handleUpdateEvent
+        );
+
+        this.handleRequest(
+            'get',
+            'http://' + window.location.hostname + ':8081/inscriptions?event=' + window.location.pathname.split('/').pop(),
+            {},
+            this.handleUpdateInscriptions
         )
+    };
+
+    handleRefreshAction = () => {
+        let _id = getCookie('userId'), fun = this.handleShare, ico = 'share', val = 'info';
+
+        if (_id !== '' && this.state.event.quotas > this.state.inscriptions.length) {
+            fun = this.handleParticipate;
+            ico= 'person_add';
+
+            if (this.state.inscriptions.some(hasUser) || this.state.event.own._id === _id) {
+                fun = this.handleComment;
+                ico     = 'comment';
+            }
+
+            if (Date.now() > new Date(this.state.event.end) && this.state.inscriptions.some(hasUser)) {
+                fun = this.handleMoment;
+                ico = 'add_to_photos';
+            }
+
+            if (Date.now() > new Date(this.state.event.end) && !this.state.inscriptions.some(hasUser)) {
+                fun = this.handleShare;
+                ico = 'share';
+            }
+        }
+
+        this.setState({
+            button: {
+                function: fun,
+                icon: ico
+            },
+            tabs: {
+                value: val
+            }
+        })
     };
 
     handleRequest = (type, url, body, callback) => {
@@ -119,12 +172,24 @@ class Event extends Component {
         })
     };
 
-    handleResponseEvent = (request) => {
+    handleUpdateEvent = (request) => {
         switch (request.status) {
             case 200:
-                this.handleUpdateEvent(request.response);
+                this.setState({ event: JSON.parse(request.response) }, this.handleRefreshAction);
                 break;
             default:
+                this.handleSnack('Sistema en mantenimiento');
+                break;
+        }
+    };
+
+    handleUpdateInscriptions = (request) => {
+        switch (request.status) {
+            case 200:
+                this.setState({ inscriptions: JSON.parse(request.response) }, this.handleRefreshAction);
+                break;
+            default:
+                this.handleSnack('Sistema en mantenimiento');
                 break;
         }
     };
@@ -134,50 +199,6 @@ class Event extends Component {
             snack: {
                 message: typeof message === 'string' ? message : '',
                 open: typeof message === 'string'
-            }
-        })
-    };
-
-    handleResponseInscription = (request) => {
-        switch (request.status) {
-            case 200:
-                this.handleRefresh();
-                break;
-            default:
-                this.handleSnack('Sistema en mantenimiento');
-                break;
-        }
-    };
-
-    handleUpdateEvent = (event) => {
-        let json_event      = JSON.parse(event),
-            user_id         = getCookie('userId'),
-            function_button = this.handleShare,
-            icon_button     = 'share';
-
-        if (user_id !== '') {
-            function_button = this.handleParticipate;
-            icon_button     = 'person_add';
-
-            if (user_id === json_event.own._id) {
-                function_button = this.handleComment;
-                icon_button     = 'comment';
-            }
-
-            if (Date.now() > new Date(json_event.end)) {
-                function_button = this.handleMoment;
-                icon_button     = 'add_to_photos';
-            }
-        }
-
-        this.setState({
-            button: {
-                function: function_button,
-                icon: icon_button
-            },
-            event: JSON.parse(event),
-            tabs: {
-                value: 1
             }
         })
     };
@@ -207,8 +228,9 @@ class Event extends Component {
                         </Link>
 
                         <IconButton
-                            children={ <Icon>more_vert</Icon> }
+                            children={ <Icon>{ cookie('userId') === this.state.event.own._id ? 'mode_edit' : 'share' }</Icon> }
                             color="contrast"
+                            onClick={ cookie('userId') === this.state.event.own._id ? this.handleEdit : this.handleShare }
                             style={{ marginLeft: 'auto' }}
                         />
                     </Toolbar>
@@ -238,7 +260,7 @@ class Event extends Component {
                     id="header-event"
                     style={{
                         padding: '16px 96px 16px 16px',
-                        backgroundColor: '#212121'
+                        background: 'linear-gradient(90deg, #18252d 30%, #0a1014 90%)'
                     }}
                     type="body1"
                 >
@@ -255,7 +277,7 @@ class Event extends Component {
                         onClick={ this.handleUsers }
                         style={{ color: '#fff' }}
                     >
-                        <Icon>people</Icon>&nbsp;&nbsp;{ this.state.event.participants.length + '/' + this.state.event.quotas }
+                        <Icon>people</Icon>&nbsp;&nbsp;{ this.state.inscriptions.length + '/' + this.state.event.quotas }
                     </Button>
                 </Typography>
 
@@ -270,13 +292,15 @@ class Event extends Component {
                     <Tab
                         icon={ <Icon>info</Icon> }
                         style={{ maxWidth: '100%' }}
+                        value='info'
                     />
 
                     {
-                        (this.state.event.participants.indexOf(getCookie('userId')) > -1 || this.state.event.own._id === getCookie('userId')) &&
+                        (this.state.inscriptions.some(hasUser) || this.state.event.own._id === getCookie('userId')) &&
                         <Tab
                             icon={ <Icon>message</Icon> }
                             style={{ maxWidth: '100%' }}
+                            value='message'
                         />
                     }
 
@@ -285,29 +309,30 @@ class Event extends Component {
                         <Tab
                             icon={ <Icon>photo_library</Icon> }
                             style={{ maxWidth: '100%' }}
+                            value='photo_library'
                         />
                     }
                 </Tabs>
 
                 {
-                    this.state.tabs.value === 1 &&
+                    this.state.tabs.value === 'info' &&
                     <ListDetail
                         detail={ this.state.event.details }
                         date={{
                             start: this.state.event.start,
                             end: this.state.event.end
                         }}
-                        location={ this.state.event.address.street + ', ' + this.state.event.address.city + ', Chile' }
+                        location={ this.state.event.address.street + ' #' + this.state.event.address.number  + ', ' + this.state.event.address.city + ', Chile' }
                     />
                 }
 
                 {
-                    this.state.tabs.value === 2 &&
+                    this.state.tabs.value === 'message' && (this.state.inscriptions.some(hasUser) || this.state.event.own._id === getCookie('userId')) &&
                     <ListComments query={ 'event=' + this.state.event._id + '&type=comment&sort=1' }/>
                 }
 
                 {
-                    this.state.tabs.value === 3 &&
+                    this.state.tabs.value === 'photo_library' && new Date(this.state.event.end) < Date.now() &&
                     <GridMoments query={ 'event=' + this.state.event._id }/>
                 }
 
@@ -318,9 +343,17 @@ class Event extends Component {
                 />
 
                 <DialogUsers
+                    dataUsers={ this.state.inscriptions.map(getUser) }
                     onClose={ this.handleUsers }
+                    onRefresh={ this.handleRefresh }
                     open={ this.state.users.open }
-                    users={ this.state.event.participants }
+                />
+
+                <DialogEvent
+                    dataEvent={ this.state.event }
+                    onClose={ this.handleEdit }
+                    onRefresh={ this.handleRefresh }
+                    open={ this.state.edit.open }
                 />
 
                 <FormShare
@@ -332,8 +365,25 @@ class Event extends Component {
     }
 }
 
+function cookie(name) {
+    let match = document.cookie.match(new RegExp(name + '=([^;]+)')); if (match) return match[1]
+}
+
 function getCookie(name) {
     let match = document.cookie.match(new RegExp(name + '=([^;]+)')); if (match) return match[1]
+}
+
+function getUser(inscription) {
+    inscription.user['inscription'] = inscription._id;
+    inscription.user['host'] = inscription.event.own;
+
+    console.log(inscription);
+
+    return inscription.user
+}
+
+function hasUser(inscription) {
+    return inscription.user._id === getCookie('userId')
 }
 
 export default Event;

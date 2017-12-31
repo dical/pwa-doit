@@ -25,7 +25,7 @@ class FormImage extends Component {
         return (
             <Dialog
                 open={ this.props.open }
-                onRequestClose={ this.props.onRequestClose }
+                onClose={ this.props.onClose }
                 classes={{ paper: 'w-80' }}
             >
                 <DialogTitle>{ "Imagen de usuario" }</DialogTitle>

@@ -8,17 +8,12 @@ import Slide from 'material-ui/transitions/Slide';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 
-import FormEvent from '../forms/event';
-
-class DialogEvent extends Component {
-    handleClick = () => {
-        document.getElementById('create_event_button').click()
-    };
-
+class Dialogo extends Component {
     render() {
         return <Dialog
             fullScreen
             open={ this.props.open }
+            transition={ <Slide direction='down'/> }
         >
             <AppBar position='fixed'>
                 <Toolbar>
@@ -29,23 +24,16 @@ class DialogEvent extends Component {
                     />
 
                     <Typography
-                        children={ typeof this.props.dataEvent === undefined ? 'Crear evento' : 'Editar evento' }
+                        children='Select category'
                         color='inherit'
                         type='title'
-                    />
-
-                    <IconButton
-                        children={ <Icon classes={{ root: 'bold' }}>check</Icon> }
-                        color="accent"
-                        onClick={ this.handleClick }
-                        style={{ marginLeft: 'auto' }}
                     />
                 </Toolbar>
             </AppBar>
 
-            <FormEvent dataEvent={ this.props.dataEvent }/>
+            { this.props.children }
         </Dialog>
     }
 }
 
-export default DialogEvent;
+export default Dialogo;

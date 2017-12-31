@@ -95,6 +95,13 @@ class ListComments extends Component {
                 { this.state.request.loading && <div style={{ padding: 16, textAlign: 'center' }}><CircularProgress/></div> }
 
                 {
+                    !this.state.request.loading && this.state.messages.length === 0 &&
+                    <ListItem>
+                        <ListItemText align='center' primary='No se encontraron mensajes.'/>
+                    </ListItem>
+                }
+
+                {
                     this.state.messages.map((message, index) => (
                         <ListItem
                             key={ this.state.messages.length - index }
@@ -104,6 +111,7 @@ class ListComments extends Component {
                                 style={{ textDecoration:'none' }}
                             >
                                 <Avatar
+                                    classes={{ img: 'avatar' }}
                                     src={ message.user.image === '/images/landscape.jpg' ? '/images/user.png' : message.user.image }
                                 />
                             </Link>

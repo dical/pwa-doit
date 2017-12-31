@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import AppBar from 'material-ui/AppBar';
+import { CircularProgress } from 'material-ui/Progress';
 import Dialog from 'material-ui/Dialog';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
@@ -8,13 +9,7 @@ import Slide from 'material-ui/transitions/Slide';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 
-import FormEvent from '../forms/event';
-
-class DialogEvent extends Component {
-    handleClick = () => {
-        document.getElementById('create_event_button').click()
-    };
-
+class DialogMap extends Component {
     render() {
         return <Dialog
             fullScreen
@@ -25,27 +20,32 @@ class DialogEvent extends Component {
                     <IconButton
                         children={ <Icon>close</Icon> }
                         color="contrast"
-                        onClick={ this.props.onClose }
+                        onClick={ this.props.close }
                     />
 
                     <Typography
-                        children={ typeof this.props.dataEvent === undefined ? 'Crear evento' : 'Editar evento' }
+                        children='Ubicacion'
                         color='inherit'
                         type='title'
-                    />
-
-                    <IconButton
-                        children={ <Icon classes={{ root: 'bold' }}>check</Icon> }
-                        color="accent"
-                        onClick={ this.handleClick }
-                        style={{ marginLeft: 'auto' }}
                     />
                 </Toolbar>
             </AppBar>
 
-            <FormEvent dataEvent={ this.props.dataEvent }/>
+            <CircularProgress size={ 50 } style={{ padding: '25vw', position: 'absolute', width: '50vw', zIndex: -1 }}/>
+
+            <iframe
+                id='map'
+                frameBorder='0'
+                width='auto'
+                height='100%'
+                src={ 'https://www.google.com/maps/embed/v1/place?q='+ encodeURI(this.props.place) +'&key=AIzaSyA1lqHGsB6HW6Ms2mKr6UOsTwqtHsF3EvA' }
+                style={{ paddingTop: 56, display: 'none' }}
+                onLoad={ function() { document.getElementById('map').style.display = '' }}
+            >
+
+            </iframe>
         </Dialog>
     }
 }
 
-export default DialogEvent;
+export default DialogMap;

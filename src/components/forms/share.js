@@ -35,7 +35,7 @@ class FormShare extends Component {
         return (
             <Dialog
                 open={ this.props.open }
-                onRequestClose={ this.props.onClose }
+                onClose={ this.props.onClose }
                 classes={{ paper: 'w-80' }}
             >
                 <DialogTitle>{ "Compartir" }</DialogTitle>

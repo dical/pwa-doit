@@ -36,6 +36,17 @@ class FormEvent extends Component {
         tag: ''
     };
 
+    componentDidMount() {
+        let event = this.props.dataEvent;
+
+        event.start = new Date(event.start);
+        event.end = new Date(event.end);
+
+        this.setState({
+            event: this.props.dataEvent
+        })
+    }
+
     handleAdd = () => {
         let event = this.state.event;
 
@@ -109,6 +120,10 @@ class FormEvent extends Component {
         this.setState({ tag: event.target.value })
     };
 
+    handlePatchRequest = () => {
+        this.handleRequest('patch', 'http://' + window.location.hostname + ':8081/events/' + this.state.event._id, function() { window.location.reload() } )
+    };
+
     handlePostRequest = () => {
         this.handleRequest('post', 'http://' + window.location.hostname + ':8081/events', function() { window.location.href = '/' })
     };
@@ -116,7 +131,7 @@ class FormEvent extends Component {
     handleRequest = (type, url, callback) => {
         let request = new XMLHttpRequest(), parent = this;
 
-        request.open('POST', 'http://' + window.location.hostname + ':8081/events', true);
+        request.open(type.toUpperCase(), url, true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
 
         this.handleDisable();
@@ -124,6 +139,9 @@ class FormEvent extends Component {
         request.onreadystatechange = function() {
             if (request.readyState === 4) {
                 switch (request.status) {
+                    case 200:
+                        callback(request.response);
+                        break;
                     case 201:
                         callback(request.response);
                         break;
@@ -279,7 +297,7 @@ class FormEvent extends Component {
                         error={ this.state.event.start >= this.state.event.end }
                         helperText='Format dd/mm/aaaa'
                         InputLabelProps={{ shrink: true }}
-                        label="Fecha de Inicio *"
+                        label="Fecha de Inicio"
                         onChange={ this.handleStartDate }
                         style={{
                             marginRight: 8,
@@ -474,7 +492,7 @@ class FormEvent extends Component {
                     <Button
                         id='create_event_button'
                         children='Create event'
-                        onClick={ this.handlePostRequest }
+                        onClick={ typeof this.props.dataEvent === undefined ? this.handlePostRequest : this.handlePatchRequest }
                         style={{ display: 'none' }}
                     />
                 </fieldset>

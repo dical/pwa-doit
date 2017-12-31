@@ -11,58 +11,36 @@ import Typography from 'material-ui/Typography';
 class Welcome extends Component {
     render() {
         return (
-            <div id='page'>
-                <AppBar position='fixed'>
-                    <div id='header-radial-gradient'/>
-
+            <div style={{ textAlign: 'center' }}>
+                <AppBar elevation={ 0 } position='fixed' style={{ background: 'transparent' }}>
                     <Toolbar>
-                        <Typography
-                            children='Welcome'
-                            color='inherit'
-                            type='title'
-                        />
+                        <Typography children='Bienvenido' color='inherit' type='title' style={{ marginLeft: 16 }}/>
 
-                        <Link
-                            to='/login'
-                            style={{ marginLeft: 'auto' }}
-                        >
-                            <IconButton
-                                children={ <Icon>person</Icon> }
-                                color="contrast"
-                            />
+                        <Link to='/login' style={{ marginLeft: 'auto' }}>
+                            <IconButton color="contrast">
+                                <Icon>info</Icon>
+                            </IconButton>
                         </Link>
                     </Toolbar>
                 </AppBar>
 
-                <div id='block'>
-                    <img
-                        src={ '/images/logo.png' }
-                        style={{
-                            width: '70vw',
-                            maxWidth: 'fit-content'
-                        }}
-                    />
+                <div style={{ padding: ' 64px 16px', background: 'linear-gradient(45deg, #18252d 30%, #0a1014 90%)', height: '-webkit-fill-available' }}>
+                    <img src={ '/images/logo.png' } style={{ width: '50vw', maxWidth: 'fit-content' }}/>
 
-                    <Typography
-                        align='center'
-                        children='Comienza la revolucion pra motivar al mundo'
-                        type='display2'
-                    />
-
-                    <Typography
-                        align='center'
-                        children='Bienvenido a Doit Exp'
-                        type='display1'
-                    />
-
-                    <br/>
+                    <Typography align='center' children='Comienza la revolución para motivar al mundo' type='headline' style={{ color: '#fff', marginBottom: 26 }}/>
 
                     <Link to='/sign-in'>
-                        <Button
-                            children='Sign In'
-                            color="primary"
-                            raised
-                        />
+                        <Button color="primary" raised>
+                            registrate
+                        </Button>
+                    </Link>
+
+                    &nbsp;&nbsp;
+
+                    <Link to='/login'>
+                        <Button color="primary" raised>
+                            inicia sesión
+                        </Button>
                     </Link>
                 </div>
             </div>

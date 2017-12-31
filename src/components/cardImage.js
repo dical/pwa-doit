@@ -11,27 +11,34 @@ class CardImage extends Component {
                 image={ this.props.image === undefined ? '/images/landscape.jpg' : this.props.image }
                 title="Title"
             >
-                <Typography
-                    type="display1"
+                <div
                     style={{
-                        color: '#fafafa',
-                        padding: 'calc(25vh) 16px 0',
-                        textShadow: '-1px 1px 0px rgba(0,0,0,0.12), 1px 1px 1px rgba(0,0,0,0.24)'
+                        background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%)'
                     }}
                 >
-                    { this.props.title }
-                </Typography>
+                    <Typography
+                        type="display1"
+                        style={{
+                            color: '#fafafa',
+                            padding: 'calc(25vh) 16px 0',
+                            textShadow: '-1px 1px 0px rgba(0,0,0,0.12), 1px 1px 1px rgba(0,0,0,0.24)',
+                            textTransform: this.props.titleTextTransform === undefined ? '' : this.props.titleTextTransform
+                        }}
+                    >
+                        { this.props.title }
+                    </Typography>
 
-                <Typography
-                    type="subheading"
-                    style={{
-                        color: '#fafafa',
-                        padding: '0 16px 26px',
-                        textShadow: '-1px 1px 0px rgba(0,0,0,0.12), 1px 1px 1px rgba(0,0,0,0.24)'
-                    }}
-                >
-                    { this.props.subtitle }
-                </Typography>
+                    <Typography
+                        type="subheading"
+                        style={{
+                            color: '#fafafa',
+                            padding: '0 16px 26px',
+                            textShadow: '-1px 1px 0px rgba(0,0,0,0.12), 1px 1px 1px rgba(0,0,0,0.24)'
+                        }}
+                    >
+                        { this.props.subtitle }
+                    </Typography>
+                </div>
             </CardMedia>
         );
     }

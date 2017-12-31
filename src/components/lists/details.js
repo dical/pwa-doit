@@ -1,9 +1,18 @@
 import React from 'react';
 
+import DialogMap from '../dialogs/map';
 import Icon from 'material-ui/Icon';
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 
 class ListDetail extends React.Component {
+    state = {
+        map: false
+    };
+
+    handleMap = () => {
+        this.setState({ map: !this.state.map })
+    };
+
     render() {
         return <List style={{ padding: 0 }}>
             <ListItem button>
@@ -13,19 +22,25 @@ class ListDetail extends React.Component {
                 <ListItemText primary={ this.props.detail === '' ? 'Sin descripcion' : this.props.detail }/>
             </ListItem>
 
-            <ListItem>
+            <ListItem button>
                 <ListItemIcon>
                     <Icon children="access_time" />
                 </ListItemIcon>
                 <ListItemText primary={ getDate(this.props.date) }/>
             </ListItem>
 
-            <ListItem button>
+            <ListItem button onClick={ this.handleMap }>
                 <ListItemIcon>
                     <Icon children="location_on" />
                 </ListItemIcon>
                 <ListItemText primary={ this.props.location }/>
             </ListItem>
+
+            <DialogMap
+                close={ this.handleMap }
+                open={ this.state.map }
+                place={ this.props.location.split('#').join('') }
+            />
         </List>
     }
 }

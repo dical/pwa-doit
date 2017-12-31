@@ -14,11 +14,15 @@ class ListEvents extends Component {
         event: {
             open: false
         },
-        events: [],
+        events: []
     };
 
     componentDidMount() {
-        this.handleRequest(this.handleUpdate, '')
+        this.handleRequest('get', this.props.src, {}, this.handleResponse)
+    }
+
+    componentWillReceiveProps(props) {
+        this.handleRequest('get', props.src, {}, this.handleResponse)
     }
 
     handleEvent = () => {
@@ -29,44 +33,52 @@ class ListEvents extends Component {
         })
     };
 
-    handleRequest = (callback, query) => {
+    handleRequest = (type, url, body, callback) => {
         let request = new XMLHttpRequest();
 
-        request.open('GET', 'http://' + window.location.hostname + ':8081/events' + query, true);
+        request.open(type.toUpperCase(), url, true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
 
         request.onreadystatechange = function() {
-            if (request.readyState === 4) {
-                switch (request.status) {
-                    case 200:
-                        callback(request.response);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
+            if (request.readyState === 4) { callback(request) } };
 
-        request.send()
+        request.send(JSON.stringify(body))
+    };
+
+    handleResponse = (request) => {
+        switch (request.status) {
+            case 200:
+                this.handleUpdate(JSON.parse(request.response));
+                break;
+            default:
+                break;
+        }
     };
 
     handleUpdate = (events) => {
         this.setState({
-            events: JSON.parse(events)
+            events: this.props.map !== undefined ? events.map(this.props.map) : events
         })
     };
 
     render() {
         return (
-            <List style={{ padding: '64px 0' }}>
+            <List>
                 {
                     this.state.events.map((event, index) => (
                         <Link
                             key={ index }
                             to={ '/event/' + event._id}
                         >
-                            <ListItem button>
-                                <Avatar src={ event.image }/>
+                            <ListItem
+                                button
+                                style={ this.state.events.length !== index + 1 ? { boxShadow: '#eee 64px 1px 0px' } : {} }
+                            >
+                                <Avatar
+                                    classes={{ img: 'avatar' }}
+                                    src={ event.image }
+                                    style={{ height: 64, width: 64 }}
+                                />
 
                                 <ListItemText
                                     primary={ event.name }
@@ -76,27 +88,35 @@ class ListEvents extends Component {
                                 <Typography
                                     children={ time(event.start) }
                                     gutterBottom
-                                    type="body2"
+                                    style={{ position: 'absolute', right: 16, top: 16 }}
+                                    type="caption"
                                 />
                             </ListItem>
                         </Link>
                     ))
                 }
 
+                {
+                    cookie('userRut') && this.props.action &&
+                    <Button
+                        fab
+                        color="accent"
+                        onClick={ this.handleEvent }
+                        style={{position: 'fixed', right: 16, bottom: 72}}
+                    >
+                        <Icon>add</Icon>
+                    </Button>
+                }
 
-                <Button
-                    fab
-                    color="accent"
-                    onClick={ this.handleEvent }
-                    style={{position: 'fixed', right: 16, bottom: 72}}
-                >
-                    <Icon>add</Icon>
-                </Button>
 
                 <DialogEvent open={ this.state.event.open } onClose={ this.handleEvent } />
             </List>
         );
     }
+}
+
+function cookie(name) {
+    let match = document.cookie.match(new RegExp(name + '=([^;]+)')); if (match) return match[1]
 }
 
 function time(etime) {

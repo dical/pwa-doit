@@ -9,7 +9,7 @@ import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 
 import FormBusiness from './components/formBusiness';
-import FormUser from './components/formUser';
+import FormUser from './components/forms/user';
 
 class SignIn extends Component {
     state = {
@@ -49,20 +49,21 @@ class SignIn extends Component {
 
     render() {
         return (
-            <div id='sign-in'>
-                <AppBar position='fixed'>
-                    <div id='header-radial-gradient'/>
-
+            <div style={{ padding: '128px 16px 0' }}>
+                <AppBar
+                    position='fixed'
+                    style={{ background: 'linear-gradient(45deg, #18252d 30%, #0a1014 90%)' }}
+                >
                     <Toolbar>
                         <Link to='/'>
                             <IconButton
                                 children={ <Icon>arrow_back</Icon> }
-                                color="contrast"
+                                color='contrast'
                             />
                         </Link>
 
                         <Typography
-                            children='Sign In'
+                            children='Registrate'
                             color='inherit'
                             style={{ flex: 1, marginLeft: 16 }}
                             type='title'
@@ -70,17 +71,16 @@ class SignIn extends Component {
 
                         <IconButton
                             children={ <Icon classes={{ root: 'bold' }}>check</Icon> }
-                            color="accent"
+                            color='accent'
                             onClick={ this.handleClick }
                         />
                     </Toolbar>
 
                     <Tabs
                         fullWidth
-                        indicatorColor="primary"
+                        indicatorColor='primary'
                         onChange={ this.handleTabs }
-                        style={{ background: '#0a1014' }}
-                        textColor="inherit"
+                        textColor='inherit'
                         value={ this.state.tabs.value }
                     >
                         <Tab icon={ <Icon>person</Icon> }/>
@@ -88,15 +88,9 @@ class SignIn extends Component {
                     </Tabs>
                 </AppBar>
 
-                {
-                    this.state.tabs.value === 0 &&
-                    <FormUser onRequestSucess={ this.handleSession }/>
-                }
+                { this.state.tabs.value === 0 && <FormUser onRequestSucess={ this.handleSession }/> }
 
-                {
-                    this.state.tabs.value === 1 &&
-                    <FormBusiness onRequestSucess={ this.handleSession }/>
-                }
+                { this.state.tabs.value === 1 && <FormBusiness onRequestSucess={ this.handleSession }/> }
 
                 <Link id='to-user' to={ '/user/' + this.state._id }/>
             </div>

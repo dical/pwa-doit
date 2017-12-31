@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 
+import Button from 'material-ui/Button';
 import { LinearProgress } from 'material-ui/Progress';
 import TextField from 'material-ui/TextField';
 
@@ -20,9 +20,7 @@ class FormSession extends Component {
     };
 
     handleChange = name => event => {
-        this.setState({
-            [name]: event.target.value
-        })
+        this.setState({ [name]: event.target.value })
     };
 
     handleDisable = () => {
@@ -50,7 +48,7 @@ class FormSession extends Component {
                 switch (request.status) {
                     case 201: success(request.response);
                         break;
-                    case 403: message("Can't start session\n" + getErrors(request.response));
+                    case 403: message(getErrors(request.response));
                         break;
                     default : message("Service don't respond");
                         break;
@@ -88,51 +86,45 @@ class FormSession extends Component {
             <form style={{ textAlign: 'center' }}>
                 <LinearProgress
                     id='progress-login'
-                    style={{
-                        position: 'fixed',
-                        left: 0,
-                        top: 0,
-                        zIndex: 2001,
-                        width: '100%',
-                        display: 'none'
-                    }}
+                    style={{position: 'fixed', left: 0, top: 0, zIndex: 2001, width: '100%', display: 'none'}}
                 />
 
                 <fieldset
                     disabled={ this.state.fieldset.disabled }
-                    style={{
-                        border: 0,
-                        lineHeight: 4,
-                        margin: 0,
-                        padding: '0 16px'
-                    }}
+                    style={{border: 0, lineHeight: 4, margin: 0, padding: '0 16px'}}
                 >
                     <img
                         src={ '/images/logo.png' }
-                        style={{
-                            width: '70vw',
-                            maxWidth: 'fit-content'
-                        }}
+                        style={{ width: '70vw', maxWidth: 'fit-content' }}
                     />
 
                     <TextField
                         error={ !test("^[a-zA-Z0-9]{5,15}$", this.state.username) }
                         fullWidth
-                        helperText='Enter between 5 to 15 characters or/and digit number'
+                        helperText='Entre 5 a 15 caracteres y/o dígitos numéricos'
                         onChange={ this.handleChange('username') }
-                        placeholder='Username'
-                        type="text"
+                        placeholder='Nombre de usuario'
+                        type='text'
                         value={ this.state.username }
                     />
 
                     <TextField
                         error={ !test("^[a-zA-Z0-9]{8,15}$", this.state.password) }
                         fullWidth
-                        helperText='Enter between 8 to 15 characters or/and digit number'
+                        helperText='Entre 8 a 15 caracteres y/o dígitos numéricos'
                         onChange={ this.handleChange('password') }
-                        placeholder='Password'
-                        type="password"
+                        placeholder='Contraseña'
+                        type='password'
                         value={ this.state.password }
+                    />
+
+                    <Button
+                        children='Ingresar'
+                        color='primary'
+                        disabled={ !test("^[a-zA-Z0-9]{5,15}$", this.state.username) || !test("^[a-zA-Z0-9]{8,15}$", this.state.password) }
+                        onClick={ this.handleRequest }
+                        raised
+                        style={{ width: '-webkit-fill-available' }}
                     />
 
                     <Snack
@@ -140,8 +132,6 @@ class FormSession extends Component {
                         message={ this.state.snack.message }
                         open={ this.state.snack.open }
                     />
-
-                    <button type='button' onClick={ this.handleRequest } hidden>&nbsp;</button>
                 </fieldset>
             </form>
         );

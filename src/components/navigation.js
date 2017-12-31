@@ -24,27 +24,28 @@ class Navigation extends Component {
                         bottom: 0,
                         position: 'fixed',
                         width: '100vw',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        background: 'linear-gradient(90deg, #18252d 30%, #0a1014 90%)'
                     }}
                     value={ this.state.value }
                 >
                     <BottomNavigationButton
-                        icon={ <Icon children='message'/> }
-                        label='Messages'
+                        icon={ <Icon children='notifications'/> }
+                        label='Notificaciones'
                         onClick={ function () { document.getElementById('messages_link').click() } }
                         value='messages'
                     />
 
                     <BottomNavigationButton
                         icon={ <Icon children='home'/> }
-                        label='Home'
+                        label='Inicio'
                         onClick={ function () { document.getElementById('events_link').click() } }
                         value='home'
                     />
 
                     <BottomNavigationButton
                         icon={ <Icon children='person'/> }
-                        label='User'
+                        label='Perfil'
                         onClick={ function () { document.getElementById('user_link').click() } }
                         value='user'
                     />

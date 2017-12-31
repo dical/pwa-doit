@@ -14,7 +14,7 @@ class Snack extends React.Component {
                 open={ this.props.open }
                 autoHideDuration={ 2000 }
                 message={ <span style={{ whiteSpace: 'pre-wrap', textAlign: 'left' }}>{ this.props.message }</span> }
-                onRequestClose={ this.props.close }
+                onClose={ this.props.close }
                 action={
                     typeof this.props.close !== "undefined" &&
                     [<Button

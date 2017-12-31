@@ -4,6 +4,8 @@ import Button from 'material-ui/Button';
 import { GridList, GridListTile, GridListTileBar } from 'material-ui/GridList';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
+import Typography from 'material-ui/Typography';
+
 import DialogMoments from '../dialogs/moments';
 import FormMoment from '../formMoment';
 
@@ -16,11 +18,14 @@ class GridMoments extends React.Component {
         form: {
             open: false
         },
-        moments: []
+        moments: [],
+        status: {
+            display: 'none'
+        }
     };
 
     componentWillMount() {
-        this.handleRequest()
+        this.handleRequest('get', 'http://' + window.location.hostname + ':8081/moments?' + this.props.query, {}, this.handleResponse)
     }
 
     handleDialog = (event) => {
@@ -40,30 +45,32 @@ class GridMoments extends React.Component {
         })
     };
 
-    handleRequest = () => {
-        let request = new XMLHttpRequest(),
-            updates = this.handleUpdate;
+    handleRequest = (type, url, body, callback) => {
+        let request = new XMLHttpRequest();
 
-        request.open('GET', 'http://' + window.location.hostname + ':8081/moments?' + this.props.query, true);
+        request.open(type.toUpperCase(), url, true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
 
-        request.onreadystatechange = function() {
-            if (request.readyState === 4) {
-                switch (request.status) {
-                    case 200: updates(JSON.parse(request.response));
-                        break;
-                    default : console.log(request.status + ': ' + request.statusText);
-                        break;
-                }
-            }
-        };
+        request.onreadystatechange = function() { if (request.readyState === 4) { callback(request) } };
 
-        request.send()
+        request.send(JSON.stringify(body))
+    };
+
+    handleResponse = (request) => {
+        switch (request.status) {
+            case 200: this.handleUpdate(JSON.parse(request.response));
+                break;
+            default :
+                break;
+        }
     };
 
     handleUpdate = (moments) => {
         this.setState({
-            moments: moments
+            moments: moments,
+            status: {
+                display: moments.length === 0 ? '' : 'none'
+            }
         })
     };
 
@@ -78,32 +85,17 @@ class GridMoments extends React.Component {
                 position: 'absolute',
                 width: '-webkit-fill-available',
                 height: 'calc(100% - 250px - 90px - 48px)',
-                overflowY: 'scroll',
+                overflowY: 'auto',
                 zIndex: -1
             }}
             cols={ 4 }
         >
-            <GridListTile
-                key={ -1 }
-                cols={ 4 }
-                style={{ height: 'auto', display: 'none' }}
-            >
-                <Button
-                    id='add'
-                    onClick={ this.handleForm }
-                    style={{
-                        height: '100%',
-                        width: '100%'
-                    }}
-                >
-                    <Icon children='add_to_photos'/>
-                    &nbsp;Add
-                </Button>
+            <GridListTile key={ -1 } cols={ 4 } style={ this.state.status }>
+                <Typography align='center' style={{ paddingTop: 8 }} type='subheading'>No se encontraron momentos.</Typography>
             </GridListTile>
 
             {
                 this.state.moments.map((tile, index) => (
-
                     <GridListTile
                         key={ index }
                         cols={ 4 }

@@ -15,11 +15,8 @@ class DialogUsers extends Component {
         return <Dialog
             fullScreen
             open={ this.props.open }
-            transition={ <Slide direction='down'/> }
         >
-            <AppBar position='fixed'>
-                <div className='header-radial-gradient'/>
-
+            <AppBar position='fixed' style={{ background: 'linear-gradient(90deg, #18252d 30%, #0a1014 90%)' }}>
                 <Toolbar>
                     <IconButton
                         children={ <Icon>close</Icon> }
@@ -28,14 +25,14 @@ class DialogUsers extends Component {
                     />
 
                     <Typography
-                        children='List of users'
+                        children='Inscritos'
                         color='inherit'
                         type='title'
                     />
                 </Toolbar>
             </AppBar>
 
-            <ListUsers users={ this.props.users }/>
+            <ListUsers dataUsers={ this.props.dataUsers } onRefresh={ this.props.onRefresh }/>
         </Dialog>
     }
 }

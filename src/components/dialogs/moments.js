@@ -7,7 +7,7 @@ class DialogMoments extends Component {
         return <Dialog
             classes={{ paper: 'w-80' }}
             open={ this.props.open }
-            onRequestClose={ this.props.onRequestClose }
+            onClose={ this.props.onRequestClose }
         >
             <DialogContent
                 children={ <img src={ this.props.image }/> }

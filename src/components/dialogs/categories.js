@@ -8,14 +8,13 @@ import Slide from 'material-ui/transitions/Slide';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 
-import ListCategories from '../lists/categories'
+import ListCategories from '../lists/filters'
 
 class DialogCategories extends Component {
     render() {
         return <Dialog
             fullScreen
             open={ this.props.open }
-            transition={ <Slide direction='down'/> }
         >
             <AppBar position='fixed'>
                 <Toolbar>
