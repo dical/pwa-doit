@@ -2,52 +2,38 @@ import React, { Component } from 'react';
 
 import Button from 'material-ui/Button';
 import Dialog, { DialogActions, DialogContent, DialogTitle } from 'material-ui/Dialog';
-import Snack from './snackDefault'
 import TextField from 'material-ui/TextField';
 
 class FormImage extends Component {
-    state = {
-        snack: {
-            message: '',
-            open: false
-        }
-    };
 
-    handleSnack = () => {
-        this.setState({
-            snack: {
-                open: !this.state.snack.open
-            }
-        })
-    };
 
     render() {
         return (
             <Dialog
                 open={ this.props.open }
-                onClose={ this.props.onClose }
+                onClose={ this.props.close }
                 classes={{ paper: 'w-80' }}
             >
-                <DialogTitle>{ "Imagen de usuario" }</DialogTitle>
+                <DialogTitle>{ 'Imagen de usuario' }</DialogTitle>
                 <DialogContent>
                     <TextField
-                        id="image"
-                        label="Direccion url"
+                        id='image'
+                        label='Direccion url'
                         multiline
-                        value={ this.props.value }
-                        onChange={ this.props.onChange }
+                        value={ '' }
+                        onChange={ null }
                         fullWidth
                     />
                 </DialogContent>
                 <DialogActions>
                     <Button
-                        onClick={ this.props.onDefaultClick }
+                        onClick={ this.props.close }
                         color="default"
                     >
                         Cancelar
                     </Button>
                     <Button
-                        onClick={ this.props.onPrimaryClick }
+                        onClick={ this.handleRequest }
                         color="primary"
                         autoFocus
                     >

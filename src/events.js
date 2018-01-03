@@ -91,7 +91,7 @@ class Events extends Component {
                     </Toolbar>
                 </AppBar>
 
-                <ListEvents src={ 'http://' + window.location.hostname + ':8081/events?search=' + this.state.search + '&filter=' + this.state.filter }/>
+                <ListEvents action src={ 'http://' + window.location.hostname + ':8081/events?search=' + this.state.search + '&filter=' + this.state.filter }/>
 
                 <Dialog
                     classes={{ paper: 'dialog' }}

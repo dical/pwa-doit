@@ -4,7 +4,6 @@ import AppBar from 'material-ui/AppBar';
 import Dialog from 'material-ui/Dialog';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
-import Slide from 'material-ui/transitions/Slide';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 

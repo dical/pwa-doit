@@ -37,14 +37,16 @@ class FormEvent extends Component {
     };
 
     componentDidMount() {
-        let event = this.props.dataEvent;
+        if (this.props.dataEvent !== undefined) {
+            let event = this.props.dataEvent;
 
-        event.start = new Date(event.start);
-        event.end = new Date(event.end);
+            event.start = new Date(event.start);
+            event.end = new Date(event.end);
 
-        this.setState({
-            event: this.props.dataEvent
-        })
+            this.setState({
+                event: this.props.dataEvent
+            })
+        }
     }
 
     handleAdd = () => {
@@ -219,7 +221,8 @@ class FormEvent extends Component {
                     style={{
                         border: 0,
                         margin: 0,
-                        padding: '16px 16px 0'
+                        padding: '16px 16px 0',
+                        lineHeight: 1
                     }}
                 >
                     <TextField
@@ -474,7 +477,7 @@ class FormEvent extends Component {
                                         <Chip
                                             label={ tag }
                                             key={ index }
-                                            onRequestDelete={ this.handleRemove(tag) }
+                                            onDelete={ this.handleRemove(tag) }
                                             style={{ marginRight: 8 }}
                                         />
                                     );
@@ -522,10 +525,6 @@ function getErrors(response) {
     }
 
     return string
-}
-
-function test(exp, val) {
-    return (new RegExp(exp)).test(val)
 }
 
 let textFields = {

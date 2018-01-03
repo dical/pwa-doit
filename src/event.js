@@ -19,6 +19,8 @@ import ListDetail from './components/lists/details';
 import ListComments from './components/lists/comments';
 import Snack from './components/snackDefault';
 
+import { get_cookie } from './helpers/cookie';
+
 class Event extends Component {
     state = {
         button: {
@@ -53,6 +55,10 @@ class Event extends Component {
         }
     };
 
+    canEdit = () => {
+        return this.isOwner() && new Date(this.state.event.start) > Date.now()
+    };
+
     componentDidMount() {
         this.handleRefresh()
     }
@@ -60,7 +66,7 @@ class Event extends Component {
     handleComment = () => {
         this.setState({
             tabs: {
-                value: 2
+                value: 'message'
             }
         }, function() { document.getElementById('add').click() })
     };
@@ -211,13 +217,17 @@ class Event extends Component {
         })
     };
 
+    isOwner = () => {
+        return get_cookie('userId') === this.state.event.own._id
+    };
+
     render() {
         return (
             <div id='event'>
                 <AppBar
+                    classes={{ root: 'transparent' }}
                     elevation={ 0 }
                     position='fixed'
-                    style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)' }}
                 >
                     <Toolbar>
                         <Link to='/'>
@@ -228,9 +238,9 @@ class Event extends Component {
                         </Link>
 
                         <IconButton
-                            children={ <Icon>{ cookie('userId') === this.state.event.own._id ? 'mode_edit' : 'share' }</Icon> }
+                            children={ <Icon>{ this.canEdit() ? 'mode_edit' : 'share' }</Icon> }
                             color="contrast"
-                            onClick={ cookie('userId') === this.state.event.own._id ? this.handleEdit : this.handleShare }
+                            onClick={ this.canEdit() ? this.handleEdit : this.handleShare }
                             style={{ marginLeft: 'auto' }}
                         />
                     </Toolbar>
@@ -365,10 +375,6 @@ class Event extends Component {
     }
 }
 
-function cookie(name) {
-    let match = document.cookie.match(new RegExp(name + '=([^;]+)')); if (match) return match[1]
-}
-
 function getCookie(name) {
     let match = document.cookie.match(new RegExp(name + '=([^;]+)')); if (match) return match[1]
 }
@@ -376,8 +382,6 @@ function getCookie(name) {
 function getUser(inscription) {
     inscription.user['inscription'] = inscription._id;
     inscription.user['host'] = inscription.event.own;
-
-    console.log(inscription);
 
     return inscription.user
 }

@@ -4,16 +4,18 @@ import Button from 'material-ui/Button';
 import { LinearProgress } from 'material-ui/Progress';
 import TextField from 'material-ui/TextField';
 
-import Snack from '../snackDefault';
+import Snack from '../snack';
+
+import { set_cookie } from '../../helpers/cookie';
+import { test_value } from '../../helpers/form';
+import { decode_errors } from '../../helpers/request';
 
 class FormSession extends Component {
     state = {
-        fieldset: {
-            disabled: false
-        },
+        fieldset: false,
         password: '',
         snack: {
-            message: 'Logging user',
+            message: 'Registrando usuario',
             open: false
         },
         username: ''
@@ -24,45 +26,18 @@ class FormSession extends Component {
     };
 
     handleDisable = () => {
-        this.setState({
-            fieldset: {
-                disabled: !this.state.fieldset.disabled
-            }
-        })
+        this.setState({ fieldset: !this.state.fieldset })
     };
 
-    handleRequest = () => {
-        let request = new XMLHttpRequest(),
-            disable = this.handleDisable,
-            message = this.handleSnack,
-            success = this.props.onRequestSucess;
-
-        message("Signing user");
-        document.getElementById('progress-login').style.display = '';
+    handleRequest = (callback) => {
+        let request = new XMLHttpRequest();
 
         request.open('POST', 'http://' + window.location.hostname + ':8081/sessions', true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
 
         request.onreadystatechange = function() {
-            if (request.readyState === 4) {
-                switch (request.status) {
-                    case 201: success(request.response);
-                        break;
-                    case 403: message(getErrors(request.response));
-                        break;
-                    default : message("Service don't respond");
-                        break;
-                }
-
-                disable();
-
-                if (document.getElementById('progress-login') !== null) {
-                    document.getElementById('progress-login').style.display = 'none';
-                }
-            }
+            if (request.readyState === 4) { callback(request) }
         };
-
-        disable();
 
         request.send(
             JSON.stringify({
@@ -70,6 +45,34 @@ class FormSession extends Component {
                 password: this.state.password
             })
         );
+
+        this.handleDisable()
+    };
+
+    handleResponse = (request) => {
+        switch (request.status) {
+            case 201:
+                this.handleSession(JSON.parse(request.response));
+                break;
+            case 403:
+                this.handleSnack(decode_errors(request.response));
+                break;
+            default :
+                this.handleSnack("Inicio de sesión en mantenimiento.");
+                break;
+        }
+
+        this.handleDisable()
+    };
+
+    handleSession = (user) => {
+        if (user.hasOwnProperty('business')) {
+            set_cookie('userRut', user.business.rut.body, 360)
+        }
+
+        set_cookie('userId', user._id, 360);
+
+        window.location.href = '/'
     };
 
     handleSnack = (message) => {
@@ -83,23 +86,21 @@ class FormSession extends Component {
 
     render() {
         return (
-            <form style={{ textAlign: 'center' }}>
+            <form className='text-align-center'>
                 <LinearProgress
-                    id='progress-login'
-                    style={{position: 'fixed', left: 0, top: 0, zIndex: 2001, width: '100%', display: 'none'}}
+                    classes={{ root: 'progress' }}
+                    style={ this.state.fieldset ? {} : { display: 'none' } }
                 />
 
-                <fieldset
-                    disabled={ this.state.fieldset.disabled }
-                    style={{border: 0, lineHeight: 4, margin: 0, padding: '0 16px'}}
-                >
+                <fieldset disabled={ this.state.fieldset }>
                     <img
+                        alt=''
                         src={ '/images/logo.png' }
-                        style={{ width: '70vw', maxWidth: 'fit-content' }}
+                        style={{ width: '70vw' }}
                     />
 
                     <TextField
-                        error={ !test("^[a-zA-Z0-9]{5,15}$", this.state.username) }
+                        error={ !test_value("^[a-zA-Z0-9]{5,15}$", this.state.username) }
                         fullWidth
                         helperText='Entre 5 a 15 caracteres y/o dígitos numéricos'
                         onChange={ this.handleChange('username') }
@@ -109,7 +110,7 @@ class FormSession extends Component {
                     />
 
                     <TextField
-                        error={ !test("^[a-zA-Z0-9]{8,15}$", this.state.password) }
+                        error={ !test_value("^[a-zA-Z0-9]{8,15}$", this.state.password) }
                         fullWidth
                         helperText='Entre 8 a 15 caracteres y/o dígitos numéricos'
                         onChange={ this.handleChange('password') }
@@ -121,8 +122,8 @@ class FormSession extends Component {
                     <Button
                         children='Ingresar'
                         color='primary'
-                        disabled={ !test("^[a-zA-Z0-9]{5,15}$", this.state.username) || !test("^[a-zA-Z0-9]{8,15}$", this.state.password) }
-                        onClick={ this.handleRequest }
+                        disabled={ !test_value("^[a-zA-Z0-9]{5,15}$", this.state.username) || !test_value("^[a-zA-Z0-9]{8,15}$", this.state.password) }
+                        onClick={ () => { this.handleRequest(this.handleResponse) } }
                         raised
                         style={{ width: '-webkit-fill-available' }}
                     />
@@ -137,52 +138,5 @@ class FormSession extends Component {
         );
     }
 }
-
-function test(exp, val) {
-    return (new RegExp(exp)).test(val)
-}
-
-function getErrors(response) {
-    let errors = JSON.parse(response),
-        string = '';
-
-    if (errors.hasOwnProperty('errors')) {
-        for (let property in errors.errors) {
-            if (errors.errors.hasOwnProperty(property)) {
-                string = string + errors.errors[property].message + '\n'
-            }
-        }
-    } else {
-        if (errors.hasOwnProperty('code')) {
-            string = textFields[errors.errmsg.split('index: ').pop().split('_').reverse().pop()] + ' ya registrado.'
-        }
-    }
-
-    return string
-}
-
-function setCookie(name, value, days) {
-    let date = new Date();
-
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-
-    document.cookie = name + "=" + value + ";expires=" + date.toUTCString() + ";path=/"
-}
-
-function setUser(res) {
-    setCookie('userId', res._id, 360);
-
-    if (res.hasOwnProperty('business')) {
-        setCookie('userRut', res.business.rut.body, 360)
-    }
-
-    document.getElementById('nav-activities').click()
-}
-
-let textFields = {
-    'username': 'Nombre de usuario',
-    'business.rut.body': 'Rut de empresa',
-    'mail': 'Correo electrónico'
-};
 
 export default FormSession;

@@ -30,6 +30,7 @@ class Navigation extends Component {
                     value={ this.state.value }
                 >
                     <BottomNavigationButton
+                        classes={{ root: 'color-black', selected: 'color-white' }}
                         icon={ <Icon children='notifications'/> }
                         label='Notificaciones'
                         onClick={ function () { document.getElementById('messages_link').click() } }
@@ -37,6 +38,7 @@ class Navigation extends Component {
                     />
 
                     <BottomNavigationButton
+                        classes={{ root: 'color-black', selected: 'color-white' }}
                         icon={ <Icon children='home'/> }
                         label='Inicio'
                         onClick={ function () { document.getElementById('events_link').click() } }
@@ -44,6 +46,7 @@ class Navigation extends Component {
                     />
 
                     <BottomNavigationButton
+                        classes={{ root: 'color-black', selected: 'color-white' }}
                         icon={ <Icon children='person'/> }
                         label='Perfil'
                         onClick={ function () { document.getElementById('user_link').click() } }

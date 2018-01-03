@@ -5,7 +5,6 @@ import { CircularProgress } from 'material-ui/Progress';
 import Dialog from 'material-ui/Dialog';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
-import Slide from 'material-ui/transitions/Slide';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 
@@ -35,15 +34,14 @@ class DialogMap extends Component {
 
             <iframe
                 id='map'
+                title='map'
                 frameBorder='0'
                 width='auto'
                 height='100%'
                 src={ 'https://www.google.com/maps/embed/v1/place?q='+ encodeURI(this.props.place) +'&key=AIzaSyA1lqHGsB6HW6Ms2mKr6UOsTwqtHsF3EvA' }
                 style={{ paddingTop: 56, display: 'none' }}
                 onLoad={ function() { document.getElementById('map').style.display = '' }}
-            >
-
-            </iframe>
+            />
         </Dialog>
     }
 }

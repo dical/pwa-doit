@@ -1,151 +1,70 @@
 import React, { Component } from 'react';
 
+import AppBar from 'material-ui/AppBar';
 import Avatar from 'material-ui/Avatar';
-import Button from 'material-ui/Button';
-import Dialog, {
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-} from 'material-ui/Dialog';
+import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
+import Icon from 'material-ui/Icon';
+import IconButton from 'material-ui/IconButton';
 import List, { ListItem, ListItemText } from 'material-ui/List';
-import TextField from 'material-ui/TextField';
-import Menu, { MenuItem } from 'material-ui/Menu';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
 
-import FormImage from '../formImage';
+import FormImage from '../forms/image';
+import FormPhrase from '../forms/phrase';
+import ListAgreements from '../lists/agreements';
+
+import { request } from '../../helpers/request';
+import { get_cookie, quit_cookie } from '../../helpers/cookie';
 
 class ListSettings extends Component {
     state = {
-        image: {
-            open: false,
-            value: ''
-        },
-        phrase: {
-            open: false,
-            value: ''
-        },
-        menu: {
-            value: 1
+        agreement: {},
+        hiring: false,
+        image: false,
+        phrase: false,
+        user: {
+            image: '',
+            phrase: ''
         }
-    };
-
-    handleLogout = () => {
-        document.cookie = "userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        document.cookie = "userRut=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        window.location.href = '/'
     };
 
     componentDidMount() {
-        this.handleRequest('get', 'http://' + window.location.hostname + ':8081/users/' + getCookie('userId'), this.handleUpdateSettings, true)
+        request('get', 'http://' + window.location.hostname + ':8081/users/' + get_cookie('userId'), {}, this.handleResponse, true)
     }
 
+    handleHire = () => {
+        this.setState({ hiring: !this.state.hiring })
+    };
+
     handleImage = () => {
-        this.setState({
-            image: {
-                open: !this.state.image.open,
-                value: this.state.image.value
-            }
-        })
+        this.setState({ image: !this.state.image })
     };
 
-    handleCheckImage = (event) => {
-        console.log(event);
-
-        this.setState({
-            image: {
-                open: true,
-                value: event.target.hasOwnProperty('value') ? event.target.value : this.state.image.value
-            }
-        })
+    handlePhrase = () => {
+        this.setState({ phrase: !this.state.phrase })
     };
 
-    handleDialogPhrase = () => {
-        this.setState({
-            phrase: {
-                open: !this.state.phrase.open,
-                value: this.state.phrase.value
-            }
-        })
-    };
-
-    handleCheckPhrase= (event) => {
-        this.setState({
-            phrase: {
-                open: true,
-                value: event.target.hasOwnProperty('value') ? event.target.value : this.state.phrase.value
-            }
-        })
-    };
-
-    handleUpdateSettings = (data) => {
-        this.setState({
-            image: {
-                open: false,
-                value: data.image
-            },
-            phrase: {
-                open: false,
-                value: data.phrase
-            }
-        })
-    };
-
-    handleRequest = (type, url, update, async) => {
-        let request = new XMLHttpRequest(), body = {};
-
-        request.open(type.toUpperCase(), url, async);
-        request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
-
-        request.onreadystatechange = function() {
-            if (request.readyState === 4) {
-                switch (request.status) {
-                    case 200:
-                        update(JSON.parse(request.response));
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
-
-        if (type.toLowerCase() === 'patch') {
-            body = {
-                image: this.state.image.value,
-                phrase: this.state.phrase.value
-            }
+    handleResponse = (request) => {
+        switch (request.status) {
+            case 200:
+                this.handleUpdate(JSON.parse(request.response));
+                break;
+            default:
+                this.handleSnack('Ajustes en mantenimiento.');
+                break;
         }
-
-        request.send(JSON.stringify(body))
     };
 
-    handleRequestImage = () => {
-        this.handleRequest('patch', 'http://' + window.location.hostname + ':8081/users/' + getCookie('userId'), this.handleUpdateSettings, true);
+    handleSession = () => {
+        ['userId', 'userRut'].forEach(quit_cookie); window.location.href = '/'
     };
 
-    handleRequestPhrase = () => {
-        this.handleRequest('patch', 'http://' + window.location.hostname + ':8081/users/' + getCookie('userId'), this.handleUpdateSettings, true);
-    };
-
-    handleClickListItem = () => {
-        this.setState({ open: true });
-    };
-
-    handleMenuItemClick = (event, index) => {
-        this.setState({ menu: { value: index }, open: false });
-    };
-
-    handleRequestClose = () => {
-        this.setState({ open: false });
+    handleUpdate = (user) => {
+        this.setState({ user: user })
     };
 
     render() {
-        const options = [
-            'Plan 0',
-            'Plan 1',
-            'Plan 2',
-            'Plan 3',
-        ];
-
         return (
             <List>
                 <ListItem
@@ -153,119 +72,83 @@ class ListSettings extends Component {
                     onClick={ this.handleImage }
                 >
                     <Avatar
-                        alt={ this.state.image.value }
-                        classes={{ img: 'avatar' }}
-                        style={{ borderRadius: 0, height: 64, width: 64 }}
-                        src={ this.state.image.value }
+                        alt={ this.state.user.image }
+                        classes={{ root: 'square', img: 'avatar' }}
+                        src={ this.state.user.image }
                     />
 
                     <ListItemText
-
                         primary='Imagen de usuario'
-                        secondary={ 'Clic para modificar' }
-                        style={{ maxWidth: '-webkit-fill-available', overflow: 'hidden' }}
-                    />
-                </ListItem>
-
-                <ListItem button>
-                    <ListItemText
-                        onClick={ this.handleDialogPhrase }
-                        primary="Frase"
-                        secondary={ this.state.phrase.value }
+                        secondary='Clic para modificar'
                     />
                 </ListItem>
 
                 <ListItem
                     button
-                    aria-haspopup="true"
-                    aria-controls="lock-menu"
-                    aria-label="Plan"
-                    onClick={this.handleClickListItem}
+                    onClick={ this.handlePhrase }
                 >
                     <ListItemText
-                        primary="Plan seleccionado"
-                        secondary={options[this.state.menu.value]}
+                        primary='Frase'
+                        secondary={ this.state.user.phrase }
                     />
                 </ListItem>
 
-                <Menu
-                    id="lock-menu"
-                    anchorEl={this.state.anchorEl}
-                    open={this.state.open}
-                    onClose={this.handleRequestClose}
+                <ListItem
+                    button
+                    onClick={ this.handleHire }
                 >
-                    {options.map((option, index) => (
-                        <MenuItem
-                            key={option}
-                            disabled={index === 0}
-                            selected={index === this.state.selectedIndex}
-                            onClick={event => this.handleMenuItemClick(event, index)}
-                        >
-                            {option}
-                        </MenuItem>
-                    ))}
-                </Menu>
+                    <ListItemText
+                        primary='Cambiar plan'
+                        secondary={ '' }
+                    />
+                </ListItem>
 
                 <Divider />
 
                 <ListItem
                     button
-                    onClick={ this.props.action }
+                    onClick={ this.handleSession }
                 >
-                    <ListItemText
-                        primary="Salir"
-                        style={{ paddingRight: 62 }}
-                        onClick={ this.handleLogout }
-                    />
+                    <ListItemText primary='Salir'/>
                 </ListItem>
 
                 <FormImage
-                    onChange={ this.handleCheckImage }
-                    onDefaultClick={ this.handleImage }
-                    onPrimaryClick={ this.handleRequestImage }
-                    onClose={ this.handleImage }
-                    open={ this.state.image.open }
-                    value={ this.state.image.value }
+                    close={ this.handleImage }
+                    open={ this.state.image }
+                />
+
+                <FormPhrase
+                    close={ this.handlePhrase }
+                    open={ this.state.phrase }
                 />
 
                 <Dialog
-                    open={ this.state.phrase.open }
-                    onClose={ this.handleDialogPhrase }
-                    classes={{ paper: 'w-80' }}
+                    classes={{ paper: 'padding-top-128' }}
+                    fullScreen
+                    open={ this.state.hiring }
                 >
-                    <DialogTitle>{ "Frase de usuario" }</DialogTitle>
-                    <DialogContent>
-                        <TextField
-                            id="phrase"
-                            label="Frase"
-                            value={ this.state.phrase.value }
-                            onChange={ this.handleCheckPhrase }
-                            fullWidth
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button
-                            onClick={ this.handleDialogPhrase }
-                            color="primary"
-                        >
-                            Cancelar
-                        </Button>
-                        <Button
-                            onClick={ this.handleRequestPhrase }
-                            color="primary"
-                            autoFocus
-                        >
-                            Actualizar
-                        </Button>
-                    </DialogActions>
+                    <AppBar position='fixed'>
+                        <Toolbar>
+                            <IconButton
+                                children={ <Icon>close</Icon> }
+                                color='contrast'
+                                onClick={ this.handleHire }
+                            />
+
+                            <Typography
+                                children='Planes'
+                                color='inherit'
+                                style={{ marginLeft: 16 }}
+                                type='title'
+                            />
+                        </Toolbar>
+                    </AppBar>
+
+                    <ListAgreements onClick={ this.handleHire }/>
                 </Dialog>
             </List>
         );
     }
-}
-
-function getCookie(name) {
-    let match = document.cookie.match(new RegExp(name + '=([^;]+)')); if (match) return match[1]
 }
 
 export default ListSettings;

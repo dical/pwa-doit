@@ -16,13 +16,11 @@ class Messages extends Component {
 
     render() {
         return (
-            <div style={{ paddingTop: 64 }}>
+            <div className='padding-top-64'>
                 <AppBar position='fixed'>
-                    <div className='header-radial-gradient'/>
-
                     <Toolbar>
                         <Typography
-                            children='Messages'
+                            children='Notificaciones'
                             color='inherit'
                             type='title'
                         />

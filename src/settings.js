@@ -9,17 +9,27 @@ import Typography from 'material-ui/Typography';
 
 import ListSettings from './components/lists/settings';
 
+import { get_cookie } from './helpers/cookie';
+
 class Settings extends Component {
     render() {
         return (
-            <div style={{ paddingTop: 64 }}>
-                <AppBar position='fixed' style={{ background: 'linear-gradient(90deg, #18252d 30%, #0a1014 90%)' }}>
+            <div className='padding-top-64'>
+                <AppBar position='fixed'>
                     <Toolbar>
-                        <Link to={ '/user/' + cookie('userId') }>
-                            <IconButton children={ <Icon>arrow_back</Icon> } color='contrast'/>
+                        <Link to={ '/user/' + get_cookie('userId') }>
+                            <IconButton
+                                children={ <Icon>arrow_back</Icon> }
+                                color='contrast'
+                            />
                         </Link>
 
-                        <Typography children='Ajustes' color='inherit' style={{ marginLeft: 16 }} type='title'/>
+                        <Typography
+                            children='Ajustes'
+                            color='inherit'
+                            style={{ marginLeft: 16 }}
+                            type='title'
+                        />
                     </Toolbar>
                 </AppBar>
 
@@ -27,10 +37,6 @@ class Settings extends Component {
             </div>
         );
     }
-}
-
-function cookie(name) {
-    let match = document.cookie.match(new RegExp(name + '=([^;]+)')); if (match) return match[1]
 }
 
 export default Settings;

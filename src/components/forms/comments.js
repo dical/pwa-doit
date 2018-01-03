@@ -85,7 +85,7 @@ class FormComments extends Component {
         return <Dialog
             classes={{ paper: 'w-80' }}
             open={ this.props.open }
-            onRequestClose={ this.props.onClose }
+            onClose={ this.props.onClose }
         >
             <DialogTitle children={ this.props.message === undefined ? 'Add comment' : 'Respond to ' + this.props.message.user.username }/>
 

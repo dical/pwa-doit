@@ -8,48 +8,25 @@ import Tabs, { Tab } from 'material-ui/Tabs';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 
-import FormBusiness from './components/formBusiness';
+import FormBusiness from './components/forms/business';
 import FormUser from './components/forms/user';
 
 class SignIn extends Component {
     state = {
-        tabs: {
-            value: 0
-        },
-        _id: ''
+        tab: 'user'
     };
 
     handleClick = () => {
-        if (document.querySelector('form button') !== null) {
-            document.querySelector('form button').click()
-        }
-    };
-
-    handleSession = (response) => {
-        let expires = new Date();
-
-        expires.setTime(expires.getTime() + (365 * 24 * 60 * 60 * 1000));
-
-        document.cookie = "userId=" + JSON.parse(response)._id + ";expires="+ expires.toUTCString() +";path=/";
-
-        this.setState({
-            _id: JSON.parse(response)._id
-        }, function() {
-            document.getElementById('to-user').click()
-        })
+        if (document.querySelector('form button') !== null) { document.querySelector('form button').click() }
     };
 
     handleTabs = (event, value) => {
-        this.setState({
-            tabs: {
-                value: value
-            }
-        })
+        this.setState({ tab: value })
     };
 
     render() {
         return (
-            <div style={{ padding: '128px 16px 0' }}>
+            <div className='padding-top-128 padding-bottom-32'>
                 <AppBar
                     position='fixed'
                     style={{ background: 'linear-gradient(45deg, #18252d 30%, #0a1014 90%)' }}
@@ -71,7 +48,8 @@ class SignIn extends Component {
 
                         <IconButton
                             children={ <Icon classes={{ root: 'bold' }}>check</Icon> }
-                            color='accent'
+                            color='inherit'
+                            focusRipple
                             onClick={ this.handleClick }
                         />
                     </Toolbar>
@@ -81,18 +59,15 @@ class SignIn extends Component {
                         indicatorColor='primary'
                         onChange={ this.handleTabs }
                         textColor='inherit'
-                        value={ this.state.tabs.value }
+                        value={ this.state.tab }
                     >
-                        <Tab icon={ <Icon>person</Icon> }/>
-                        <Tab icon={ <Icon>business</Icon>}/>
+                        <Tab icon={ <Icon>person</Icon> } value='user'/>
+                        <Tab icon={ <Icon>business</Icon>} value='business'/>
                     </Tabs>
                 </AppBar>
 
-                { this.state.tabs.value === 0 && <FormUser onRequestSucess={ this.handleSession }/> }
-
-                { this.state.tabs.value === 1 && <FormBusiness onRequestSucess={ this.handleSession }/> }
-
-                <Link id='to-user' to={ '/user/' + this.state._id }/>
+                { this.state.tab === 'user' && <FormUser/> }
+                { this.state.tab === 'business' && <FormBusiness/> }
             </div>
         );
     }

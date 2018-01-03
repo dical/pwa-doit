@@ -57,6 +57,9 @@ class FormRank extends Component {
             case 200:
                 this.handleUpdate(JSON.parse(request.response));
                 break;
+            case 201:
+                this.handleUpdate(JSON.parse(request.response));
+                break;
             default:
                 break;
         }

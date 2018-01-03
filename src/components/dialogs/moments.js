@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Dialog, { DialogActions, DialogContent, DialogTitle } from 'material-ui/Dialog';
+import Dialog, { DialogContent } from 'material-ui/Dialog';
 
 class DialogMoments extends Component {
     render() {
@@ -10,7 +10,7 @@ class DialogMoments extends Component {
             onClose={ this.props.onRequestClose }
         >
             <DialogContent
-                children={ <img src={ this.props.image }/> }
+                children={ <img alt='' src={ this.props.image }/> }
                 style={{ padding: 0 }}
             />
         </Dialog>

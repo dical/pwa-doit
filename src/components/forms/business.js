@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import Button from 'material-ui/Button';
 import { LinearProgress } from 'material-ui/Progress';
@@ -7,26 +7,30 @@ import Typography from 'material-ui/Typography';
 
 import Snack from '../snack';
 
-import { test_value } from '../../helpers/form';
+import { test_value, test_rut } from '../../helpers/form';
 import { decode_errors } from '../../helpers/request';
 import { set_cookie } from "../../helpers/cookie";
 
-class FormUser extends React.Component {
+class FormBusiness extends Component {
     state = {
-        names: '',
-        surnames: '',
-        born: '',
-        sex: '',
+        name: '',
+        rutBody: '',
+        rutCheck: '',
         mail: '',
         street: '',
         number: '',
         city: '',
+        state: '',
+        zip: '',
+        country: '',
         username: '',
         password: '',
         confirm: '',
-        fieldset: false,
+        fieldset: {
+            disabled: false
+        },
         snack: {
-            message: 'Signing user',
+            message: 'Registrando empresa...',
             open: false
         }
     };
@@ -36,7 +40,13 @@ class FormUser extends React.Component {
     };
 
     handleDisable = () => {
-        this.setState({ fieldset: !this.state.fieldset })
+        document.getElementById('progress-business').style.display = document.getElementById('progress-business').style.display === 'none' ? '' : 'none';
+
+        this.setState({
+            fieldset: {
+                disabled: !this.state.fieldset.disabled
+            }
+        })
     };
 
     handleRequest = (callback) => {
@@ -45,14 +55,19 @@ class FormUser extends React.Component {
         request.open('POST', 'http://' + window.location.hostname + ':8081/users', true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
 
-        request.onreadystatechange = function() { if (request.readyState === 4) { callback(request) } };
+        request.onreadystatechange = function() { if (request.readyState === 4) { callback(request)} };
 
         request.send(
             JSON.stringify({
                 username: this.state.username,
                 password: this.state.password,
                 names: this.state.name,
-                born: this.state.born,
+                business: {
+                    rut: {
+                        body: this.state.rutBody,
+                        checker: this.state.rutCheck
+                    }
+                },
                 mail: this.state.mail,
                 address: {
                     city: this.state.city,
@@ -74,7 +89,7 @@ class FormUser extends React.Component {
                 this.handleSnack(decode_errors(request.response));
                 break;
             default :
-                this.handleSnack('Registro de usuario en mantenimiento.');
+                this.handleSnack('Registro de empresa en mantenimiento.');
                 break;
         }
 
@@ -104,11 +119,18 @@ class FormUser extends React.Component {
         return (
             <form autoComplete='off'>
                 <LinearProgress
-                    classes={{ root: 'progress' }}
-                    style={ this.state.fieldset ? {} : { display: 'none' } }
+                    id='progress-business'
+                    style={{
+                        position: 'fixed',
+                        left: 0,
+                        top: 0,
+                        zIndex: 2001,
+                        width: '100%',
+                        display: 'none'
+                    }}
                 />
 
-                <fieldset disabled={ this.state.fieldset }>
+                <fieldset disabled={ this.state.fieldset.disabled }>
                     <Typography
                         children='Información de contacto'
                         color='inherit'
@@ -117,67 +139,114 @@ class FormUser extends React.Component {
                     />
 
                     <TextField
-                        error={ !test_value("^(?!\\s)(?!.*\\s$)(?=.*[a-zA-Z])[a-zA-Z '~?!]{2,32}$", this.state.names) }
+                        error={ !test_value("^(?!\\s)(?!.*\\s$)(?=.*[a-zA-Z0-9])[a-zA-Z0-9 '~?!]{2,32}$", this.state.name) }
                         fullWidth
-                        helperText='Entre 2 a 32 caracteres'
-                        onChange={ this.handleChange('names') }
-                        placeholder='Nombre(s)'
+                        helperText='Entre 2 a 32 caracteres y/o dígitos numéricos'
+                        onChange={ this.handleChange('name') }
+                        placeholder='Nombre de empresa *'
                         type='text'
-                        value={ this.state.names }
+                        value={ this.state.name }
                     />
 
                     <TextField
-                        error={ !test_value("^(?!\\s)(?!.*\\s$)(?=.*[a-zA-Z0-9])[a-zA-Z0-9 '~?!]{2,32}$", this.state.surnames) }
+                        error={ !test_value("^\\d+$", this.state.rutBody) || !test_rut(this.state.rutBody + '-' + this.state.rutCheck) }
                         fullWidth
-                        helperText='Entre 2 a 32 caracteres y/o dígitos numéricos'
-                        onChange={ this.handleChange('surnames') }
-                        placeholder='Apellido(s)'
-                        type='text'
-                        value={ this.state.surnames }
+                        helperText='Ingrese su rut sin: puntos, guión y dígito verificador'
+                        onChange={ this.handleChange('rutBody') }
+                        placeholder='RUT *'
+                        style={{ width: '55%', margin: '0 16px 0 0' }}
+                        type='number'
+                        value={ this.state.rutBody }
+                    />
+
+                    <TextField
+                        error={ !test_value("^\\d+$", this.state.rutCheck) || !test_rut(this.state.rutBody + '-' + this.state.rutCheck) }
+                        fullWidth
+                        helperText='Ingrese el dígito verificador del rut'
+                        onChange={ this.handleChange('rutCheck') }
+                        placeholder='Dígito verificador *'
+                        style={{ width: '35%' }}
+                        type='number'
+                        value={ this.state.rutCheck }
                     />
 
                     <TextField
                         error={ !test_value("^(([^<>()[\\]\\\\.,;:\\s@\\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\\"]+)*)|(\\\".+\\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$", this.state.mail) }
                         fullWidth
-                        helperText='Formato: abc123@dominio.abc'
+                        helperText='Formato: empresa@dominio.com'
                         onChange={ this.handleChange('mail') }
-                        placeholder='Correo electrónico'
+                        placeholder='Correo electrónico *'
                         type='mail'
                         value={ this.state.mail }
                     />
 
                     <Typography
-                        children='Nacimiento'
+                        children='Dirección de la empresa'
                         color='inherit'
                         style={{ flex: 1, marginTop: 24 }}
                         type='title'
                     />
 
                     <TextField
+                        error={ !test_value("^[a-zA-Z0-9\\s,'-,{1}]{2,}$", this.state.street) }
                         fullWidth
-                        helperText='Formato: 1-31/1-12/0-9999'
-                        onChange={ this.handleChange('born') }
-                        placeholder='Fecha de nacimiento *'
-                        style={{ width: '50%', margin: '0 16px 0 0' }}
-                        type='date'
-                        value={ this.state.born }
+                        helperText='Min. 2 caracteres'
+                        onChange={ this.handleChange('street') }
+                        placeholder='Calle *'
+                        style={{ width: '55%', margin: '0 16px 0 0' }}
+                        type='text'
+                        value={ this.state.street }
                     />
 
                     <TextField
+                        error={ !test_value("^[\\d]{1,}$", this.state.number) }
                         fullWidth
-                        onChange={ this.handleChange('sex') }
-                        placeholder='Sexo'
-                        select
-                        SelectProps={{ native: true }}
-                        style={{
-                            lineHeight: 1,
-                            width: 'calc(50% - 16px)'
-                        }}
-                        value={ this.state.sex }
-                    >
-                        <option value='F'>Femenino</option>
-                        <option value='M'>Masculino</option>
-                    </TextField>
+                        helperText='Min 1 dígito numérico'
+                        onChange={ this.handleChange('number') }
+                        placeholder='Numero *'
+                        style={{ width: 'calc(45% - 16px)' }}
+                        type='number'
+                        value={ this.state.number }
+                    />
+
+                    <TextField
+                        error={ !test_value("^[a-zA-Z0-9\\s,'-,#]{2,}$", this.state.city) }
+                        fullWidth
+                        onChange={ this.handleChange('city') }
+                        placeholder='Ciudad *'
+                        style={{ width: '55%', margin: '0 16px 0 0' }}
+                        type='text'
+                        value={ this.state.city }
+                    />
+
+                    <TextField
+                        disabled={ true }
+                        fullWidth
+                        placeholder='State'
+                        style={{ width: '35%' }}
+                        type="text"
+                        value={ 'Coquimbo' }
+                    />
+
+                    <TextField
+                        error={ !test_value("^\\d{6,}$", this.state.zip) }
+                        fullWidth
+                        helperText='Min. 6 dígitos numéricos'
+                        onChange={ this.handleChange('zip') }
+                        placeholder='Codigo Postal'
+                        style={{ width: '55%', margin: '0 16px 0 0' }}
+                        type="text"
+                        value={ this.state.zip }
+                    />
+
+                    <TextField
+                        disabled={ true }
+                        fullWidth
+                        placeholder='Country'
+                        style={{ width: '35%' }}
+                        type="text"
+                        value={ 'Chile' }
+                    />
 
                     <Typography
                         children='Información de usuario'
@@ -209,10 +278,10 @@ class FormUser extends React.Component {
                     <TextField
                         error={ this.state.password !== this.state.confirm }
                         fullWidth
-                        helperText='Confirmar contraseña'
+                        helperText='Repita la contraseña'
                         onChange={ this.handleChange('confirm') }
-                        placeholder='Ingrese nuevamente la contraseña'
-                        type='password'
+                        placeholder='Confirmar contraseña'
+                        type="password"
                         value={ this.state.confirm }
                     />
 
@@ -236,4 +305,4 @@ class FormUser extends React.Component {
     }
 }
 
-export default FormUser;
+export default FormBusiness;

@@ -110,9 +110,9 @@ class User extends Component {
         return (
             <div style={{ paddingBottom: 56 }}>
                 <AppBar
+                    classes={{ root: 'transparent' }}
                     elevation={ 0 }
                     position='fixed'
-                    style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)' }}
                 >
                     <Toolbar>
                         <Link to='/'>
