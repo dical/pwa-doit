@@ -10,7 +10,7 @@ export function decode_errors(response) {
                 }
 
                 if (errors_json.errors[property].kind === 'max') {
-                    errors_string = errors_string + 'La fecha fundación supera el maximo permitido' + '\n'
+                    errors_string = errors_string + 'La fecha fundación supera el maximo permitido\n'
                 }
             }
         }
