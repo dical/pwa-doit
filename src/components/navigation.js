@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import BottomNavigation, { BottomNavigationButton } from 'material-ui/BottomNavigation';
+import BottomNavigation, { BottomNavigationAction } from 'material-ui/BottomNavigation';
 import Icon from 'material-ui/Icon';
 
 class Navigation extends Component {
@@ -29,7 +29,7 @@ class Navigation extends Component {
                     }}
                     value={ this.state.value }
                 >
-                    <BottomNavigationButton
+                    <BottomNavigationAction
                         classes={{ root: 'color-black', selected: 'color-white' }}
                         icon={ <Icon children='notifications'/> }
                         label='Notificaciones'
@@ -37,7 +37,7 @@ class Navigation extends Component {
                         value='messages'
                     />
 
-                    <BottomNavigationButton
+                    <BottomNavigationAction
                         classes={{ root: 'color-black', selected: 'color-white' }}
                         icon={ <Icon children='home'/> }
                         label='Inicio'
@@ -45,7 +45,7 @@ class Navigation extends Component {
                         value='home'
                     />
 
-                    <BottomNavigationButton
+                    <BottomNavigationAction
                         classes={{ root: 'color-black', selected: 'color-white' }}
                         icon={ <Icon children='person'/> }
                         label='Perfil'
