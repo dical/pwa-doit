@@ -126,15 +126,18 @@ class User extends Component {
                             />
                         </Link>
 
-                        <Link
-                            style={{ marginLeft: 'auto' }}
-                            to='/settings'
-                        >
-                            <IconButton
-                                children={ <Icon>settings</Icon> }
-                                color="contrast"
-                            />
-                        </Link>
+                        {
+                            get_cookie('userId') === this.state.user._id &&
+                            <Link
+                                style={{ marginLeft: 'auto' }}
+                                to='/settings'
+                            >
+                                <IconButton
+                                    children={ <Icon>settings</Icon> }
+                                    color="contrast"
+                                />
+                            </Link>
+                        }
                     </Toolbar>
                 </AppBar>
 
