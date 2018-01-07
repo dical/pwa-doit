@@ -222,6 +222,7 @@ class FormBusiness extends Component {
                     <TextField
                         disabled={ true }
                         fullWidth
+                        helperText='Region'
                         placeholder='State'
                         style={{ width: '35%' }}
                         type="text"
@@ -242,6 +243,7 @@ class FormBusiness extends Component {
                     <TextField
                         disabled={ true }
                         fullWidth
+                        helperText='Pais'
                         placeholder='Country'
                         style={{ width: '35%' }}
                         type="text"
