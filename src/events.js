@@ -35,7 +35,7 @@ class Events extends Component {
     };
 
     handleSearch = () => {
-        this.setState({ searching: !this.state.searching })
+        this.setState({ searching: !this.state.searching, search: '' })
     };
 
     render() {
@@ -67,10 +67,10 @@ class Events extends Component {
                         />
                     </Toolbar>
 
-                    <Toolbar style={ this.state.searching ? {} : { display: 'none' } }>
+                    <Toolbar style={ this.state.searching ? { backgroundColor: '#fff' } : { display: 'none' } }>
                         <IconButton
                             children={ <Icon>search</Icon> }
-                            color='contrast'
+                            color='default'
                         />
 
                         <TextField
@@ -80,11 +80,12 @@ class Events extends Component {
                             onChange={ this.handleChange }
                             style={{ marginLeft: 16 }}
                             type='text'
+                            value={ this.state.search }
                         />
 
                         <IconButton
                             children={ <Icon>close</Icon> }
-                            color='contrast'
+                            color='default'
                             onClick={ this.handleSearch }
                             style={{ marginLeft: 'auto' }}
                         />

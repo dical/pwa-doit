@@ -400,9 +400,9 @@ class FormEvent extends Component {
                     />
 
                     <TextField
-                        helperText='Enter a url of image'
+                        helperText='Dirección url de la imagen'
                         fullWidth
-                        label="Image"
+                        label='Imagen'
                         onChange={ this.handleChange('image') }
                         style={{
                             marginRight: 8,
@@ -416,7 +416,7 @@ class FormEvent extends Component {
 
                     <Button
                         color='primary'
-                        children='select'
+                        children='Subir'
                         dense
                         onClick={ this.handleFile }
                         style={{
@@ -433,7 +433,8 @@ class FormEvent extends Component {
                         }}
                     >
                         <TextField
-                            placeholder='Enter a tag and press "add"'
+                            placeholder='Texto de la etiqueta'
+                            helperText='Ingrese una etiqueta y presione "agregar"'
                             onChange={ this.handleTag }
                             style={{
                                 marginRight: 8,
@@ -452,7 +453,7 @@ class FormEvent extends Component {
                                 width: 'calc(30% - 8px)'
                             }}
                         >
-                            Add
+                            Agregar
                         </Button>
 
                         <div
@@ -466,7 +467,7 @@ class FormEvent extends Component {
                                 this.state.event.tags.length === 0 &&
                                 <Chip
                                     key={ -1 }
-                                    label={ <span><Icon style={{ verticalAlign: 'middle' }}>mood_bad</Icon> No tags</span> }
+                                    label={ <span><Icon style={{ verticalAlign: 'middle' }}>mood_bad</Icon> Sin etiquetas</span> }
                                     style={{ opacity: .7 }}
                                 />
                             }

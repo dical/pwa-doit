@@ -52,7 +52,7 @@ function getDate(dateObject) {
     let start = new Date(dateObject.start),
         end = new Date(dateObject.end);
 
-    return <span>{days[start.getDay()] + ' ' + start.getDate() + ' de ' + months[start.getMonth()] + ' del ' + start.getFullYear() }<br/>{ getTime(start) + ' - ' + getTime(end) }</span>
+    return <span>{days[start.getDay()] + ' ' + start.getDate() + ' de ' + months[start.getMonth()] + ' del ' + start.getFullYear() }<br/>{ getTime(start) + ' - ' + getTime(end) }{ start.getDate() !== end.getDate() ? ' del ' + end.getDate() + ' de ' + months[start.getMonth()] + ' del ' + start.getFullYear() : ''}</span>
 }
 
 function getTime(date) {
