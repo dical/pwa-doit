@@ -27,6 +27,7 @@ class DialogUsers extends Component {
                         children='Inscritos'
                         color='inherit'
                         type='title'
+                        style={{ marginLeft: 16 }}
                     />
                 </Toolbar>
             </AppBar>

@@ -5,7 +5,13 @@ export function decode_errors(response) {
     if (errors_json.hasOwnProperty('errors')) {
         for (let property in errors_json.errors) {
             if (errors_json.errors.hasOwnProperty(property)) {
-                errors_string = errors_string + errors_json.errors[property].message + '\n'
+                if (errors_json.errors[property].kind === 'required') {
+                    errors_string = errors_string + errors_json.errors[property].message + '\n'
+                }
+
+                if (errors_json.errors[property].kind === 'max') {
+                    errors_string = errors_string + 'La fecha fundación supera el maximo permitido' + '\n'
+                }
             }
         }
     } else {

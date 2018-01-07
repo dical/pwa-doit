@@ -228,8 +228,8 @@ class FormEvent extends Component {
                     <TextField
                         fullWidth
                         error={ this.state.event.name.trim().length === 0 }
-                        helperText='Enter characters or/and digits numbers'
-                        label='Title'
+                        helperText='Caracteres y/o dígitos numéricos'
+                        label='Titulo'
                         onChange={ this.handleChange('name') }
                         style={{ paddingBottom: 16 }}
                         type='text'
@@ -238,7 +238,7 @@ class FormEvent extends Component {
 
                     <TextField
                         disabled={ true }
-                        label='Country'
+                        label='Pais'
                         select
                         onChange={ null }
                         SelectProps={{ native: true }}
@@ -252,8 +252,8 @@ class FormEvent extends Component {
                     </TextField>
 
                     <TextField
-                        helperText='Select a city'
-                        label='City'
+                        helperText='Seleccione una ciudad'
+                        label='Ciudad'
                         onChange={ this.handleCity }
                         select
                         SelectProps={{ native: true }}
@@ -270,8 +270,8 @@ class FormEvent extends Component {
 
                     <TextField
                         error={ this.state.event.address.street.trim().length === 0 }
-                        helperText='Enter characters or/and digits numbers'
-                        label="Street"
+                        helperText='Caracteres y/o dígitos numéricos'
+                        label='Calle'
                         onChange={ this.handleStreet }
                         style={{
                             paddingBottom: 16,
@@ -284,8 +284,8 @@ class FormEvent extends Component {
 
                     <TextField
                         error={ this.state.event.address.number === '' }
-                        helperText='Enter a number'
-                        label="Number"
+                        helperText='Numero'
+                        label='Numero'
                         onChange={ this.handleNumber }
                         style={{
                             paddingBottom: 16,
@@ -298,16 +298,16 @@ class FormEvent extends Component {
 
                     <TextField
                         error={ this.state.event.start >= this.state.event.end }
-                        helperText='Format dd/mm/aaaa'
+                        helperText='Formato: dia/mes/año'
                         InputLabelProps={{ shrink: true }}
-                        label="Fecha de Inicio"
+                        label='Fecha de Inicio'
                         onChange={ this.handleStartDate }
                         style={{
                             marginRight: 8,
                             paddingBottom: 16,
                             width: 'calc(50% - 8px)'
                         }}
-                        type="date"
+                        type='date'
                         value={
                             this.state.event.start.getFullYear() + '-' +
                             ( this.state.event.start.getMonth() + 1 < 10 ? '0' + (this.state.event.start.getMonth() + 1) : this.state.event.start.getMonth() + 1 ) + '-' +
@@ -317,22 +317,22 @@ class FormEvent extends Component {
 
                     <TextField
                         error={ this.state.event.start >= this.state.event.end }
-                        helperText='Format hh:mm'
+                        helperText='Formato: hora:minuto'
                         InputLabelProps={{ shrink: true }}
-                        label="Hora de Inicio *"
+                        label='Hora de Inicio'
                         onChange={ this.handleStartTime }
                         style={{
                             marginLeft: 8,
                             paddingBottom: 16,
                             width: 'calc(50% - 8px)'
                         }}
-                        type="time"
+                        type='time'
                         value={ ( this.state.event.start.getHours() < 10 ? '0' + this.state.event.start.getHours() : this.state.event.start.getHours() ) + ':' + ( this.state.event.start.getMinutes() < 10 ? '0' + this.state.event.start.getMinutes() : this.state.event.start.getMinutes() ) }
                     />
 
                     <TextField
-                        helperText='Format dd/mm/aaaa'
-                        label='Fecha de Termino *'
+                        helperText='Formato: dia/mes/año'
+                        label='Fecha de Termino'
                         onChange={ this.handleEndDate }
                         style={{
                             marginRight: 8,
@@ -348,7 +348,7 @@ class FormEvent extends Component {
                     />
 
                     <TextField
-                        helperText='Format hh:mm'
+                        helperText='Formato: hora:minuto'
                         InputLabelProps={{ shrink: true }}
                         label="Hora de Termino *"
                         onChange={ this.handleEndTime }
@@ -363,7 +363,7 @@ class FormEvent extends Component {
 
                     <TextField
                         fullWidth
-                        label="Description"
+                        label="Descripcion"
                         multiline
                         rowsMax="3"
                         onChange={ this.handleChange('details') }
@@ -373,22 +373,22 @@ class FormEvent extends Component {
 
                     <TextField
                         error={ this.state.event.quotas < 1 }
-                        helperText='Enter a number'
-                        label='Quotas'
+                        helperText='Minimo 1'
+                        label='Cupos'
                         onChange={ this.handleChange('quotas') }
                         style={{
                             paddingBottom: 16,
                             marginRight: 8,
                             width: 'calc(50% - 8px)'
                         }}
-                        type="number"
+                        type='number'
                         value={ this.state.event.quotas }
                     />
 
                     <TextField
                         error={ this.state.event.price < 0 || this.state.event.price === '' }
-                        helperText='Enter a number'
-                        label="Price"
+                        helperText='Minimo 0'
+                        label='Precio'
                         onChange={ this.handleChange('price') }
                         style={{
                             paddingBottom: 16,

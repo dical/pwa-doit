@@ -8,61 +8,42 @@ import Typography from 'material-ui/Typography';
 import Snack from '../snack';
 
 import { test_value } from '../../helpers/form';
-import { decode_errors } from '../../helpers/request';
+import {decode_errors, request} from '../../helpers/request';
 import { set_cookie } from "../../helpers/cookie";
 
 class FormUser extends React.Component {
     state = {
-        names: '',
-        surnames: '',
-        born: '',
-        sex: '',
-        mail: '',
-        street: '',
-        number: '',
-        city: '',
-        username: '',
-        password: '',
+        user: {
+            username: '',
+            password: '',
+            names: '',
+            surnames: '',
+            born: new Date(new Date(Date.now()).getFullYear() - 18, new Date(Date.now()).getMonth(), new Date(Date.now()).getDate()),
+            sex: 'm',
+            mail: '',
+            address: {
+                city: '',
+                number: '',
+                street: ''
+            }
+        },
         confirm: '',
-        fieldset: false,
         snack: {
-            message: 'Signing user',
+            message: 'Registrando usuario',
             open: false
         }
     };
 
     handleChange = name => event => {
-        this.setState({ [name]: event.target.value })
+        let user = this.state.user; user[name] = event.target.value; this.setState({ user: user })
     };
 
-    handleDisable = () => {
-        this.setState({ fieldset: !this.state.fieldset })
+    handleChangeBorn = event => {
+        let user = this.state.user; user.born = new Date(event.target.value); this.setState({ user: user })
     };
 
-    handleRequest = (callback) => {
-        let request = new XMLHttpRequest();
-
-        request.open('POST', 'http://' + window.location.hostname + ':8081/users', true);
-        request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
-
-        request.onreadystatechange = function() { if (request.readyState === 4) { callback(request) } };
-
-        request.send(
-            JSON.stringify({
-                username: this.state.username,
-                password: this.state.password,
-                names: this.state.name,
-                born: this.state.born,
-                mail: this.state.mail,
-                address: {
-                    city: this.state.city,
-                    number: this.state.number,
-                    street: this.state.street
-                }
-            })
-        );
-
-        this.handleDisable()
+    handleChangeConfirm = event => {
+        this.setState({ confirm: event.target.value })
     };
 
     handleResponse = (request) => {
@@ -77,8 +58,6 @@ class FormUser extends React.Component {
                 this.handleSnack('Registro de usuario en mantenimiento.');
                 break;
         }
-
-        this.handleDisable()
     };
 
     handleSession = (user) => {
@@ -105,10 +84,10 @@ class FormUser extends React.Component {
             <form autoComplete='off'>
                 <LinearProgress
                     classes={{ root: 'progress' }}
-                    style={ this.state.fieldset ? {} : { display: 'none' } }
+                    style={ this.state.snack.open ? {} : { display: 'none' } }
                 />
 
-                <fieldset disabled={ this.state.fieldset }>
+                <fieldset disabled={ this.state.snack.open }>
                     <Typography
                         children='Información de contacto'
                         color='inherit'
@@ -117,33 +96,33 @@ class FormUser extends React.Component {
                     />
 
                     <TextField
-                        error={ !test_value("^(?!\\s)(?!.*\\s$)(?=.*[a-zA-Z])[a-zA-Z '~?!]{2,32}$", this.state.names) }
+                        error={ !test_value("^(?!\\s)(?!.*\\s$)(?=.*[a-zA-Záéíóú])[a-zA-Záéíóú '~?!]{2,32}$", this.state.user.names) }
                         fullWidth
                         helperText='Entre 2 a 32 caracteres'
                         onChange={ this.handleChange('names') }
                         placeholder='Nombre(s)'
                         type='text'
-                        value={ this.state.names }
+                        value={ this.state.user.names }
                     />
 
                     <TextField
-                        error={ !test_value("^(?!\\s)(?!.*\\s$)(?=.*[a-zA-Z0-9])[a-zA-Z0-9 '~?!]{2,32}$", this.state.surnames) }
+                        error={ this.state.user.surnames !== '' && !test_value("^(?!\\s)(?!.*\\s$)(?=.*[a-zA-Záéíóú])[a-zA-Záéíóú '~?!]{2,32}$", this.state.user.surnames) }
                         fullWidth
-                        helperText='Entre 2 a 32 caracteres y/o dígitos numéricos'
+                        helperText='Entre 2 a 32 caracteres'
                         onChange={ this.handleChange('surnames') }
                         placeholder='Apellido(s)'
                         type='text'
-                        value={ this.state.surnames }
+                        value={ this.state.user.surnames }
                     />
 
                     <TextField
-                        error={ !test_value("^(([^<>()[\\]\\\\.,;:\\s@\\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\\"]+)*)|(\\\".+\\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$", this.state.mail) }
+                        error={ !test_value("^(([^<>()[\\]\\\\.,;:\\s@\\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\\"]+)*)|(\\\".+\\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$", this.state.user.mail) }
                         fullWidth
                         helperText='Formato: abc123@dominio.abc'
                         onChange={ this.handleChange('mail') }
                         placeholder='Correo electrónico'
                         type='mail'
-                        value={ this.state.mail }
+                        value={ this.state.user.mail }
                     />
 
                     <Typography
@@ -154,29 +133,30 @@ class FormUser extends React.Component {
                     />
 
                     <TextField
+                        error={ new Date(Date.now()).getFullYear() - this.state.user.born.getFullYear() < 18 || new Date(Date.now()).getMonth() < this.state.user.born.getMonth() || (new Date(Date.now()).getMonth() === this.state.user.born.getMonth() && new Date(Date.now()).getDate() <= this.state.user.born.getDate()) }
                         fullWidth
                         helperText='Formato: 1-31/1-12/0-9999'
-                        onChange={ this.handleChange('born') }
+                        onChange={ this.handleChangeBorn }
                         placeholder='Fecha de nacimiento *'
                         style={{ width: '50%', margin: '0 16px 0 0' }}
                         type='date'
-                        value={ this.state.born }
+                        value={ this.state.user.born.toISOString().slice(0,10) }
                     />
 
                     <TextField
                         fullWidth
                         onChange={ this.handleChange('sex') }
-                        placeholder='Sexo'
+                        helperText='Sexo'
                         select
                         SelectProps={{ native: true }}
                         style={{
                             lineHeight: 1,
                             width: 'calc(50% - 16px)'
                         }}
-                        value={ this.state.sex }
+                        value={ this.state.user.sex }
                     >
-                        <option value='F'>Femenino</option>
-                        <option value='M'>Masculino</option>
+                        <option value='f'>Femenino</option>
+                        <option value='m'>Masculino</option>
                     </TextField>
 
                     <Typography
@@ -187,30 +167,30 @@ class FormUser extends React.Component {
                     />
 
                     <TextField
-                        error={ !test_value("^[a-zA-Z0-9]{5,15}$", this.state.username) }
+                        error={ !test_value("^[a-zA-Z0-9]{5,15}$", this.state.user.username) }
                         fullWidth
                         helperText='Entre 5 a 15 caracteres y/o dígitos numéricos'
                         onChange={ this.handleChange('username') }
                         placeholder='Nombre de usuario'
                         type='text'
-                        value={ this.state.username }
+                        value={ this.state.user.username }
                     />
 
                     <TextField
-                        error={ !test_value("^[a-zA-Z0-9]{8,15}$", this.state.password) }
+                        error={ !test_value("^[a-zA-Z0-9]{8,15}$", this.state.user.password) }
                         fullWidth
                         helperText='Entre 8 a 15 caracteres y/o dígitos numéricos'
                         onChange={ this.handleChange('password') }
                         placeholder='Contraseña'
                         type='password'
-                        value={ this.state.password }
+                        value={ this.state.user.password }
                     />
 
                     <TextField
-                        error={ this.state.password !== this.state.confirm }
+                        error={ this.state.user.password !== this.state.confirm }
                         fullWidth
                         helperText='Confirmar contraseña'
-                        onChange={ this.handleChange('confirm') }
+                        onChange={ this.handleChangeConfirm }
                         placeholder='Ingrese nuevamente la contraseña'
                         type='password'
                         value={ this.state.confirm }
@@ -226,7 +206,7 @@ class FormUser extends React.Component {
                         children='Registrarse'
                         color='accent'
                         hidden
-                        onClick={ () => { this.handleRequest(this.handleResponse) } }
+                        onClick={ () => { this.handleSnack('Registrando usuario', request('post', 'http://' + window.location.hostname + ':8081/users', this.state.user, this.handleResponse, true)) } }
                         raised
                         style={{ width: '100%', display: 'none' }}
                     />

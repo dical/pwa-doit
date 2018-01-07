@@ -8,27 +8,30 @@ import Typography from 'material-ui/Typography';
 import Snack from '../snack';
 
 import { test_value, test_rut } from '../../helpers/form';
-import { decode_errors } from '../../helpers/request';
+import { decode_errors, request } from '../../helpers/request';
 import { set_cookie } from "../../helpers/cookie";
 
 class FormBusiness extends Component {
     state = {
-        name: '',
-        rutBody: '',
-        rutCheck: '',
-        mail: '',
-        street: '',
-        number: '',
-        city: '',
-        state: '',
-        zip: '',
-        country: '',
-        username: '',
-        password: '',
-        confirm: '',
-        fieldset: {
-            disabled: false
+        user: {
+            username: '',
+            password: '',
+            names: '',
+            born: new Date(Date.now()),
+            business: {
+                rut: {
+                    body: '',
+                    checker: ''
+                }
+            },
+            mail: '',
+            address: {
+                city: '',
+                number: '',
+                street: ''
+            }
         },
+        confirm: '',
         snack: {
             message: 'Registrando empresa...',
             open: false
@@ -36,48 +39,23 @@ class FormBusiness extends Component {
     };
 
     handleChange = name => event => {
-        this.setState({ [name]: event.target.value })
+        let user = this.state.user; user[name] = event.target.value; this.setState({ user: user })
     };
 
-    handleDisable = () => {
-        document.getElementById('progress-business').style.display = document.getElementById('progress-business').style.display === 'none' ? '' : 'none';
-
-        this.setState({
-            fieldset: {
-                disabled: !this.state.fieldset.disabled
-            }
-        })
+    handleChangeAddress = name => event => {
+        let user = this.state.user; user.address[name] = event.target.value; this.setState({ user: user })
     };
 
-    handleRequest = (callback) => {
-        let request = new XMLHttpRequest();
+    handleChangeBorn = event => {
+        let user = this.state.user; user.born = new Date(event.target.value); this.setState({ user: user })
+    };
 
-        request.open('POST', 'http://' + window.location.hostname + ':8081/users', true);
-        request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
+    handleChangeConfirm = event => {
+        this.setState({ confirm: event.target.value })
+    };
 
-        request.onreadystatechange = function() { if (request.readyState === 4) { callback(request)} };
-
-        request.send(
-            JSON.stringify({
-                username: this.state.username,
-                password: this.state.password,
-                names: this.state.name,
-                business: {
-                    rut: {
-                        body: this.state.rutBody,
-                        checker: this.state.rutCheck
-                    }
-                },
-                mail: this.state.mail,
-                address: {
-                    city: this.state.city,
-                    number: this.state.number,
-                    street: this.state.street
-                }
-            })
-        );
-
-        this.handleDisable()
+    handleChangeRut = name => event => {
+        let user = this.state.user; user.business.rut[name] = event.target.value; this.setState({ user: user })
     };
 
     handleResponse = (request) => {
@@ -92,8 +70,6 @@ class FormBusiness extends Component {
                 this.handleSnack('Registro de empresa en mantenimiento.');
                 break;
         }
-
-        this.handleDisable()
     };
 
     handleSession = (user) => {
@@ -119,18 +95,11 @@ class FormBusiness extends Component {
         return (
             <form autoComplete='off'>
                 <LinearProgress
-                    id='progress-business'
-                    style={{
-                        position: 'fixed',
-                        left: 0,
-                        top: 0,
-                        zIndex: 2001,
-                        width: '100%',
-                        display: 'none'
-                    }}
+                    classes={{ root: 'progress' }}
+                    style={ this.state.snack.open ? {} : { display: 'none' } }
                 />
 
-                <fieldset disabled={ this.state.fieldset.disabled }>
+                <fieldset disabled={ this.state.snack.open }>
                     <Typography
                         children='Información de contacto'
                         color='inherit'
@@ -139,45 +108,45 @@ class FormBusiness extends Component {
                     />
 
                     <TextField
-                        error={ !test_value("^(?!\\s)(?!.*\\s$)(?=.*[a-zA-Z0-9])[a-zA-Z0-9 '~?!]{2,32}$", this.state.name) }
+                        error={ !test_value("^(?!\\s)(?!.*\\s$)(?=.*[a-zA-Z0-9])[a-zA-Z0-9 '~?!]{2,32}$", this.state.user.names) }
                         fullWidth
                         helperText='Entre 2 a 32 caracteres y/o dígitos numéricos'
                         onChange={ this.handleChange('name') }
                         placeholder='Nombre de empresa *'
                         type='text'
-                        value={ this.state.name }
+                        value={ this.state.user.names }
                     />
 
                     <TextField
-                        error={ !test_value("^\\d+$", this.state.rutBody) || !test_rut(this.state.rutBody + '-' + this.state.rutCheck) }
+                        error={ !test_value("^\\d+$", this.state.user.business.rut.body) || !test_rut(this.state.user.business.rut.body + '-' + this.state.user.business.rut.checker) }
                         fullWidth
                         helperText='Ingrese su rut sin: puntos, guión y dígito verificador'
-                        onChange={ this.handleChange('rutBody') }
+                        onChange={ this.handleChangeRut('body') }
                         placeholder='RUT *'
                         style={{ width: '55%', margin: '0 16px 0 0' }}
                         type='number'
-                        value={ this.state.rutBody }
+                        value={ this.state.user.business.rut.body }
                     />
 
                     <TextField
-                        error={ !test_value("^\\d+$", this.state.rutCheck) || !test_rut(this.state.rutBody + '-' + this.state.rutCheck) }
+                        error={ !test_value("^\\d+$", this.state.user.business.rut.checker) || !test_rut(this.state.user.business.rut.body + '-' + this.state.user.business.rut.checker) }
                         fullWidth
                         helperText='Ingrese el dígito verificador del rut'
-                        onChange={ this.handleChange('rutCheck') }
+                        onChange={ this.handleChangeRut('checker') }
                         placeholder='Dígito verificador *'
                         style={{ width: '35%' }}
                         type='number'
-                        value={ this.state.rutCheck }
+                        value={ this.state.user.business.rut.checker }
                     />
 
                     <TextField
-                        error={ !test_value("^(([^<>()[\\]\\\\.,;:\\s@\\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\\"]+)*)|(\\\".+\\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$", this.state.mail) }
+                        error={ !test_value("^(([^<>()[\\]\\\\.,;:\\s@\\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\\"]+)*)|(\\\".+\\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$", this.state.user.mail) }
                         fullWidth
                         helperText='Formato: empresa@dominio.com'
                         onChange={ this.handleChange('mail') }
                         placeholder='Correo electrónico *'
                         type='mail'
-                        value={ this.state.mail }
+                        value={ this.state.user.mail }
                     />
 
                     <Typography
@@ -188,35 +157,35 @@ class FormBusiness extends Component {
                     />
 
                     <TextField
-                        error={ !test_value("^[a-zA-Z0-9\\s,'-,{1}]{2,}$", this.state.street) }
+                        error={ !test_value("^[a-zA-Z0-9\\s,'-,{1}]{2,}$", this.state.user.address.street) }
                         fullWidth
                         helperText='Min. 2 caracteres'
-                        onChange={ this.handleChange('street') }
+                        onChange={ this.handleChangeAddress('street') }
                         placeholder='Calle *'
                         style={{ width: '55%', margin: '0 16px 0 0' }}
                         type='text'
-                        value={ this.state.street }
+                        value={ this.state.user.address.street }
                     />
 
                     <TextField
-                        error={ !test_value("^[\\d]{1,}$", this.state.number) }
+                        error={ !test_value("^[\\d]{1,}$", this.state.user.address.number) }
                         fullWidth
                         helperText='Min 1 dígito numérico'
-                        onChange={ this.handleChange('number') }
+                        onChange={ this.handleChangeAddress('number') }
                         placeholder='Numero *'
                         style={{ width: 'calc(45% - 16px)' }}
                         type='number'
-                        value={ this.state.number }
+                        value={ this.state.user.address.number }
                     />
 
                     <TextField
-                        error={ !test_value("^[a-zA-Z0-9\\s,'-,#]{2,}$", this.state.city) }
+                        error={ !test_value("^[a-zA-Z0-9\\s,'-,#]{2,}$", this.state.user.address.city) }
                         fullWidth
-                        onChange={ this.handleChange('city') }
+                        onChange={ this.handleChangeAddress('city') }
                         placeholder='Ciudad *'
                         style={{ width: '55%', margin: '0 16px 0 0' }}
                         type='text'
-                        value={ this.state.city }
+                        value={ this.state.user.address.city }
                     />
 
                     <TextField
@@ -229,25 +198,21 @@ class FormBusiness extends Component {
                         value={ 'Coquimbo' }
                     />
 
-                    <TextField
-                        error={ !test_value("^\\d{6,}$", this.state.zip) }
-                        fullWidth
-                        helperText='Min. 6 dígitos numéricos'
-                        onChange={ this.handleChange('zip') }
-                        placeholder='Codigo Postal'
-                        style={{ width: '55%', margin: '0 16px 0 0' }}
-                        type="text"
-                        value={ this.state.zip }
+                    <Typography
+                        children='Fecha de fundación'
+                        color='inherit'
+                        style={{ flex: 1, marginTop: 24 }}
+                        type='title'
                     />
 
                     <TextField
-                        disabled={ true }
+                        error={ new Date(Date.now()) < this.state.user.born }
                         fullWidth
-                        helperText='Pais'
-                        placeholder='Country'
-                        style={{ width: '35%' }}
-                        type="text"
-                        value={ 'Chile' }
+                        helperText='Formato: 1-31/1-12/0-9999'
+                        onChange={ this.handleChangeBorn }
+                        placeholder='Fecha de nacimiento *'
+                        type='date'
+                        value={ this.state.user.born.toISOString().slice(0,10) }
                     />
 
                     <Typography
@@ -258,30 +223,30 @@ class FormBusiness extends Component {
                     />
 
                     <TextField
-                        error={ !test_value("^[a-zA-Z0-9]{5,15}$", this.state.username) }
+                        error={ !test_value("^[a-zA-Z0-9]{5,15}$", this.state.user.username) }
                         fullWidth
                         helperText='Entre 5 a 15 caracteres y/o dígitos numéricos'
                         onChange={ this.handleChange('username') }
                         placeholder='Nombre de usuario'
                         type='text'
-                        value={ this.state.username }
+                        value={ this.state.user.username }
                     />
 
                     <TextField
-                        error={ !test_value("^[a-zA-Z0-9]{8,15}$", this.state.password) }
+                        error={ !test_value("^[a-zA-Z0-9]{8,15}$", this.state.user.password) }
                         fullWidth
                         helperText='Entre 8 a 15 caracteres y/o dígitos numéricos'
                         onChange={ this.handleChange('password') }
                         placeholder='Contraseña'
                         type='password'
-                        value={ this.state.password }
+                        value={ this.state.user.password }
                     />
 
                     <TextField
-                        error={ this.state.password !== this.state.confirm }
+                        error={ this.state.user.password !== this.state.confirm }
                         fullWidth
                         helperText='Repita la contraseña'
-                        onChange={ this.handleChange('confirm') }
+                        onChange={ this.handleChangeConfirm }
                         placeholder='Confirmar contraseña'
                         type="password"
                         value={ this.state.confirm }
@@ -297,7 +262,7 @@ class FormBusiness extends Component {
                         children='Registrarse'
                         color='accent'
                         hidden
-                        onClick={ () => { this.handleRequest(this.handleResponse) } }
+                        onClick={ () => { this.handleSnack('Registrando empresa', request('post', 'http://' + window.location.hostname + ':8081/users', this.state.user, this.handleResponse, true)) } }
                         raised
                         style={{ width: '100%', display: 'none' }}
                     />

@@ -10,7 +10,7 @@ class ListNotifications extends Component {
     state = { notifications: [] };
 
     icons = {
-        owner_comment: 'notification',
+        owner_new_message: 'notifications',
         new_inscription: 'person_add'
     };
 
@@ -48,7 +48,10 @@ class ListNotifications extends Component {
                             children={
                                 <ListItem button>
                                     <ListItemIcon children={ <Icon children={ this.icons[notification.activity] }/> }/>
-                                    <ListItemText primary={ notification.details }/>
+                                    <ListItemText
+                                        primary={ notification.details }
+                                        secondary={ notification.event.name }
+                                    />
                                 </ListItem>
                             }
                             key={ index }

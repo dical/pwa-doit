@@ -61,7 +61,8 @@ class FormComments extends Component {
                 user: getCookie('userId'),
                 event: window.location.pathname.split('/').pop(),
                 details: this.state.value,
-                to: this.props.message._id
+                to: this.props.message,
+                responses: typeof this.props.message === undefined ? [] : undefined
             })
         )
     };
