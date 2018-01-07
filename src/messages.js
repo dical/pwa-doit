@@ -4,14 +4,29 @@ import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 
-import ListMessages from './components/lists/messages';
+import ListNotifications from './components/lists/notifications';
 import Navigation from './components/navigation';
 
+import { get_cookie } from './helpers/cookie';
+import { request } from'./helpers/request';
+
 class Messages extends Component {
-    state = {
-        categories: {
-            open: false
+    state = { query: '' };
+
+    componentWillMount() {
+        request('get', 'http://' + window.location.hostname + ':8081/inscriptions?user=' + get_cookie('userId'), {}, this.handleUpdate, true )
+    }
+
+    handleUpdate = (request) => {
+        switch (request.status) {
+            case 200:
+                this.setState({ query : '?' + JSON.parse(request.response).map(function(inscription) { return 'event=' + inscription.event._id }).join('&') });
+                break;
+            default:
+                break;
         }
+
+        console.log(this.state.query);
     };
 
     render() {
@@ -27,16 +42,12 @@ class Messages extends Component {
                     </Toolbar>
                 </AppBar>
 
-                <ListMessages query={ 'user=' + getCookie('userId') }/>
+                <ListNotifications query={ this.state.query }/>
 
                 <Navigation value={ 'messages' }/>
             </div>
         );
     }
-}
-
-function getCookie(name) {
-    let match = document.cookie.match(new RegExp(name + '=([^;]+)')); if (match) return match[1]
 }
 
 export default Messages;

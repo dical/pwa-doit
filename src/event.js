@@ -17,7 +17,8 @@ import FormShare from './components/forms/share';
 import GridMoments from './components/grids/moments';
 import ListDetail from './components/lists/details';
 import ListComments from './components/lists/comments';
-import Snack from './components/snackDefault';
+
+import Snack from './components/snack';
 
 import { get_cookie } from './helpers/cookie';
 

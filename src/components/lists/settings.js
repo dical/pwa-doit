@@ -1,53 +1,50 @@
 import React, { Component } from 'react';
 
-import AppBar from 'material-ui/AppBar';
 import Avatar from 'material-ui/Avatar';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
-import Icon from 'material-ui/Icon';
-import IconButton from 'material-ui/IconButton';
 import List, { ListItem, ListItemText } from 'material-ui/List';
-import Toolbar from 'material-ui/Toolbar';
-import Typography from 'material-ui/Typography';
 
 import FormImage from '../forms/image';
 import FormPhrase from '../forms/phrase';
-import ListAgreements from '../lists/agreements';
+import FormAgreement from '../forms/agreement';
 
 import { request } from '../../helpers/request';
 import { get_cookie, quit_cookie } from '../../helpers/cookie';
 
 class ListSettings extends Component {
     state = {
-        agreement: {},
-        hiring: false,
-        image: false,
-        phrase: false,
+        dialog: null,
         user: {
             image: '',
             phrase: ''
         }
     };
 
+    agreements = [
+        'Basico',
+        'Medio',
+        'Pro'
+    ];
+
     componentDidMount() {
         request('get', 'http://' + window.location.hostname + ':8081/users/' + get_cookie('userId'), {}, this.handleResponse, true)
     }
 
-    handleHire = () => {
-        this.setState({ hiring: !this.state.hiring })
+    handleChange = (prop, value) => {
+        let user = this.state.user; user[prop] = value; this.setState({ user: user })
     };
 
-    handleImage = () => {
-        this.setState({ image: !this.state.image })
-    };
-
-    handlePhrase = () => {
-        this.setState({ phrase: !this.state.phrase })
+    handleDialog = (value) => {
+        this.setState({ dialog: typeof value === "object" ? null : value })
     };
 
     handleResponse = (request) => {
         switch (request.status) {
             case 200:
+                this.handleUpdate(JSON.parse(request.response));
+                break;
+            case 202:
                 this.handleUpdate(JSON.parse(request.response));
                 break;
             default:
@@ -56,12 +53,11 @@ class ListSettings extends Component {
         }
     };
 
-    handleSession = () => {
-        ['userId', 'userRut'].forEach(quit_cookie); window.location.href = '/'
-    };
-
     handleUpdate = (user) => {
-        this.setState({ user: user })
+        this.setState({
+            dialog: null,
+            user: user
+        })
     };
 
     render() {
@@ -69,7 +65,7 @@ class ListSettings extends Component {
             <List>
                 <ListItem
                     button
-                    onClick={ this.handleImage }
+                    onClick={ () => { this.handleDialog('image') } }
                 >
                     <Avatar
                         alt={ this.state.user.image }
@@ -85,7 +81,7 @@ class ListSettings extends Component {
 
                 <ListItem
                     button
-                    onClick={ this.handlePhrase }
+                    onClick={ () => { this.handleDialog('phrase') } }
                 >
                     <ListItemText
                         primary='Frase'
@@ -93,58 +89,56 @@ class ListSettings extends Component {
                     />
                 </ListItem>
 
-                <ListItem
-                    button
-                    onClick={ this.handleHire }
-                >
-                    <ListItemText
-                        primary='Cambiar plan'
-                        secondary={ '' }
-                    />
-                </ListItem>
+                {
+                    get_cookie('userRut') &&
+                    <ListItem
+                        button
+                        onClick={ () => { this.handleDialog('agreement') } }
+                    >
+                        <ListItemText
+                            primary='Cambiar plan'
+                            secondary={ this.agreements[this.state.user.agreement] }
+                        />
+                    </ListItem>
+                }
 
                 <Divider />
 
                 <ListItem
                     button
-                    onClick={ this.handleSession }
+                    onClick={ () => { ['userId', 'userRut'].forEach(quit_cookie); window.location.href = '/' } }
                 >
                     <ListItemText primary='Salir'/>
                 </ListItem>
 
-                <FormImage
-                    close={ this.handleImage }
-                    open={ this.state.image }
-                />
-
-                <FormPhrase
-                    close={ this.handlePhrase }
-                    open={ this.state.phrase }
-                />
-
                 <Dialog
-                    classes={{ paper: 'padding-top-128' }}
-                    fullScreen
-                    open={ this.state.hiring }
+                    classes={{ paper: 'w-80' }}
+                    onClose={ this.handleDialog }
+                    open={ this.state.dialog !== null }
                 >
-                    <AppBar position='fixed'>
-                        <Toolbar>
-                            <IconButton
-                                children={ <Icon>close</Icon> }
-                                color='contrast'
-                                onClick={ this.handleHire }
-                            />
+                    {
+                        this.state.dialog === 'image' &&
+                        <FormImage
+                            image={ this.state.user.image }
+                            update={ this.handleResponse }
+                        />
+                    }
 
-                            <Typography
-                                children='Planes'
-                                color='inherit'
-                                style={{ marginLeft: 16 }}
-                                type='title'
-                            />
-                        </Toolbar>
-                    </AppBar>
+                    {
+                        this.state.dialog === 'phrase' &&
+                        <FormPhrase
+                            phrase={ this.state.user.phrase }
+                            update={ this.handleResponse }
+                        />
+                    }
 
-                    <ListAgreements onClick={ this.handleHire }/>
+                    {
+                        this.state.dialog === 'agreement' &&
+                        <FormAgreement
+                            agreement={ this.state.user.agreement }
+                            update={ this.handleResponse }
+                        />
+                    }
                 </Dialog>
             </List>
         );

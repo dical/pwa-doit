@@ -6,7 +6,7 @@ import IconButton from 'material-ui/IconButton';
 import Typography from 'material-ui/Typography';
 
 import DialogMoments from '../dialogs/moments';
-import FormMoment from '../formMoment';
+import FormMoment from '../forms/moment';
 
 class GridMoments extends React.Component {
     state = {

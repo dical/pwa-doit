@@ -4,7 +4,7 @@ import Button from 'material-ui/Button';
 import Dialog, { DialogActions, DialogContent, DialogTitle } from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 
-import Snack from '../snackDefault';
+import Snack from '../snack';
 
 class FormComments extends Component {
     state = {
@@ -60,9 +60,8 @@ class FormComments extends Component {
             JSON.stringify({
                 user: getCookie('userId'),
                 event: window.location.pathname.split('/').pop(),
-                type: 'comment',
                 details: this.state.value,
-                respond: this.props.message
+                to: this.props.message._id
             })
         )
     };

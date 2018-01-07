@@ -105,6 +105,7 @@ class ListComments extends Component {
                     this.state.messages.map((message, index) => (
                         <ListItem
                             key={ this.state.messages.length - index }
+                            style={{ alignItems: 'end' }}
                         >
                             <Link
                                 to={ '/user/' + message.user._id }
@@ -138,22 +139,44 @@ class ListComments extends Component {
                                 }
                                 secondary={
                                     <div>
-                                        <Typography type="body1">{ message.details }</Typography>
+                                        <Typography type='body1'>{ message.details }</Typography>
 
                                         {
                                             message.responses.length > 0 &&
-                                            <Typography
-                                                style={{ fontWeight: 500 }}
-                                                type="caption"
-                                            >
-                                                SEE { message.responses.length } RESPONSES <IconButton children={ 'keyboard_arrow_down' } style={{ verticalAlign: 'middle' }}/>
-                                            </Typography>
+                                            <List style={{ marginLeft: -16 }}>
+                                                {
+                                                    message.responses.reverse().map((response, index) => (
+                                                        <ListItem key={ 'r' + index }>
+                                                            <Link to={ '/user/' + response.user._id }>
+                                                                <Avatar
+                                                                    classes={{ img: 'avatar' }}
+                                                                    src={ response.user.image === '/images/landscape.jpg' ? '/images/user.png' : response.user.image }
+                                                                />
+                                                            </Link>
+
+                                                            <ListItemText
+                                                                disableTypography
+                                                                primary={
+                                                                    <div>
+                                                                        <Typography style={{ display: 'inline' }} type='body1'>{ response.user.username } &nbsp;</Typography>
+
+                                                                        <Typography style={{ display: 'inline' }} type='caption'>{ getDiffDate(response.date) }</Typography>
+                                                                    </div>
+                                                                }
+
+                                                                secondary={ <Typography type='body1'>{ response.details }</Typography> }
+                                                            />
+                                                        </ListItem>
+                                                    ))
+                                                }
+                                            </List>
                                         }
+
                                     </div>
                                 }
                             />
 
-                            <ListItemSecondaryAction>
+                            <ListItemSecondaryAction style={{ top: 26 }}>
                                 {
                                     message.user._id !== getCookie('userId') &&
                                     <IconButton

@@ -5,7 +5,7 @@ import Chip from 'material-ui/Chip';
 import Icon from 'material-ui/Icon';
 import TextField from 'material-ui/TextField';
 
-import Snack from '../snackDefault';
+import Snack from '../snack';
 
 class FormEvent extends Component {
     state = {

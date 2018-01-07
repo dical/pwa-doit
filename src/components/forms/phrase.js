@@ -1,48 +1,26 @@
 import React, { Component } from 'react';
 
 import Button from 'material-ui/Button';
-import Dialog, { DialogActions, DialogContent, DialogTitle } from 'material-ui/Dialog';
+import { DialogActions, DialogContent, DialogTitle } from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 
-import { request} from '../../helpers/request';
+import { request } from '../../helpers/request';
 import { get_cookie } from "../../helpers/cookie";
 
 class FormImage extends Component {
-    state = {
-        user: {}
-    };
-
-    componentDidMount() {
-        request('get', 'http://' + window.location.hostname + ':8081/users/' + get_cookie('userId'), {}, this.handleUpdate, true)
-    }
+    state = { phrase: this.props.phrase };
 
     handleChange = (event) =>{
-        let user = this.state.user; user.phrase = event.target.value;
-
-        this.setState({ user: user })
+        this.setState({ phrase: event.target.value })
     };
 
-    handleUpdate = (request) => {
-        switch (request.status) {
-            case 200:
-                this.setState({ user: JSON.parse(request.response) });
-                break;
-            case 202:
-                window.location.reload();
-                break;
-            default:
-                this.handleSnack('Modificar frase en mantenimiento.');
-                break;
-        }
+    handlePatch = () => {
+        request('patch', 'http://' + window.location.hostname + ':8081/users/' + get_cookie('userId'), { phrase: this.state.phrase }, this.props.update, true)
     };
 
     render() {
         return (
-            <Dialog
-                open={ this.props.open }
-                onClose={ this.props.close }
-                classes={{ paper: 'w-80' }}
-            >
+            <form>
                 <DialogTitle>{ 'Frase de usuario' }</DialogTitle>
                 <DialogContent>
                     <TextField
@@ -50,22 +28,17 @@ class FormImage extends Component {
                         multiline
                         onChange={ this.handleChange }
                         placeholder='Frase'
-                        value={ this.state.user.phrase }
+                        value={ this.state.phrase }
                     />
                 </DialogContent>
                 <DialogActions>
                     <Button
-                        children='Cancelar'
-                        onClick={ this.props.close }
-                    />
-
-                    <Button
                         children='Actualizar'
                         color='primary'
-                        onClick={ () => { request('patch', 'http://' + window.location.hostname + ':8081/users/' + get_cookie('userId'), { phrase: this.state.user.phrase }, this.handleUpdate, true) } }
+                        onClick={ this.handlePatch }
                     />
                 </DialogActions>
-            </Dialog>
+            </form>
         );
     }
 }
