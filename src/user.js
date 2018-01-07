@@ -19,6 +19,8 @@ import ListEvents from './components/lists/events';
 import Navigation from './components/navigation';
 import FormRank from "./components/forms/rank";
 
+import { get_cookie } from './helpers/cookie';
+
 class User extends Component {
     state = {
         rank: {
@@ -89,6 +91,8 @@ class User extends Component {
     };
 
     handleUpdateRank = (rank) => {
+        console.log(rank);
+
         this.setState({
             rank: {
                 open: this.state.rank.open,
@@ -142,7 +146,7 @@ class User extends Component {
                     titleTextTransform='capitalize'
                 />
 
-                <Button fab color='accent' onClick={ this.handleRank } style={{ marginTop: -28, position: 'absolute', right: 16 }}>
+                <Button fab color='accent' onClick={ get_cookie('userId') !== this.state.user._id ? this.handleRank : null } style={{ marginTop: -28, position: 'absolute', right: 16 }}>
                     <Badge badgeContent={ this.state.rank.value.toFixed(1) } color='primary'>
                         <Icon children='star' color='contrast'/>
                     </Badge>
