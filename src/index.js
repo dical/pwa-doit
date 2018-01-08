@@ -14,6 +14,7 @@ import Settings from './settings';
 import SignIn from './sign-in';
 import User from './user';
 import Welcome from './welcome';
+import Support from './support';
 
 const theme = createMuiTheme({
     palette: {
@@ -45,6 +46,7 @@ class App extends React.Component {
                         <Route path="/event" component={Event}/>
                         <Route path="/messages" component={Messages}/>
                         <Route path="/settings" component={Settings}/>
+                        <Route path="/support" component={Support}/>
                     </Switch>
                 </div>
             </BrowserRouter>

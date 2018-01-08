@@ -8,8 +8,9 @@ import Typography from 'material-ui/Typography';
 import Snack from '../snack';
 
 import { test_value } from '../../helpers/form';
-import {decode_errors, request} from '../../helpers/request';
+import { decode_errors, request } from '../../helpers/request';
 import { set_cookie } from "../../helpers/cookie";
+import { utc_full_date, is_down_years } from '../../helpers/date';
 
 class FormUser extends React.Component {
     state = {
@@ -39,7 +40,7 @@ class FormUser extends React.Component {
     };
 
     handleChangeBorn = event => {
-        let user = this.state.user; user.born = new Date(event.target.value); this.setState({ user: user })
+        let user = this.state.user; user.born = new Date(event.target.value + 'T12:00:00Z'); this.setState({ user: user })
     };
 
     handleChangeConfirm = event => {
@@ -133,14 +134,14 @@ class FormUser extends React.Component {
                     />
 
                     <TextField
-                        error={ new Date(Date.now()).getFullYear() - this.state.user.born.getFullYear() < 18 || new Date(Date.now()).getMonth() < this.state.user.born.getMonth() || (new Date(Date.now()).getMonth() === this.state.user.born.getMonth() && new Date(Date.now()).getDate() <= this.state.user.born.getDate()) }
+                        error={ is_down_years(this.state.user.born, 18) }
                         fullWidth
                         helperText='Formato: 1-31/1-12/0-9999'
                         onChange={ this.handleChangeBorn }
                         placeholder='Fecha de nacimiento *'
                         style={{ width: '50%', margin: '0 16px 0 0' }}
                         type='date'
-                        value={ this.state.user.born.toISOString().slice(0,10) }
+                        value={ utc_full_date(this.state.user.born) }
                     />
 
                     <TextField

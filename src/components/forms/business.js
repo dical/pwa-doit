@@ -10,6 +10,7 @@ import Snack from '../snack';
 import { test_value, test_rut } from '../../helpers/form';
 import { decode_errors, request } from '../../helpers/request';
 import { set_cookie } from "../../helpers/cookie";
+import { utc_full_date } from '../../helpers/date';
 
 class FormBusiness extends Component {
     state = {
@@ -47,7 +48,7 @@ class FormBusiness extends Component {
     };
 
     handleChangeBorn = event => {
-        let user = this.state.user; user.born = new Date(event.target.value); this.setState({ user: user })
+        let user = this.state.user; user.born = new Date(event.target.value+ 'T12:00:00Z'); this.setState({ user: user })
     };
 
     handleChangeConfirm = event => {
@@ -212,7 +213,7 @@ class FormBusiness extends Component {
                         onChange={ this.handleChangeBorn }
                         placeholder='Fecha de nacimiento *'
                         type='date'
-                        value={ this.state.user.born.toISOString().slice(0,10) }
+                        value={ utc_full_date(this.state.user.born) }
                     />
 
                     <Typography

@@ -8,7 +8,7 @@ class CardImage extends Component {
         return (
             <CardMedia
                 className='profile'
-                image={ this.props.image === undefined ? '/images/landscape.jpg' : this.props.image }
+                image={ typeof this.props.image === "string" && this.props.image.trim() !== '' ? this.props.image : '/images/landscape.jpg' }
                 title="Title"
             >
                 <div

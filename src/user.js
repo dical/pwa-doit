@@ -91,8 +91,6 @@ class User extends Component {
     };
 
     handleUpdateRank = (rank) => {
-        console.log(rank);
-
         this.setState({
             rank: {
                 open: this.state.rank.open,

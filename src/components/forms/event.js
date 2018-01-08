@@ -7,6 +7,8 @@ import TextField from 'material-ui/TextField';
 
 import Snack from '../snack';
 
+import { utc_full_date, utc_full_hour, utc_hours, utc_minutes } from '../../helpers/date';
+
 class FormEvent extends Component {
     state = {
         event: {
@@ -87,23 +89,11 @@ class FormEvent extends Component {
     };
 
     handleEndDate = (event) => {
-        let endDate = event.target.value.split('-'), aux = this.state.event;
-
-        aux.end = new Date(endDate[0], endDate[1] - 1, endDate[2], this.state.event.end.getHours(), this.state.event.end.getMinutes());
-
-        this.setState({
-            event: aux
-        })
+        let aux = this.state.event; aux.end = new Date(event.target.value + 'T' + utc_hours(this.state.event.end) + ':' + utc_minutes(this.state.event.end) + ':00'); this.setState({ event: aux })
     };
 
     handleEndTime = (event) => {
-        let endTime = event.target.value.split(':'), aux = this.state.event;
-
-        aux.end = new Date(this.state.event.end.getFullYear(), this.state.event.end.getMonth(), this.state.event.end.getDate(), endTime[0], endTime[1]);
-
-        this.setState({
-            event: aux
-        })
+        let aux = this.state.event; aux.end = new Date(utc_full_date(this.state.event.end) + 'T' + event.target.value + ':00'); this.setState({ event: aux })
     };
 
     handleFile = () => {
@@ -181,23 +171,11 @@ class FormEvent extends Component {
     };
 
     handleStartDate = (event) => {
-        let startDate = event.target.value.split('-'), aux = this.state.event;
-
-        aux.start = new Date(startDate[0], startDate[1] - 1, startDate[2], aux.start.getHours(), aux.start.getMinutes());
-
-        this.setState({
-            event: aux
-        })
+        let aux = this.state.event; aux.start = new Date(event.target.value + 'T' + utc_hours(this.state.event.start) + ':' + utc_minutes(this.state.event.start) + ':00'); this.setState({ event: aux })
     };
 
     handleStartTime = (event) => {
-        let startTime = event.target.value.split(':'), aux = this.state.event;
-
-        aux.start = new Date(aux.start.getFullYear(), aux.start.getMonth(), aux.start.getDate(), startTime[0], startTime[1]);
-
-        this.setState({
-            event: aux
-        })
+        let aux = this.state.event; aux.start = new Date(utc_full_date(this.state.event.start) + 'T' + event.target.value + ':00'); this.setState({ event: aux })
     };
 
     handleStreet = (event) => {
@@ -308,11 +286,7 @@ class FormEvent extends Component {
                             width: 'calc(50% - 8px)'
                         }}
                         type='date'
-                        value={
-                            this.state.event.start.getFullYear() + '-' +
-                            ( this.state.event.start.getMonth() + 1 < 10 ? '0' + (this.state.event.start.getMonth() + 1) : this.state.event.start.getMonth() + 1 ) + '-' +
-                            ( this.state.event.start.getDate() < 10 ? '0' + this.state.event.start.getDate() : this.state.event.start.getDate() )
-                        }
+                        value={ utc_full_date(this.state.event.start) }
                     />
 
                     <TextField
@@ -327,7 +301,7 @@ class FormEvent extends Component {
                             width: 'calc(50% - 8px)'
                         }}
                         type='time'
-                        value={ ( this.state.event.start.getHours() < 10 ? '0' + this.state.event.start.getHours() : this.state.event.start.getHours() ) + ':' + ( this.state.event.start.getMinutes() < 10 ? '0' + this.state.event.start.getMinutes() : this.state.event.start.getMinutes() ) }
+                        value={ utc_full_hour(this.state.event.start) }
                     />
 
                     <TextField
@@ -340,11 +314,7 @@ class FormEvent extends Component {
                             width: 'calc(50% - 8px)'
                         }}
                         type='date'
-                        value={
-                            this.state.event.end.getFullYear() + '-' +
-                            ( this.state.event.end.getMonth() + 1 < 10 ? '0' + (this.state.event.end.getMonth() + 1) : this.state.event.end.getMonth() + 1 ) + '-' +
-                            ( this.state.event.end.getDate() < 10 ? '0' + this.state.event.end.getDate() : this.state.event.end.getDate() )
-                        }
+                        value={ utc_full_date(this.state.event.end) }
                     />
 
                     <TextField
@@ -358,7 +328,7 @@ class FormEvent extends Component {
                             width: 'calc(50% - 8px)'
                         }}
                         type="time"
-                        value={ ( this.state.event.end.getHours() < 10 ? '0' + this.state.event.end.getHours() : this.state.event.end.getHours() ) + ':' + ( this.state.event.end.getMinutes() < 10 ? '0' + this.state.event.end.getMinutes() : this.state.event.end.getMinutes() ) }
+                        value={ utc_full_hour(this.state.event.end) }
                     />
 
                     <TextField

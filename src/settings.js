@@ -30,6 +30,16 @@ class Settings extends Component {
                             style={{ marginLeft: 16 }}
                             type='title'
                         />
+
+                        <Link
+                            to={ '/support' }
+                            style={{ marginLeft: 'auto' }}
+                        >
+                            <IconButton
+                                children={ <Icon>help</Icon> }
+                                color='contrast'
+                            />
+                        </Link>
                     </Toolbar>
                 </AppBar>
 

@@ -25,8 +25,6 @@ class Messages extends Component {
             default:
                 break;
         }
-
-        console.log(this.state.query);
     };
 
     render() {
