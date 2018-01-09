@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 import Button from 'material-ui/Button';
 import { LinearProgress } from 'material-ui/Progress';
 import TextField from 'material-ui/TextField';
+import Typography from 'material-ui/Typography';
 
 import Snack from '../snack';
 
@@ -134,6 +136,18 @@ class FormSession extends Component {
                         open={ this.state.snack.open }
                     />
                 </fieldset>
+
+                <Link
+                    style={{ color: '#607D8B' }}
+                    to='/recovery'
+                >
+                    <Typography
+                        classes={{ root: 'hover-underline' }}
+                        children='Recuperar contraseña'
+                        color='inherit'
+                        type='subheading'
+                    />
+                </Link>
             </form>
         );
     }

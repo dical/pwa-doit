@@ -5,7 +5,7 @@ export function decode_errors(response) {
     if (errors_json.hasOwnProperty('errors')) {
         for (let property in errors_json.errors) {
             if (errors_json.errors.hasOwnProperty(property)) {
-                if (errors_json.errors[property].kind === 'required') {
+                if (errors_json.errors[property].kind === 'required' || !errors_json.errors[property].hasOwnProperty('kind')) {
                     errors_string = errors_string + errors_json.errors[property].message + '\n'
                 }
 
@@ -19,6 +19,9 @@ export function decode_errors(response) {
             errors_string = textFields[errors_json.errmsg.split('index: ').pop().split('_').reverse().pop()] + ' ya registrado.'
         }
     }
+
+    console.log(errors_json);
+    console.log(errors_string);
 
     return errors_string
 }

@@ -94,7 +94,7 @@ class User extends Component {
         this.setState({
             rank: {
                 open: this.state.rank.open,
-                value: rank.average
+                value: typeof rank.average === undefined ? 0.0 : rank.average
             }
         })
     };

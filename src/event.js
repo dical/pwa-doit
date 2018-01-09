@@ -145,6 +145,11 @@ class Event extends Component {
                 fun = this.handleShare;
                 ico = 'share';
             }
+
+            if (get_cookie('userRut') !== '') {
+                fun = this.handleShare;
+                ico = 'share';
+            }
         }
 
         this.setState({
