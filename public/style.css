@@ -13,6 +13,10 @@ header, .background-default {
     background: linear-gradient(45deg, #18252d 30%, #0a1014 90%) !important;
 }
 
+.color-gray {
+    color: #78909C !important;
+}
+
 .color-black {
     color: #000 !important;
 }
