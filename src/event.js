@@ -127,28 +127,20 @@ class Event extends Component {
     handleRefreshAction = () => {
         let _id = get_cookie('userId'), fun = this.handleShare, ico = 'share', val = 'info';
 
-        if (_id !== '' && this.state.event.quotas > this.state.inscriptions.length && Date.now() < new Date(this.state.event.start)) {
-            fun = this.handleParticipate;
-            ico = 'person_add';
+        if (_id !== '') {
+            if (this.state.event.quotas > this.state.inscriptions.length && get_cookie('userRut') === undefined) {
+                fun = this.handleParticipate;
+                ico = 'person_add';
+            }
 
             if (this.state.inscriptions.some(hasUser) || this.state.event.own._id === _id) {
                 fun = this.handleComment;
                 ico     = 'comment';
-            }
 
-            if (Date.now() > new Date(this.state.event.end) && this.state.inscriptions.some(hasUser)) {
-                fun = this.handleMoment;
-                ico = 'add_to_photos';
-            }
-
-            if (Date.now() > new Date(this.state.event.end) && !this.state.inscriptions.some(hasUser)) {
-                fun = this.handleShare;
-                ico = 'share';
-            }
-
-            if (get_cookie('userRut')) {
-                fun = this.handleShare;
-                ico = 'share';
+                if (Date.now() > new Date(this.state.event.end)) {
+                    fun = this.handleMoment;
+                    ico = 'add_to_photos';
+                }
             }
         }
 
