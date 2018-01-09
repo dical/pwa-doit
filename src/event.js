@@ -255,7 +255,7 @@ class Event extends Component {
                 <CardImage
                     avatar={ this.state.event.own.image }
                     image={this.state.event.image }
-                    subtitle={ '@' + this.state.event.own.names }
+                    subtitle={ '@' + this.state.event.own.username }
                     title={ this.state.event.name }
                 />
 
