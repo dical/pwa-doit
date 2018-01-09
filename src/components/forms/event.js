@@ -191,7 +191,7 @@ class FormEvent extends Component {
     handleUpload = (event) => {
         this.setState({ uploading: true });
 
-        let xhr = new XMLHttpRequest;
+        let xhr = new XMLHttpRequest();
         let fdt = new FormData();
         let response = this.handleResponseImage;
 
