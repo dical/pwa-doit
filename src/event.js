@@ -387,7 +387,7 @@ function getCookie(name) {
 
 function getUser(inscription) {
     inscription.user['inscription'] = inscription._id;
-    inscription.user['host'] = inscription.event.own;
+    inscription.user['event'] = inscription.event;
 
     return inscription.user
 }

@@ -61,7 +61,7 @@ class ListUsers extends Component {
                             />
 
                             {
-                                user.host === get_cookie('userId') &&
+                                user.event.own === get_cookie('userId') &&
                                 <IconButton
                                     children={ <Icon>close</Icon> }
                                     onClick={ () => this.handleDelete( user.inscription ) }
