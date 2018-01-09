@@ -70,7 +70,7 @@ class FormImage extends Component {
     render() {
         return (
             <form>
-                <fieldset disabled={ this.state.uploading } style={{ lineHeight: 1 }}>
+                <fieldset disabled={ this.state.uploading } style={{ lineHeight: 1, padding: 0 }}>
                     <DialogTitle>{ 'Imagen de usuario' }</DialogTitle>
                     <DialogContent>
                         <TextField
