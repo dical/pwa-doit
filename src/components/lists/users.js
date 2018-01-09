@@ -54,7 +54,7 @@ class ListUsers extends Component {
 
                             <ListItemText
                                 classes={{ text:'overflow-text' }}
-                                primary={ capitalizeFirstLetter(user.names) + ' ' + capitalizeFirstLetter(typeof user.surnames === undefined ? '' : user.surnames) }
+                                primary={ capitalizeFirstLetter(user.names) + ' ' + (user.hasOwnProperty('surnames') ? capitalizeFirstLetter(user.surnames) : '') }
                                 secondary={ user.phrase }
                             />
 

@@ -125,11 +125,11 @@ class Event extends Component {
     };
 
     handleRefreshAction = () => {
-        let _id = getCookie('userId'), fun = this.handleShare, ico = 'share', val = 'info';
+        let _id = get_cookie('userId'), fun = this.handleShare, ico = 'share', val = 'info';
 
         if (_id !== '' && this.state.event.quotas > this.state.inscriptions.length) {
             fun = this.handleParticipate;
-            ico= 'person_add';
+            ico = 'person_add';
 
             if (this.state.inscriptions.some(hasUser) || this.state.event.own._id === _id) {
                 fun = this.handleComment;
@@ -146,7 +146,7 @@ class Event extends Component {
                 ico = 'share';
             }
 
-            if (get_cookie('userRut') !== '') {
+            if (get_cookie('userRut')) {
                 fun = this.handleShare;
                 ico = 'share';
             }
@@ -393,7 +393,7 @@ function getUser(inscription) {
 }
 
 function hasUser(inscription) {
-    return inscription.user._id === getCookie('userId')
+    return inscription.user._id === get_cookie('userId')
 }
 
 export default Event;
