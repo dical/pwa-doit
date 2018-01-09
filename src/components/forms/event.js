@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import Button from 'material-ui/Button';
 import Chip from 'material-ui/Chip';
+import { CircularProgress } from 'material-ui/Progress';
 import Icon from 'material-ui/Icon';
 import TextField from 'material-ui/TextField';
 
@@ -35,7 +36,8 @@ class FormEvent extends Component {
             message: '',
             open: false
         },
-        tag: ''
+        tag: '',
+        uploading: false
     };
 
     componentDidMount() {
@@ -184,6 +186,37 @@ class FormEvent extends Component {
         aux.address.street = event.target.value;
 
         this.setState({ event: aux })
+    };
+
+    handleUpload = (event) => {
+        this.setState({ uploading: true });
+
+        let xhr = new XMLHttpRequest;
+        let fdt = new FormData();
+        let response = this.handleResponseImage;
+
+        fdt.append('image', event.target.files[0]);
+
+        xhr.open("POST", 'http://' + window.location.hostname + ':8081/images', true);
+
+        xhr.onreadystatechange = function() { if (xhr.readyState === 4) { response(xhr) } };
+
+        xhr.send(fdt);
+    };
+
+    handleResponseImage = (request) => {
+        switch (request.status) {
+            case 200:
+                let event = this.state.event; event.image = JSON.parse(request.response).image
+                this.setState({ event: event });
+                this.handleSnack('Imagen subida');
+                break;
+            default:
+                this.handleSnack('No se pudo subir la imagen');
+                break;
+        }
+
+        this.setState({ uploading: false })
     };
 
     render() {
@@ -370,6 +403,7 @@ class FormEvent extends Component {
                     />
 
                     <TextField
+                        disabled={ this.state.uploading }
                         helperText='Dirección url de la imagen'
                         fullWidth
                         label='Imagen'
@@ -382,11 +416,11 @@ class FormEvent extends Component {
                         value={ this.state.event.image }
                     />
 
-                    <input type="file" name="pic" accept="image/*" hidden/>
+                    <input type="file" name="pic" accept="image/*" hidden onChange={ this.handleUpload }/>
 
                     <Button
                         color='primary'
-                        children='Subir'
+                        children={ this.state.uploading ? <CircularProgress size={ 15 }/> : 'Subir' }
                         dense
                         onClick={ this.handleFile }
                         style={{
@@ -466,7 +500,7 @@ class FormEvent extends Component {
                     <Button
                         id='create_event_button'
                         children='Create event'
-                        onClick={ typeof this.props.dataEvent === undefined ? this.handlePostRequest : this.handlePatchRequest }
+                        onClick={ this.props.dataEvent === undefined ? this.handlePostRequest : this.handlePatchRequest }
                         style={{ display: 'none' }}
                     />
                 </fieldset>

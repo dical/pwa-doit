@@ -87,7 +87,7 @@ class FormComments extends Component {
             open={ this.props.open }
             onClose={ this.props.onClose }
         >
-            <DialogTitle children={ this.props.message === undefined ? 'Add comment' : 'Respond to ' + this.props.message.user.username }/>
+            <DialogTitle children={ this.props.message === undefined ? 'Agregar comentario' : 'Responder a ' + this.props.message.user.username }/>
 
             <DialogContent>
                 <TextField
@@ -97,7 +97,7 @@ class FormComments extends Component {
                     fullWidth
                     multiline
                     onChange={ this.handleChange }
-                    placeholder='Write comment...'
+                    placeholder='Escribir comentario'
                     rowsMax='4'
                     value={ this.state.value }
                 />
@@ -108,7 +108,7 @@ class FormComments extends Component {
                     color="default"
                     onClick={ this.props.onClose }
                 >
-                    Cancel
+                    Cancelar
                 </Button>
 
                 <Button
@@ -116,7 +116,7 @@ class FormComments extends Component {
                     color="primary"
                     onClick={ this.handleRequest }
                 >
-                    { this.props.message === undefined ? 'Add' : 'Respond' }
+                    { this.props.message === undefined ? 'Agregar' : 'Responder' }
                 </Button>
             </DialogActions>
 
