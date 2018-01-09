@@ -79,6 +79,7 @@ class Recovery extends Component {
                     value={ this.state.mail }
                     onChange={ this.handleChange }
                     margin="normal"
+                    type='mail'
                 />
 
                 <Button
