@@ -128,7 +128,7 @@ class Event extends Component {
         let _id = get_cookie('userId'), fun = this.handleShare, ico = 'share', val = 'info';
 
         if (_id !== '') {
-            if (this.state.event.quotas > this.state.inscriptions.length && get_cookie('userRut') === undefined) {
+            if (this.state.event.quotas > this.state.inscriptions.length && get_cookie('userRut') === undefined && Date.now() < new Date(this.state.event.start)) {
                 fun = this.handleParticipate;
                 ico = 'person_add';
             }
