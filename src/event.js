@@ -127,7 +127,7 @@ class Event extends Component {
     handleRefreshAction = () => {
         let _id = get_cookie('userId'), fun = this.handleShare, ico = 'share', val = 'info';
 
-        if (_id !== '' && this.state.event.quotas > this.state.inscriptions.length) {
+        if (_id !== '' && this.state.event.quotas > this.state.inscriptions.length && Date.now() < new Date(this.state.event.start)) {
             fun = this.handleParticipate;
             ico = 'person_add';
 
