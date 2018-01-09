@@ -4,6 +4,10 @@ import { CardMedia } from 'material-ui/Card';
 import Typography from 'material-ui/Typography';
 
 class CardImage extends Component {
+    componentWillReceiveProps(props){
+        console.log(props)
+    }
+
     render() {
         return (
             <CardMedia

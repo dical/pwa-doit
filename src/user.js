@@ -106,6 +106,8 @@ class User extends Component {
                 value: 1
             }
         })
+
+        console.log(typeof user.surnames)
     };
 
     render() {
@@ -143,7 +145,7 @@ class User extends Component {
                     avatar={ this.state.user.image }
                     image={ this.state.user.image }
                     subtitle={ '@' + this.state.user.username }
-                    title={ this.state.user.names + ' ' + (typeof this.state.user.surnames === undefined ? '' : this.state.user.surnames) }
+                    title={ this.state.user.names + (this.state.user.surnames === undefined ? '' : ' ' + this.state.user.surnames) }
                     titleTextTransform='capitalize'
                 />
 

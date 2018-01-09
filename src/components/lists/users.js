@@ -6,6 +6,8 @@ import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 import List, { ListItem, ListItemText } from 'material-ui/List';
 
+import { get_cookie } from '../../helpers/cookie';
+
 class ListUsers extends Component {
     handleDelete = (_id) => {
         this.handleRequest(
@@ -59,7 +61,7 @@ class ListUsers extends Component {
                             />
 
                             {
-                                user.host === cookie('userId') &&
+                                user.host === get_cookie('userId') &&
                                 <IconButton
                                     children={ <Icon>close</Icon> }
                                     onClick={ () => this.handleDelete( user.inscription ) }
@@ -75,10 +77,6 @@ class ListUsers extends Component {
 
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-function cookie(name) {
-    let match = document.cookie.match(new RegExp(name + '=([^;]+)')); if (match) return match[1]
 }
 
 export default ListUsers;
