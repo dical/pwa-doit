@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import AppBar from 'material-ui/AppBar';
+import { CircularProgress } from 'material-ui/Progress';
 import IconButton from 'material-ui/IconButton';
 import Toolbar from 'material-ui/Toolbar';
 
@@ -105,14 +106,23 @@ class User extends Component {
             tabs: {
                 value: 1
             }
-        })
-
-        console.log(typeof user.surnames)
+        });
     };
 
     render() {
         return (
             <div style={{ paddingBottom: 56 }}>
+                <div style={ this.state.tabs.value === 0 ? {
+                    backgroundColor: '#fff',
+                    position: 'absolute',
+                    width: '100vw',
+                    height: 'calc(100vh - 128px)',
+                    zIndex: 2,
+                    textAlign: 'center',
+                    paddingTop: 128
+                } : { display: 'none' } }>
+                    <CircularProgress size={ 150 } />
+                </div>
                 <AppBar
                     classes={{ root: 'transparent' }}
                     elevation={ 0 }

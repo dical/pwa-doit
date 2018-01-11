@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import Button from 'material-ui/Button';
+import { CircularProgress } from 'material-ui/Progress';
 import Dialog, { DialogActions, DialogContent, DialogTitle } from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 
@@ -43,7 +44,7 @@ class FormMoment extends Component {
         let request = new XMLHttpRequest(),
             disable = this.handleDisable,
             message = this.handleSnack,
-            success = this.props.onRequestClose;
+            success = this.props.close;
 
         request.open('POST', 'http://' + window.location.hostname + ':8081/moments', true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
@@ -83,14 +84,48 @@ class FormMoment extends Component {
         })
     };
 
+    handleUpload = (event) => {
+        this.setState({ uploading: true });
+
+        let xhr = new XMLHttpRequest();
+        let fdt = new FormData();
+        let response = this.handleResponse;
+
+        fdt.append('image', event.target.files[0]);
+
+        xhr.open("POST", 'http://' + window.location.hostname + ':8081/images', true);
+
+        xhr.onreadystatechange = function() { if (xhr.readyState === 4) { response(xhr) } };
+
+        xhr.send(fdt);
+    };
+
+    handleResponse = (request) => {
+        switch (request.status) {
+            case 200:
+                let moment = this.state.moment;
+
+                moment.value = JSON.parse(request.response).image
+
+                this.setState({ moment: moment });
+                this.handleSnack('Imagen subida');
+                break;
+            default:
+                this.handleSnack('No se pudo subir la imagen');
+                break;
+        }
+
+        this.setState({ uploading: false })
+    };
+
     render() {
         return (
             <Dialog
                 open={ this.props.open }
-                onRequestClose={ this.props.onRequestClose }
+                onClose={ this.props.close }
                 classes={{ paper: 'w-80' }}
             >
-                <DialogTitle>{ "New Moment" }</DialogTitle>
+                <DialogTitle>{ 'Nuevo Momento' }</DialogTitle>
                 <DialogContent>
                     <TextField
                         id="moment-source"
@@ -100,21 +135,23 @@ class FormMoment extends Component {
                         onChange={ this.handleChange }
                         fullWidth
                     />
+
+                    <input type='file' hidden onChange={ this.handleUpload } accept="image/*"/>
                 </DialogContent>
                 <DialogActions>
                     <Button
-                        onClick={ this.props.onRequestClose }
-                        color="default"
+                        onClick={ () => { document.querySelector('input[type="file"').click() } }
                     >
-                        Cancel
+                        { this.state.uploading ? <CircularProgress size={ 15 }/> : 'Subir' }
                     </Button>
+
                     <Button
                         autoFocus
                         color="primary"
                         disabled={ !(new RegExp("https?:\\/\\/.*\\.(?:png|jpg)")).test(this.state.moment.value) }
                         onClick={ this.handleRequest }
                     >
-                        Add
+                        Agregar
                     </Button>
                 </DialogActions>
 

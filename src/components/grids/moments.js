@@ -1,5 +1,6 @@
 import React from 'react';
 
+import Button from 'material-ui/Button';
 import { GridList, GridListTile, GridListTileBar } from 'material-ui/GridList';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
@@ -83,7 +84,7 @@ class GridMoments extends React.Component {
                 justifyContent: 'space-around',
                 position: 'absolute',
                 width: '-webkit-fill-available',
-                height: 'calc(100% - 250px - 90px - 48px)',
+                height: 'calc(100% - 250px - 90px - 48px ' + ( window.location.pathname.indexOf('user') ? ' - 44px' : '' ) + ')',
                 overflowY: 'auto',
                 zIndex: -1
             }}
@@ -114,6 +115,8 @@ class GridMoments extends React.Component {
                 ))
             }
 
+            <Button children='' id='add' onClick={ this.handleForm } style={{ display: 'none' }}/>
+
             <DialogMoments
                 image={ this.state.dialog.image }
                 open={ this.state.dialog.open }
@@ -122,7 +125,7 @@ class GridMoments extends React.Component {
 
             <FormMoment
                 open={ this.state.form.open }
-                onRequestClose={ this.handleForm }
+                close={ this.handleForm }
             />
         </GridList>;
     }

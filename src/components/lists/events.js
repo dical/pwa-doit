@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import Avatar from 'material-ui/Avatar';
+import { CircularProgress } from 'material-ui/Progress';
 import Button from 'material-ui/Button';
 import Icon from 'material-ui/Icon';
 import List, { ListItem, ListItemText } from 'material-ui/List';
@@ -14,7 +15,10 @@ class ListEvents extends Component {
         event: {
             open: false
         },
-        events: []
+        events: [],
+        request: {
+            loading: false
+        }
     };
 
     componentDidMount() {
@@ -35,6 +39,8 @@ class ListEvents extends Component {
 
     handleRequest = (type, url, body, callback) => {
         let request = new XMLHttpRequest();
+
+        this.setState({ request: { loading: true } });
 
         request.open(type.toUpperCase(), url, true);
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
@@ -57,13 +63,28 @@ class ListEvents extends Component {
 
     handleUpdate = (events) => {
         this.setState({
-            events: this.props.map !== undefined ? events.map(this.props.map) : events
+            events: this.props.map !== undefined ? events.map(this.props.map) : events,
+            request: {
+                loading: false
+            }
         })
     };
 
     render() {
         return (
             <List>
+
+                {
+                    this.state.request.loading && <div style={{ padding: 16, textAlign: 'center' }}><CircularProgress/></div>
+                }
+
+                {
+                    !this.state.request.loading && this.state.events.length === 0 &&
+                    <ListItem style={{ marginTop: -8 }}>
+                        <ListItemText align='center' primary='No se encontraron eventos.'/>
+                    </ListItem>
+                }
+
                 {
                     this.state.events.map((event, index) => (
                         <Link

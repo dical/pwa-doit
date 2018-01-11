@@ -98,7 +98,7 @@ class FormSession extends Component {
                     <img
                         alt=''
                         src={ '/images/logo.png' }
-                        style={{ width: '70vw' }}
+                        style={{ width: '50vw', maxWidth: 'fit-content' }}
                     />
 
                     <TextField

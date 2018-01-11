@@ -91,7 +91,7 @@ class Event extends Component {
     handleMoment = () => {
         this.setState({
             tabs: {
-                value: 3
+                value: 'photo_library'
             }
         }, function() { document.getElementById('add').click() })
     };
