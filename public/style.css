@@ -13,16 +13,16 @@ header, .background-default {
     background: linear-gradient(45deg, #18252d 30%, #0a1014 90%) !important;
 }
 
-.color-gray {
-    color: #78909C !important;
+.color-white {
+    color: #fff !important;
+}
+
+.color-orange {
+    color: #ff6e40 !important;
 }
 
 .color-black {
     color: #000 !important;
-}
-
-.color-white {
-    color: #fff !important;
 }
 
 .height-fill-available {

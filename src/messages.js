@@ -20,7 +20,7 @@ class Messages extends Component {
     handleUpdate = (request) => {
         switch (request.status) {
             case 200:
-                this.setState({ query : '?' + JSON.parse(request.response).map(function(inscription) { return 'event=' + inscription.event._id }).join('&') });
+                this.setState({ query : '&' + JSON.parse(request.response).map(function(inscription) { return 'event=' + inscription.event._id }).join('&') });
                 break;
             default:
                 break;

@@ -31,6 +31,7 @@ class DialogEvent extends Component {
                         children={ typeof this.props.dataEvent === undefined ? 'Crear evento' : 'Editar evento' }
                         color='inherit'
                         type='title'
+                        style={{ marginLeft: 16 }}
                     />
 
                     <IconButton

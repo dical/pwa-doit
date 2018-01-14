@@ -152,6 +152,7 @@ class User extends Component {
                 </AppBar>
 
                 <CardImage
+                    href={ "/user/" + this.state.user._id }
                     avatar={ this.state.user.image }
                     image={ this.state.user.image }
                     subtitle={ '@' + this.state.user.username }

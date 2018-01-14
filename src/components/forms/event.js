@@ -48,7 +48,10 @@ class FormEvent extends Component {
             event.end = new Date(event.end);
 
             this.setState({
-                event: this.props.dataEvent
+                event: this.props.dataEvent,
+                fieldset: {
+                    disabled: this.props.dataEvent.start < new Date(Date.now())
+                }
             })
         }
     }
@@ -207,7 +210,7 @@ class FormEvent extends Component {
     handleResponseImage = (request) => {
         switch (request.status) {
             case 200:
-                let event = this.state.event; event.image = JSON.parse(request.response).image
+                let event = this.state.event; event.image = JSON.parse(request.response).image;
                 this.setState({ event: event });
                 this.handleSnack('Imagen subida');
                 break;
@@ -294,7 +297,7 @@ class FormEvent extends Component {
                     />
 
                     <TextField
-                        error={ this.state.event.address.number === '' }
+                        error={ this.state.event.address.number === '' || this.state.event.address.number < 1 }
                         helperText='Numero'
                         label='Numero'
                         onChange={ this.handleNumber }
@@ -308,7 +311,7 @@ class FormEvent extends Component {
                     />
 
                     <TextField
-                        error={ this.state.event.start >= this.state.event.end }
+                        error={ this.state.event.start >= this.state.event.end || this.state.event.start <= new Date(Date.now()) }
                         helperText='Formato: dia/mes/año'
                         InputLabelProps={{ shrink: true }}
                         label='Fecha de Inicio'
@@ -323,7 +326,7 @@ class FormEvent extends Component {
                     />
 
                     <TextField
-                        error={ this.state.event.start >= this.state.event.end }
+                        error={ this.state.event.start >= this.state.event.end || this.state.event.start <= new Date(Date.now()) }
                         helperText='Formato: hora:minuto'
                         InputLabelProps={{ shrink: true }}
                         label='Hora de Inicio'
@@ -338,6 +341,7 @@ class FormEvent extends Component {
                     />
 
                     <TextField
+                        error={ this.state.event.start >= this.state.event.end || this.state.event.start <= new Date(Date.now()) }
                         helperText='Formato: dia/mes/año'
                         label='Fecha de Termino'
                         onChange={ this.handleEndDate }
@@ -351,6 +355,7 @@ class FormEvent extends Component {
                     />
 
                     <TextField
+                        error={ this.state.event.start >= this.state.event.end || this.state.event.start <= new Date(Date.now()) }
                         helperText='Formato: hora:minuto'
                         InputLabelProps={{ shrink: true }}
                         label="Hora de Termino *"
@@ -464,6 +469,7 @@ class FormEvent extends Component {
                             style={{
                                 display: 'flex',
                                 margin: '16px -16px 0',
+                                flexWrap: 'wrap',
                                 padding: '0 16px'
                             }}
                         >
@@ -483,7 +489,7 @@ class FormEvent extends Component {
                                             label={ tag }
                                             key={ index }
                                             onDelete={ this.handleRemove(tag) }
-                                            style={{ marginRight: 8 }}
+                                            style={{ marginRight: 8, marginBottom: 8 }}
                                         />
                                     );
                                 })

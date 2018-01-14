@@ -13,13 +13,17 @@ import ListFilters from './components/lists/filters';
 
 import Navigation from './components/navigation';
 
+import { get_cookie } from "./helpers/cookie";
+
 class Events extends Component {
     state = {
         filtering: false,
         filter: 'soon',
         searching: false,
         search: '',
-        title: 'Próximos'
+        title: 'Próximos',
+        skip: 0,
+        cont: 10
     };
 
     handleChange = (event) => {
@@ -27,6 +31,10 @@ class Events extends Component {
     };
 
     handleClick = (filter, title) => {
+        if (filter === "me") {
+            filter = filter + "&user=" + get_cookie("userId")
+        }
+
         this.setState({ filter: filter, filtering: false, title: title })
     };
 

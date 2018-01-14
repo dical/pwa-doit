@@ -5,6 +5,7 @@ import Icon from 'material-ui/Icon';
 import List, { ListItem, ListItemText, ListItemIcon } from 'material-ui/List';
 
 import { request } from '../../helpers/request';
+import { get_cookie } from "../../helpers/cookie";
 
 class ListNotifications extends Component {
     state = { notifications: [] };
@@ -15,7 +16,7 @@ class ListNotifications extends Component {
     };
 
     componentWillReceiveProps(nextProps) {
-        request('get', 'http://' + window.location.hostname + ':8081/notifications' + nextProps.query, {}, this.handleUpdate, true)
+        request('get', 'http://' + window.location.hostname + ':8081/notifications?user=' + get_cookie("userId") + nextProps.query, {}, this.handleUpdate, true)
     }
 
     handleUpdate = (request) => {

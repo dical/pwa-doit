@@ -10,6 +10,8 @@ import Typography from 'material-ui/Typography';
 
 import DialogEvent from '../dialogs/event';
 
+import { request } from "../../helpers/request";
+
 class ListEvents extends Component {
     state = {
         event: {
@@ -18,11 +20,12 @@ class ListEvents extends Component {
         events: [],
         request: {
             loading: false
-        }
+        },
+        skip: 0
     };
 
     componentDidMount() {
-        this.handleRequest('get', this.props.src, {}, this.handleResponse)
+        this.handleRequest('get', this.props.src + "&skip=" + this.state.skip, {}, this.handleResponse); window.onscroll = this.handleRequestScroll
     }
 
     componentWillReceiveProps(props) {
@@ -35,6 +38,12 @@ class ListEvents extends Component {
                 open: !this.state.event.open
             }
         })
+    };
+
+    handleRequestScroll = () => {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+            request("get", this.props.src + "&skip=" + this.state.skip, {}, this.handleResponseAddEvent)
+        }
     };
 
     handleRequest = (type, url, body, callback) => {
@@ -61,12 +70,31 @@ class ListEvents extends Component {
         }
     };
 
+    handleResponseAddEvent = (request) => {
+        switch (request.status) {
+            case 200:
+                console.log(request);
+
+                this.setState({
+                    events: this.state.events.concat(JSON.parse(request.response)),
+                    request: {
+                        loading: false
+                    },
+                    skip: this.state.skip + JSON.parse(request.response).length
+                });
+                break;
+            default:
+                break;
+        }
+    };
+
     handleUpdate = (events) => {
         this.setState({
             events: this.props.map !== undefined ? events.map(this.props.map) : events,
             request: {
                 loading: false
-            }
+            },
+            skip: events.length
         })
     };
 
@@ -128,7 +156,6 @@ class ListEvents extends Component {
                         <Icon>add</Icon>
                     </Button>
                 }
-
 
                 <DialogEvent open={ this.state.event.open } onClose={ this.handleEvent } />
             </List>

@@ -57,7 +57,7 @@ class Event extends Component {
     };
 
     canEdit = () => {
-        return this.isOwner() && new Date(this.state.event.start) > Date.now()
+        return this.isOwner() || new Date(this.state.event.start) > Date.now()
     };
 
     componentDidMount() {
@@ -245,6 +245,7 @@ class Event extends Component {
                 </AppBar>
 
                 <CardImage
+                    href={ "/user/" + this.state.event.own._id }
                     avatar={ this.state.event.own.image }
                     image={this.state.event.image }
                     subtitle={ '@' + this.state.event.own.username }

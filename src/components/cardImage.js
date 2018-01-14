@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from "react-router-dom";
 
 import { CardMedia } from 'material-ui/Card';
 import Typography from 'material-ui/Typography';
@@ -10,7 +11,7 @@ class CardImage extends Component {
             <CardMedia
                 className='profile'
                 image={ typeof this.props.image === "string" && this.props.image.trim() !== '' ? this.props.image : '/images/landscape.jpg' }
-                title="Title"
+                title={ this.props.title }
             >
                 <div
                     style={{
@@ -29,16 +30,18 @@ class CardImage extends Component {
                         { this.props.title }
                     </Typography>
 
-                    <Typography
-                        type="subheading"
-                        style={{
-                            color: '#fafafa',
-                            padding: '0 16px 26px',
-                            textShadow: '-1px 1px 0px rgba(0,0,0,0.12), 1px 1px 1px rgba(0,0,0,0.24)'
-                        }}
-                    >
-                        { this.props.subtitle }
-                    </Typography>
+                    <Link to={ this.props.href ? this.props.href : "/" }>
+                        <Typography
+                            type="subheading"
+                            style={{
+                                color: '#fafafa',
+                                padding: '0 16px 26px',
+                                textShadow: '-1px 1px 0px rgba(0,0,0,0.12), 1px 1px 1px rgba(0,0,0,0.24)'
+                            }}
+                        >
+                            { this.props.subtitle }
+                        </Typography>
+                    </Link>
                 </div>
             </CardMedia>
         );
