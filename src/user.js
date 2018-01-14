@@ -215,8 +215,8 @@ class User extends Component {
                 {
                     this.state.tabs.value === 1 &&
                     <ListEvents
-                        map={ event }
-                        src={ 'http://' + window.location.hostname + ':8081/inscriptions?user=' + this.state.user._id }
+                        map={ this.state.user.hasOwnProperty("business") ? undefined : event }
+                        src={ 'http://' + window.location.hostname + ':8081/' + ( this.state.user.hasOwnProperty("business") ? 'events?filter=me&user=' : 'inscriptions?user=' ) + this.state.user._id }
                     />
                 }
 
@@ -227,7 +227,7 @@ class User extends Component {
 
                 {
                     this.state.tabs.value === 3 &&
-                    <GridMoments query={ 'user=' + this.state.user._id }/>
+                    <GridMoments query={ this.state.user.hasOwnProperty("business") ? "own=" + this.state.user._id : "user=" + this.state.user._id }/>
                 }
 
                 <Navigation value={ 'user' }/>

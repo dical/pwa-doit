@@ -73,8 +73,6 @@ class ListEvents extends Component {
     handleResponseAddEvent = (request) => {
         switch (request.status) {
             case 200:
-                console.log(request);
-
                 this.setState({
                     events: this.state.events.concat(JSON.parse(request.response)),
                     request: {
@@ -117,7 +115,7 @@ class ListEvents extends Component {
                     this.state.events.map((event, index) => (
                         <Link
                             key={ index }
-                            to={ '/event/' + event._id}
+                            to={ '/event/' + event._id }
                         >
                             <ListItem
                                 button
