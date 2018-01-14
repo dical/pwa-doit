@@ -53,13 +53,14 @@ class FormSession extends Component {
      handleSocialRequest = (callback) => {  
         let request = new XMLHttpRequest();
    
-        request.open('GET', 'http://localhost:8081/auth/facebook', true);
+        request.open('GET', 'http://'+ window.location.hostname +':8081/auth/facebook', true);
         request.setRequestHeader( 'Access-Control-Allow-Origin', '*');
         request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
         
         request.onreadystatechange = function() {
             if (request.readyState === 4 ) { 
-                callback(request) 
+                callback(request)
+                console.log(callback) 
             }
         };
 
