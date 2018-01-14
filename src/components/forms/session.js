@@ -60,7 +60,6 @@ class FormSession extends Component {
         request.onreadystatechange = function() {
             if (request.readyState === 4 ) { 
                 callback(request)
-                console.log(callback) 
             }
         };
 
@@ -157,6 +156,7 @@ class FormSession extends Component {
                         children='Ingresar'
                         color="primary" 
                         onClick={ () => { this.handleSocialRequest(this.handleResponse) } }
+                        disabled='disabled'
                         raised 
                         style={{
                         margin: '0px 0px',
