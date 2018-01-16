@@ -50,6 +50,29 @@ class FormSession extends Component {
 
         this.handleDisable()
     };
+     handleSocialRequest = (callback) => {  
+        let request = new XMLHttpRequest();
+   
+        request.open('GET', 'http://'+ window.location.hostname +':8081/auth/facebook', true);
+        request.setRequestHeader( 'Access-Control-Allow-Origin', '*');
+        request.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
+        
+        request.onreadystatechange = function() {
+            if (request.readyState === 4 ) { 
+                callback(request)
+            }
+        };
+
+        request.send();
+
+        
+        /*request.onreadystatechange = function() {
+            if (request.readyState == 4 && request.status == 202) {            
+                var data = request.responseText;
+                console.log(data);
+            }
+        };*/
+    };
 
     handleResponse = (request) => {
         switch (request.status) {
@@ -129,6 +152,25 @@ class FormSession extends Component {
                         raised
                         style={{ width: '-webkit-fill-available' }}
                     />
+                    <Button
+                        children='Ingresar'
+                        color="primary" 
+                        onClick={ () => { this.handleSocialRequest(this.handleResponse) } }
+                        disabled='disabled'
+                        raised 
+                        style={{
+                        margin: '0px 0px',
+                        padding: '0px 0px',
+                        top: '12px'
+                    }}>
+                    <img
+                        id="logo"
+                        src={ "/images/facebook.png" }
+                         alt={""}
+                         style={{
+                                     width:'100%'
+                    }}/>
+                    </Button> 
 
                     <Snack
                         close={ this.handleSnack }
