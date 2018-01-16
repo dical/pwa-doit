@@ -156,7 +156,7 @@ class FormSession extends Component {
                         children='Ingresar'
                         color="primary" 
                         onClick={ () => { this.handleSocialRequest(this.handleResponse) } }
-                        //disabled='disabled'
+                        disabled='disabled'
                         raised 
                         style={{
                         margin: '0px 0px',
