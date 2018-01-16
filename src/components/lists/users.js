@@ -9,10 +9,6 @@ import List, { ListItem, ListItemText } from 'material-ui/List';
 import { get_cookie } from '../../helpers/cookie';
 
 class ListUsers extends Component {
-    componentWillReceiveProps(props) {
-        console.log(props)
-    }
-
     handleDelete = (_id) => {
         this.handleRequest(
             'delete',
