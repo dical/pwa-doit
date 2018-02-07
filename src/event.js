@@ -56,9 +56,9 @@ class Event extends Component {
         }
     };
 
-    canEdit = () => {
-        return this.isOwner() || new Date(this.state.event.start) > Date.now()
-    };
+    /*canEdit = () => {
+        return this.isOwner() && new Date(this.state.event.start) > Date.now()
+    };*/
 
     componentDidMount() {
         this.handleRefresh()
@@ -80,13 +80,13 @@ class Event extends Component {
         })
     };
 
-    handleEdit = () => {
+    /*handleEdit = () => {
         this.setState({
             edit: {
                 open: !this.state.edit.open
             }
         })
-    };
+    };*/
 
     handleMoment = () => {
         this.setState({
@@ -236,10 +236,11 @@ class Event extends Component {
                         </Link>
 
                         <IconButton
-                            children={ <Icon>{ this.canEdit() ? 'mode_edit' : 'share' }</Icon> }
+                            children={ <Icon>{ 'share' }</Icon> }
                             color="contrast"
-                            onClick={ this.canEdit() ? this.handleEdit : this.handleShare }
+                            onClick={ this.handleShare }
                             style={{ marginLeft: 'auto' }}
+                            
                         />
                     </Toolbar>
                 </AppBar>

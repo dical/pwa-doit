@@ -62,16 +62,7 @@ class FormSession extends Component {
                 callback(request)
             }
         };
-
         request.send();
-
-        
-        /*request.onreadystatechange = function() {
-            if (request.readyState == 4 && request.status == 202) {            
-                var data = request.responseText;
-                console.log(data);
-            }
-        };*/
     };
 
     handleResponse = (request) => {
@@ -152,6 +143,7 @@ class FormSession extends Component {
                         raised
                         style={{ width: '-webkit-fill-available' }}
                     />
+                    
                     <Button
                         children='Ingresar'
                         color="primary" 
@@ -170,7 +162,8 @@ class FormSession extends Component {
                          style={{
                                      width:'100%'
                     }}/>
-                    </Button> 
+                    </Button>
+                     
 
                     <Snack
                         close={ this.handleSnack }
