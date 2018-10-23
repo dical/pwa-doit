@@ -52,7 +52,7 @@ class Support extends Component {
                 <br/>
 
                 <Typography
-                    children='+56 9 563 458 159'
+                    children='+56 9 646 445 88'
                     type='button'
                 />
 

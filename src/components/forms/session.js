@@ -157,7 +157,7 @@ class FormSession extends Component {
                     }}>
                     <img
                         id="logo"
-                        src={ "/images/facebook.png" }
+                        src={ "/images/loginfb.png" }
                          alt={""}
                          style={{
                                      width:'100%'
